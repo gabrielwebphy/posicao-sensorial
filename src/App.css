@@ -1,0 +1,21 @@
+.app {
+    display: grid;
+    grid-template-columns: 1fr;
+    box-sizing: border-box;
+    grid-template-rows: 1fr auto;
+    place-items: center;
+}
+
+canvas {
+    border: 2px solid #000;
+    box-sizing: border-box;
+    width: 350px;
+    height: 350px;
+}
+
+.app>div {
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    gap: 40px;
+}
