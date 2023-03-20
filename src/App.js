@@ -9,7 +9,10 @@ function App() {
   const [velocities, setVelocities] = useState({ x: 0, y: 0, z: 0 })
   const [rotationAngle, setAngle] = useState({ x: 0, y: 0, z: 0 })
   const [movementStarted, setStart] = useState(false)
+  const [initialAngles, setInitial] = useState({ x: 0, y: 0, z: 0 })
   const [timeInterval, setTimeInterval] = useState(60)
+  const anglesRef = useRef(null)
+  anglesRef.current = initialAngles
 
   const isMobile = navigator.userAgentData.mobile;
 
@@ -21,19 +24,29 @@ function App() {
   }, [])
 
   function handleOrientation(event) {
-    if (event.alpha) { setAngle({ x: event.alpha, y: event.beta, z: event.gamma }) }
+    if (event.alpha) { setAngle({ x: event.alpha - anglesRef.current.x, y: event.beta - anglesRef.current.y, z: event.gamma - anglesRef.current.z }) }
   }
 
   function handleMotion(event) {
     if (event.acceleration) {
       setAccelerations({ x: event.acceleration.x, y: event.acceleration.y, z: event.acceleration.z })
       //setVelocities({ x: event.acceleration.x, y: event.acceleration.y, z: event.acceleration.z })
-      setTimeInterval(event.interval)
+      setTimeInterval(1000 / event.interval)
     }
   }
 
+useEffect(() => {
+  let newVelocities = {...velocities}
+  newVelocities.x = !accelerations.x?0: newVelocities.x
+  newVelocities.y = !accelerations.y?0: newVelocities.y
+  newVelocities.z = !accelerations.z?0: newVelocities.z
+  setVelocities(newVelocities)
+}, [accelerations])
+
   function updateCoordinates(x, y, z, vx, vy, vz, ax, ay, az, thetvx, thetvy, thetvz) {
     if (movementStarted) {
+
+      // os ângulos y e z estão trocados nessa equação, pois após testar percebi que assim eles funcionam como deveriam
       const roll = thetvx / 180 * Math.PI;
       const pitch = thetvz / 180 * Math.PI;
       const yaw = thetvy / 180 * Math.PI;
@@ -46,9 +59,10 @@ function App() {
       const newX = x + newXVelocity / timeInterval
       const newY = y + newYVelocity / timeInterval
       const newZ = z + newZVelocity / timeInterval
-      /*const newX = x + ((vx * Math.cos(yaw) * Math.cos(pitch)) + (vy * (Math.sin(roll) * Math.sin(yaw) * Math.cos(pitch) - Math.cos(roll) * Math.sin(pitch))) + (vz * (Math.cos(roll) * Math.sin(yaw) * Math.cos(pitch) + Math.sin(roll) * Math.sin(pitch)))) / timeInterval
-      const newY = y + ((vx * Math.cos(yaw) * Math.sin(pitch)) + (vy * (Math.sin(roll) * Math.sin(yaw) * Math.sin(pitch) + Math.cos(roll) * Math.cos(pitch))) + (vz * (Math.cos(roll) * Math.sin(yaw) * Math.sin(pitch) - Math.sin(roll) * Math.cos(pitch)))) / timeInterval
-      const newZ = z + ((-vx * Math.sin(yaw)) + (vy * Math.sin(roll) * Math.cos(yaw)) + (vz * Math.cos(roll) * Math.cos(yaw))) / timeInterval
+      /*
+       const newX = x + ((vx * Math.cos(yaw) * Math.cos(pitch)) + (vy * (Math.sin(roll) * Math.sin(yaw) * Math.cos(pitch) - Math.cos(roll) * Math.sin(pitch))) + (vz * (Math.cos(roll) * Math.sin(yaw) * Math.cos(pitch) + Math.sin(roll) * Math.sin(pitch)))) / timeInterval
+       const newY = y + ((vx * Math.cos(yaw) * Math.sin(pitch)) + (vy * (Math.sin(roll) * Math.sin(yaw) * Math.sin(pitch) + Math.cos(roll) * Math.cos(pitch))) + (vz * (Math.cos(roll) * Math.sin(yaw) * Math.sin(pitch) - Math.sin(roll) * Math.cos(pitch)))) / timeInterval
+       const newZ = z + ((-vx * Math.sin(yaw)) + (vy * Math.sin(roll) * Math.cos(yaw)) + (vz * Math.cos(roll) * Math.cos(yaw))) / timeInterval
       */
       setCoordinates({ x: newX, y: newY, z: newZ })
     }
@@ -58,13 +72,14 @@ function App() {
     }
   }
 
-  useInterval(() => { updateCoordinates(coordinates.x, coordinates.y, coordinates.z, velocities.x, velocities.y, velocities.z, accelerations.x, accelerations.y, accelerations.z, rotationAngle.x, rotationAngle.y, rotationAngle.z,/*angle*Math.PI/180*/) }, 1000 / 60)
+  useInterval(() => { updateCoordinates(coordinates.x, coordinates.y, coordinates.z, velocities.x, velocities.y, velocities.z, accelerations.x, accelerations.y, accelerations.z, rotationAngle.x, rotationAngle.y, rotationAngle.z) }, 1000 / 60)
 
   return (
     <div className="app">
-      <Scene coordinates={coordinates} rotationAngle={rotationAngle}/>
+      <Scene coordinates={coordinates} rotationAngle={rotationAngle} />
       <div>
         <div>
+          {isMobile ? <button onClick={() => setInitial({ x: rotationAngle.x + initialAngles.x, y: rotationAngle.y + initialAngles.y, z: rotationAngle.z + initialAngles.z })}>Estabilizar</button> : ''}
           <button onClick={() => setStart(!movementStarted)}>{movementStarted ? 'Parar' : 'Iniciar'}</button>
           <div>aceleração horizontal<input value={accelerations.x} onChange={e => setAccelerations(prevState => { return { ...prevState, x: e.target.value } })} /></div>
           <div>aceleração vertical<input value={accelerations.y} onChange={e => setAccelerations(prevState => { return { ...prevState, y: e.target.value } })} /></div>
@@ -91,6 +106,10 @@ function App() {
           <div>Ângulo x: {rotationAngle.x}</div>
           <div>Ângulo y: {rotationAngle.y}</div>
           <div>Ângulo z: {rotationAngle.z}</div>
+
+          <div>Ângulo estabilização x: {initialAngles.x}</div>
+          <div>Ângulo estabilização y: {initialAngles.y}</div>
+          <div>Ângulo estabilização z: {initialAngles.z}</div>
         </div>
       </div>
     </div>
