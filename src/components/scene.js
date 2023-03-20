@@ -11,7 +11,7 @@ export default function Scene({ coordinates, rotationAngle }) {
             <Box position={[coordinates.x, coordinates.y, coordinates.z]} rotation={[rotationAngle.x*Math.PI/180, rotationAngle.y*Math.PI/180, rotationAngle.z*Math.PI/180]}/>
             <color attach="background" args={["#06092c"]} />
             <OrbitControls />
-            <axesHelper args={[50]} />
+            <gridHelper args={[20, 20, 0xff0000, 'teal']} position={[0,-1,0]}/>
         </Canvas>
     );
 }

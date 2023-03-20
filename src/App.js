@@ -24,7 +24,7 @@ function App() {
   }, [])
 
   function handleOrientation(event) {
-    if (event.alpha) { setAngle({ x: event.alpha - anglesRef.current.x, y: event.beta - anglesRef.current.y, z: event.gamma - anglesRef.current.z }) }
+    if (event.alpha) { setAngle({ x: event.beta - anglesRef.current.x, y: event.gamma - anglesRef.current.y, z: event.alpha - anglesRef.current.z }) }
   }
 
   function handleMotion(event) {

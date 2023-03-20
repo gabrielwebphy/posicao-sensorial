@@ -6,11 +6,11 @@ function Box(props) {
     <>
       <mesh {...props} ref={mesh}>
         <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="#FFAE00" />
+        <meshBasicMaterial color="#FFAE00" />
       </mesh>
       <mesh {...props} ref={mesh}>
         <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="#000000" wireframe />
+        <meshBasicMaterial color="#000000" wireframe />
       </mesh>
     </>
 
