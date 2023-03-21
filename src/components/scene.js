@@ -1,17 +1,36 @@
-import { Canvas } from '@react-three/fiber';
 import * as THREE from "three";
-import { OrbitControls } from '@react-three/drei';
-import Box from './box';
 
-export default function Scene({ coordinates, rotationAngle }) {
-    return (
-        <Canvas dpr={window.devicePixelRatio} camera={{ position: new THREE.Vector3(2, 2, 2) }}>
-            <ambientLight />
-            <pointLight position={[10, 10, 10]} />
-            <Box position={[coordinates.x, coordinates.y, coordinates.z]} rotation={[rotationAngle.x*Math.PI/180, rotationAngle.y*Math.PI/180, rotationAngle.z*Math.PI/180]}/>
-            <color attach="background" args={["#06092c"]} />
-            <OrbitControls />
-            <gridHelper args={[20, 20, 0xff0000, 'teal']} position={[0,-1,0]}/>
-        </Canvas>
-    );
+export default function Scene({ canvasRef, coordinates, rotation }) {
+    let scene = new THREE.Scene();
+
+    // Cria a câmera
+    let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+    // Cria o renderer
+    let renderer = new THREE.WebGLRenderer(canvasRef);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Cria a geometria
+    let geometry = new THREE.BoxGeometry();
+    let material = new THREE.MeshBasicMaterial({ color: 0xff00ff });
+    let cube = new THREE.Mesh(geometry, material);
+    let wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe:true });
+    let wiredCube = new THREE.Mesh(geometry, wireframeMaterial);
+    scene.add(cube)
+    scene.add(wiredCube)
+
+    // Posiciona a câmera
+    camera.position.z = 5;
+
+    // Cria um loop de renderização
+    function animate() {
+        requestAnimationFrame(animate);
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        wiredCube.rotation.x += 0.01;
+        wiredCube.rotation.y += 0.01;
+        renderer.render(scene, camera);
+    }
+    animate();
 }
