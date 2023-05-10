@@ -39,9 +39,9 @@ function ThreeScene({ x, y, z, quaternion }) {
     scene.add(wiredCube);
 
     // Posiciona a câmera
-    camera.position.x = 5;
-    camera.position.y = 5;
-    camera.position.z = 5;
+    camera.position.x = -4;
+    camera.position.y = 0;
+    camera.position.z = 0;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
     const axesHelper = new THREE.AxesHelper(5);
     scene.add(axesHelper);
