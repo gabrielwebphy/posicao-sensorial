@@ -1,118 +1,83 @@
 import { useEffect, useRef, useState } from 'react';
 import useInterval from './components/useInterval';
-import Scene from './components/scene';
+import ThreeScene from './components/scene'
 import './App.css';
 import * as THREE from 'three'
-import Quaternion from 'quaternion'
 
 function App() {
   const [coordinates, setCoordinates] = useState({ x: 0, y: 0, z: 0 })
   const [accelerations, setAccelerations] = useState({ x: 0, y: 0, z: 0 })
   const [velocities, setVelocities] = useState({ x: 0, y: 0, z: 0 })
-  const [rotationAngle, setAngle] = useState({ x: 0, y: 0, z: 0 })
+  const [quaternion, setQuaternion] = useState([0, 0, 0, 0])
   const [movementStarted, setStart] = useState(false)
   const [initialAngles, setInitial] = useState({ x: 0, y: 0, z: 0 })
-  const [timeInterval, setTimeInterval] = useState(60)
   const anglesRef = useRef(null)
-  const canvasRef = useRef(null)
-  const objectRef = useRef(null)
   anglesRef.current = initialAngles
-  const rad = Math.PI / 180;
   const isMobile = navigator.userAgentData.mobile;
 
   useEffect(() => {
-    Scene(canvasRef, {}, {})
-    if (isMobile) {
-      window.addEventListener("devicemotion", handleMotion);
-      //window.addEventListener("deviceorientation", handleOrientation);
-      window.addEventListener("deviceorientation", function (ev) {
-        // Update the rotation object
-        const q = Quaternion.fromEuler(ev.alpha * rad, ev.beta * rad, ev.gamma * rad, 'ZXY');
-        const rotation = q.conjugate().toMatrix4()
-        // Set the CSS style to the element you want to rotate
-        objectRef.current.style.transform = "matrix3d(" + rotation + ")";
-
-      }, true);
-
-    }
+    window.addEventListener('deviceorientation', handleOrientation, true);
   }, [])
 
-  /*function handleOrientation(event) {
-    if (event.alpha) { setAngle({ x: event.beta - anglesRef.current.x, y: event.gamma - anglesRef.current.y, z: event.alpha - anglesRef.current.z }) }
-  }*/
+  // Handle device orientation data
+  function handleOrientation(event) {
+    const alpha = event.alpha || 0; // rotation around z-axis
+    const beta = event.beta || 0;   // rotation around x-axis
+    const gamma = event.gamma || 0; // rotation around y-axis
 
-  function handleMotion(event) {
-    if (event.acceleration) {
-      setAccelerations({ x: event.acceleration.x, y: event.acceleration.y, z: event.acceleration.z })
-      //setVelocities({ x: event.acceleration.x, y: event.acceleration.y, z: event.acceleration.z })
-      setTimeInterval(1000 / event.interval)
-    }
+    // Convert Euler angles to quaternion
+    const alphaRad = alpha * (Math.PI / 180);
+    const betaRad = beta * (Math.PI / 180);
+    const gammaRad = gamma * (Math.PI / 180);
+
+    const c1 = Math.cos(alphaRad / 2);
+    const s1 = Math.sin(alphaRad / 2);
+    const c2 = Math.cos(betaRad / 2);
+    const s2 = Math.sin(betaRad / 2);
+    const c3 = Math.cos(gammaRad / 2);
+    const s3 = Math.sin(gammaRad / 2);
+
+    const w = c1 * c2 * c3 - s1 * s2 * s3;
+    const x = s1 * s2 * c3 + c1 * c2 * s3;
+    const y = s1 * c2 * c3 + c1 * s2 * s3;
+    const z = c1 * s2 * c3 - s1 * c2 * s3;
+
+    const magnitude = Math.sqrt(x * x + y * y + z * z + w * w);
+    const quaternionObject = { x: x/magnitude, y: y/magnitude, z: z/magnitude, w: w/magnitude };
+    const quaternionArray = [quaternionObject.x, quaternionObject.y, quaternionObject.z, quaternionObject.w];
+
+    // Use the quaternion as needed
+    console.log(quaternionObject);
+    const quaternion = new THREE.Quaternion()
+    quaternion.fromArray(quaternionArray)
+    setQuaternion(quaternion)
   }
 
-  useEffect(() => {
-    let newVelocities = { ...velocities }
-    newVelocities.x = !accelerations.x ? 0 : newVelocities.x
-    newVelocities.y = !accelerations.y ? 0 : newVelocities.y
-    newVelocities.z = !accelerations.z ? 0 : newVelocities.z
-    setVelocities(newVelocities)
-  }, [accelerations])
-
-  function updateCoordinates(x, y, z, vx, vy, vz, ax, ay, az, thetvx, thetvy, thetvz) {
+  function updateCoordinates() {
     if (movementStarted) {
-
-      // os ângulos y e z estão trocados nessa equação, pois após testar percebi que assim eles funcionam como deveriam
-      /*const roll = thetvx / 180 * Math.PI;
-      const pitch = thetvz / 180 * Math.PI;
-      const yaw = thetvy / 180 * Math.PI;
-
-      const newXVelocity = vx + ((ax * Math.cos(yaw) * Math.cos(pitch)) + (ay * (Math.sin(roll) * Math.sin(yaw) * Math.cos(pitch) - Math.cos(roll) * Math.sin(pitch))) + (az * (Math.cos(roll) * Math.sin(yaw) * Math.cos(pitch) + Math.sin(roll) * Math.sin(pitch)))) / timeInterval
-      const newYVelocity = vy + ((ax * Math.cos(yaw) * Math.sin(pitch)) + (ay * (Math.sin(roll) * Math.sin(yaw) * Math.sin(pitch) + Math.cos(roll) * Math.cos(pitch))) + (az * (Math.cos(roll) * Math.sin(yaw) * Math.sin(pitch) - Math.sin(roll) * Math.cos(pitch)))) / timeInterval
-      const newZVelocity = vz + ((-ax * Math.sin(yaw)) + (ay * Math.sin(roll) * Math.cos(yaw)) + (az * Math.cos(roll) * Math.cos(yaw))) / timeInterval
-      setVelocities({ x: newXVelocity, y: newYVelocity, z: newZVelocity })*/
-
-      /*const a = new THREE.Vector3(az, ax, ay);
-      const b = a.applyMatrix4(rotationMatrix)
-      console.log(a, b)*/
-
-      const newXVelocity = vx + ax / timeInterval
-      const newYVelocity = vy + ay / timeInterval
-      const newZVelocity = vz + az / timeInterval
-      setVelocities({ x: newXVelocity, y: newYVelocity, z: newZVelocity })
-
-      const newX = x + newXVelocity / timeInterval
-      const newY = y + newYVelocity / timeInterval
-      const newZ = z + newZVelocity / timeInterval
-      setCoordinates({ x: newX, y: newY, z: newZ })
     }
     else {
-      setCoordinates({ x: 0, y: 0, z: 0 })
-      setVelocities({ x: 0, y: 0, z: 0 })
+
     }
   }
 
-  useInterval(() => { updateCoordinates(coordinates.x, coordinates.y, coordinates.z, velocities.x, velocities.y, velocities.z, accelerations.x, accelerations.y, accelerations.z, rotationAngle.x, rotationAngle.y, rotationAngle.z) }, 1000 / 60)
+  useInterval(() => { updateCoordinates(coordinates.x, coordinates.y, coordinates.z, velocities.x, velocities.y, velocities.z, accelerations.x, accelerations.y, accelerations.z) }, 1000 / 60)
 
   return (
     <div className="app">
-
       <div>
         <div>
-          {isMobile ? <button onClick={() => setInitial({ x: rotationAngle.x + initialAngles.x, y: rotationAngle.y + initialAngles.y, z: rotationAngle.z + initialAngles.z })}>Estabilizar</button> : ''}
-          <div ref={objectRef}>ola</div>
+          <ThreeScene x={coordinates.x} y={coordinates.y} z={coordinates.z} quaternion={quaternion} />
           <button onClick={() => setStart(!movementStarted)}>{movementStarted ? 'Parar' : 'Iniciar'}</button>
           <div>aceleração horizontal<input value={accelerations.x} onChange={e => setAccelerations(prevState => { return { ...prevState, x: e.target.value } })} /></div>
           <div>aceleração vertical<input value={accelerations.y} onChange={e => setAccelerations(prevState => { return { ...prevState, y: e.target.value } })} /></div>
           <div>aceleração perpendicular<input value={accelerations.z} onChange={e => setAccelerations(prevState => { return { ...prevState, z: e.target.value } })} /></div>
-          <div>ângulo de rotação horizontal<input value={rotationAngle.x} onChange={e => setAngle(prevState => { return { ...prevState, x: e.target.value } })} /></div>
-          <div>ângulo de rotação vertical<input value={rotationAngle.y} onChange={e => setAngle(prevState => { return { ...prevState, y: e.target.value } })} /></div>
-          <div>ângulo de rotação perpendicular<input value={rotationAngle.z} onChange={e => setAngle(prevState => { return { ...prevState, z: e.target.value } })} /></div>
         </div>
         <div>
+          <div>Quatêrnio: {quaternion}</div>
           <div>Aceleração x: {accelerations.x}</div>
           <div>Aceleração y: {accelerations.y}</div>
           <div>Aceleração z: {accelerations.z}</div>
-
-          <div>ts: {timeInterval}</div>
 
           <div>Posição x: {coordinates.x}</div>
           <div>Posição y: {coordinates.y}</div>
@@ -121,10 +86,6 @@ function App() {
           <div>Velocidade x: {velocities.x}</div>
           <div>Velocidade y: {velocities.y}</div>
           <div>Velocidade z: {velocities.z}</div>
-
-          <div>Ângulo x: {rotationAngle.x}</div>
-          <div>Ângulo y: {rotationAngle.y}</div>
-          <div>Ângulo z: {rotationAngle.z}</div>
 
           <div>Ângulo estabilização x: {initialAngles.x}</div>
           <div>Ângulo estabilização y: {initialAngles.y}</div>
