@@ -37,9 +37,9 @@ function handleMotion(event) {
   const accel = new THREE.Vector3(ax, ay, az);
   accel.applyQuaternion(quart);
 
-  cubeData.vx += accel.x / 60;
-  cubeData.vy += accel.y / 60;
-  cubeData.vz += accel.z / 60;
+  cubeData.vx = accel.x / 60;
+  cubeData.vy = accel.y / 60;
+  cubeData.vz = accel.z / 60;
 
   cubeData.x += cubeData.vx / 60;
   cubeData.y += cubeData.vy / 60;
