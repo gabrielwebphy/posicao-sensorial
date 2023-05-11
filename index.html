@@ -12,9 +12,9 @@
   <canvas id="three-canvas"></canvas>
   <div>
     <button id="botao" onclick="iniciarMovimento()">Iniciar movimento</button>
-    <div id="ax">0</div>
-    <div id="ay">0</div>
-    <div id="az">0</div>
+    <p id="ax">0</p>
+    <p id="ay">0</p>
+    <p id="az">0</p>
   </div>
   <script src='script.js'></script>
   <style>
@@ -25,13 +25,15 @@
   z-index: 1;
 }
 div{
-  color: #fff;
   display: flex;
   flex-direction: column;
   position: absolute;
   left: 10px;
   top: 10px;
   z-index: 2;
+}
+p{
+  color: #fff;
 }
 
   </style>
