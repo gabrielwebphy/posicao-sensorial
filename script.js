@@ -70,7 +70,7 @@ function handleOrientation(event) {
 
   const quaternion = new THREE.Quaternion();
   quaternion.fromArray(quaternionArray);
-  quart = quaternion;
+  quart = quaternion.normalize();
 }
 
 const scene = new THREE.Scene();
