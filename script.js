@@ -23,7 +23,7 @@ function handleMotion(event) {
   if (!movementStarted) {
     return;
   }
-  const ax = event ? event.acceleration.x : 0.1;
+  const ax = event ? event.acceleration.x : 0;
   const ay = event ? event.acceleration.y : 0;
   const az = event ? event.acceleration.z : 0;
 
