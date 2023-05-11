@@ -26,9 +26,9 @@ function handleMotion(event) {
   if (!movementStarted) {
     return;
   }
-  const ax = event ? event.acceleration.x : 0;
-  const ay = event ? event.acceleration.y : 0;
-  const az = event ? event.acceleration.z : 0;
+  const ax = event && Math.abs(event.acceleration.x) > 0.1 ? event.acceleration.x : 0;
+  const ay = event && Math.abs(event.acceleration.y) > 0.1 ? event.acceleration.y : 0;
+  const az = event && Math.abs(event.acceleration.z) > 0.1 ? event.acceleration.z : 0;
 
   axDisplay.innerHTML = ax
   ayDisplay.innerHTML = ay
@@ -122,7 +122,7 @@ scene.add(wiredCube);
 
 const animate = () => {
   controls.update();
-  handleMotion();
+  // handleMotion();
   cube.position.set(cubeData.x, cubeData.y, cubeData.z);
   wiredCube.position.set(cubeData.x, cubeData.y, cubeData.z);
   cube.quaternion.copy(quart.normalize());
