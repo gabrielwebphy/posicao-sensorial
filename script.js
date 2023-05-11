@@ -1,6 +1,9 @@
 window.addEventListener("deviceorientation", handleOrientation, true);
 window.addEventListener("devicemotion", handleMotion, true);
 const button = document.getElementById('botao')
+const axDisplay = document.getElementById('ax')
+const ayDisplay = document.getElementById('ay')
+const azDisplay = document.getElementById('az')
 
 let movementStarted = false;
 
@@ -26,6 +29,10 @@ function handleMotion(event) {
   const ax = event ? event.acceleration.x : 0;
   const ay = event ? event.acceleration.y : 0;
   const az = event ? event.acceleration.z : 0;
+
+  axDisplay.innerHTML = ax
+  ayDisplay.innerHTML = ay
+  azDisplay.innerHTML = az
 
   const accel = new THREE.Vector3(ax, ay, az);
   accel.applyQuaternion(quart);
