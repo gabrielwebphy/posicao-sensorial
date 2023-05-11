@@ -1,6 +1,7 @@
 window.addEventListener("deviceorientation", handleOrientation, true);
 window.addEventListener("devicemotion", handleMotion, true);
 const button = document.getElementById('botao')
+button.addEventListener("onclick", iniciarMovimento)
 const axDisplay = document.getElementById('ax')
 const ayDisplay = document.getElementById('ay')
 const azDisplay = document.getElementById('az')
