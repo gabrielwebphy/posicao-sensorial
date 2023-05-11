@@ -11,6 +11,9 @@
 <body>
   <canvas id="three-canvas"></canvas>
   <button id="botao" onclick="iniciarMovimento()">Iniciar movimento</button>
+  <div id="ax">0</div>
+  <div id="ay">0</div>
+  <div id="az">0</div>
   <script src='script.js'></script>
   <style>
     #three-canvas {
@@ -18,6 +21,9 @@
   left: 0;
   top: 0;
   z-index: 1;
+}
+div{
+  color: #fff;
 }
 
 #botao {
