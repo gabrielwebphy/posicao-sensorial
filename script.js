@@ -27,9 +27,9 @@ function handleMotion(event) {
   if (!movementStarted) {
     return;
   }
-  const ax = event && Math.abs(event.acceleration.x) > 0.1 ? event.acceleration.x : 0;
-  const ay = event && Math.abs(event.acceleration.y) > 0.1 ? event.acceleration.y : 0;
-  const az = event && Math.abs(event.acceleration.z) > 0.1 ? event.acceleration.z : 0;
+  const ax = event ? event.acceleration.x : 0;
+  const ay = event ? event.acceleration.y : 0;
+  const az = event ? event.acceleration.z : 0;
 
   axDisplay.innerHTML = ax
   ayDisplay.innerHTML = ay
@@ -89,9 +89,9 @@ const size = {
 };
 const aspect = size.width / size.height;
 const camera = new THREE.PerspectiveCamera(75, aspect);
-camera.position.z = 2;
-camera.position.y = 2;
-camera.position.x = -4;
+camera.position.z = 0.05;
+camera.position.y = 0.05;
+camera.position.x = -0.2;
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
 const threeCanvas = document.getElementById("three-canvas");
@@ -113,7 +113,7 @@ for (let i = 0; i < 6; i++) {
 }
 
 // Cria a geometria
-let geometry = new THREE.BoxGeometry(2, 0.5, 1);
+let geometry = new THREE.BoxGeometry(0.16, 0.01, 0.07);
 let cube = new THREE.Mesh(geometry, materials);
 let wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
 let wiredCube = new THREE.Mesh(geometry, wireframeMaterial);
@@ -123,7 +123,7 @@ scene.add(wiredCube);
 
 const animate = () => {
   controls.update();
-  // handleMotion();
+   handleMotion();
   cube.position.set(cubeData.x, cubeData.y, cubeData.z);
   wiredCube.position.set(cubeData.x, cubeData.y, cubeData.z);
   cube.quaternion.copy(quart.normalize());
