@@ -3,9 +3,11 @@ window.addEventListener("devicemotion", handleMotion, true);
 const button = document.getElementById('botao')
 button.addEventListener("click", iniciarMovimento)
 const axDisplay = document.getElementById('ax')
+let movementRegister = true
+let frameCount = 0
 const ayDisplay = document.getElementById('ay')
 const azDisplay = document.getElementById('az')
-
+let fps = document.getElementById('fps')
 let movementStarted = false;
 
 function iniciarMovimento() {
@@ -27,7 +29,14 @@ function handleMotion(event) {
   if (!movementStarted) {
     return;
   }
-  const ax = event ? event.acceleration.x : 0;
+  if(movementRegister){
+    frameCount++
+  }
+  else{
+    fps.innerHTML = frameCount
+  }
+  console.log(event);
+  const ax = event ? event.acceleration.x : 0.1;
   const ay = event ? event.acceleration.y : 0;
   const az = event ? event.acceleration.z : 0;
 
@@ -50,11 +59,12 @@ function handleMotion(event) {
   cubeData.y += cubeData.vy / 60;
   cubeData.z += cubeData.vz / 60;
 }
-
+setTimeout(() => {movementRegister = false}, 1000)
 let quart = new THREE.Quaternion();
 
 // Handle device orientation data
 function handleOrientation(event) {
+  console.log(event);
   const alpha = event.alpha || 0; // rotation around z-axis
   const beta = event.beta || 0; // rotation around x-axis
   const gamma = event.gamma || 0; // rotation around y-axis
