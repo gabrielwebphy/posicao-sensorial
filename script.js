@@ -59,24 +59,24 @@ function handleMotion(event) {
   xDisplay.innerHTML = cubeData.x;
   yDisplay.innerHTML = cubeData.y;
   zDisplay.innerHTML = cubeData.z;
-  ts.innerHTML = lastTimestamp +'s '+timeDivision
+  // ts.innerHTML = lastTimestamp +'s '+timeDivision
   evDisplay.innerHTML = event
 
   const accel = new THREE.Vector3(ax, ay, az);
   accel.applyQuaternion(quart.normalize());
-  let timeDivision = 1000 / (event.timestamp - lastTimestamp);
+  // let timeDivision = 1000 / (event.timestamp - lastTimestamp);
 
-  cubeData.vx += accel.x / timeDivision;
-  cubeData.vy += accel.y / timeDivision;
-  cubeData.vz += accel.z / timeDivision;
+  cubeData.vx += accel.x / 60;
+  cubeData.vy += accel.y / 60;
+  cubeData.vz += accel.z / 60;
 
   cubeData.vx = accel.x === 0 ? 0 : cubeData.vx;
   cubeData.vy = accel.y === 0 ? 0 : cubeData.vy;
   cubeData.vz = accel.z === 0 ? 0 : cubeData.vz;
 
-  cubeData.x += cubeData.vx / timeDivision;
-  cubeData.y += cubeData.vy / timeDivision;
-  cubeData.z += cubeData.vz / timeDivision;
+  cubeData.x += cubeData.vx / 60;
+  cubeData.y += cubeData.vy / 60;
+  cubeData.z += cubeData.vz / 60;
 }
 setInterval(() => {
   movementRegister = false;
