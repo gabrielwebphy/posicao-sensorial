@@ -38,9 +38,9 @@ function handleMotion(event) {
   if (!movementStarted) {
     return;
   }
-  const ax = event ? event.acceleration.x : 0;
-  const ay = event ? event.acceleration.y : 0;
-  const az = event ? event.acceleration.z : 0;
+  const ax = event ? event.acceleration.x : 0.01;
+  const ay = event ? event.acceleration.y : 0.01;
+  const az = event ? event.acceleration.z : 0.01;
 
   axDisplay.innerHTML = ax
   ayDisplay.innerHTML = ay
@@ -49,8 +49,8 @@ function handleMotion(event) {
   const accel = new THREE.Vector3(ax, ay, az);
   accel.applyQuaternion(quart.normalize());
 
-  let timeDivision = 1000 / (event.timestamp - lastTimestamp)
-  lastTimestamp = event.timestamp
+  let timeDivision = event? 1000 / (event.timestamp - lastTimestamp) : 60
+  lastTimestamp = event ? event.timestamp : 0
 
   cubeData.vx += accel.x / timeDivision;
   cubeData.vy += accel.y / timeDivision;
@@ -142,7 +142,7 @@ scene.add(wiredCube);
 
 const animate = () => {
   controls.update();
-  handleMotion();
+  //handleMotion();
   cube.position.set(cubeData.x, cubeData.y, cubeData.z);
   wiredCube.position.set(cubeData.x, cubeData.y, cubeData.z);
   cube.quaternion.copy(quart.normalize());
