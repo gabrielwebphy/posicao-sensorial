@@ -9,6 +9,7 @@ const ayDisplay = document.getElementById('ay')
 const azDisplay = document.getElementById('az')
 let fps = document.getElementById('fps')
 let movementStarted = false;
+let lastTimestamp = 0
 
 function iniciarMovimento() {
   movementStarted = !movementStarted;
@@ -37,7 +38,6 @@ function handleMotion(event) {
   if (!movementStarted) {
     return;
   }
-  console.log(event);
   const ax = event ? event.acceleration.x : 0;
   const ay = event ? event.acceleration.y : 0;
   const az = event ? event.acceleration.z : 0;
@@ -49,17 +49,20 @@ function handleMotion(event) {
   const accel = new THREE.Vector3(ax, ay, az);
   accel.applyQuaternion(quart.normalize());
 
-  // cubeData.vx += accel.x / 60;
-  // cubeData.vy += accel.y / 60;
-  // cubeData.vz += accel.z / 60;
+  let timeDivision = 1000 / (event.timestamp - lastTimestamp)
+  lastTimestamp = event.timestamp
 
-  cubeData.vx += accel.x / 60;
-  cubeData.vy += accel.y / 60;
-  cubeData.vz += accel.z / 60;
+  cubeData.vx += accel.x / timeDivision;
+  cubeData.vy += accel.y / timeDivision;
+  cubeData.vz += accel.z / timeDivision;
 
-  cubeData.x += cubeData.vx / 60;
-  cubeData.y += cubeData.vy / 60;
-  cubeData.z += cubeData.vz / 60;
+  cubeData.vx = accel.x === 0 ? 0: cubeData.vx
+  cubeData.vy = accel.y === 0 ? 0: cubeData.vy
+  cubeData.vz = accel.z === 0 ? 0: cubeData.vz
+
+  cubeData.x += cubeData.vx / timeDivision;
+  cubeData.y += cubeData.vy / timeDivision;
+  cubeData.z += cubeData.vz / timeDivision;
 }
 setInterval(() => { movementRegister = false }, 1000)
 let quart = new THREE.Quaternion();
