@@ -7,6 +7,12 @@ let movementRegister = true;
 let frameCount = 0;
 const ayDisplay = document.getElementById("ay");
 const azDisplay = document.getElementById("az");
+const vxDisplay = document.getElementById("vx");
+const vyDisplay = document.getElementById("vy");
+const vzDisplay = document.getElementById("vz");
+const xDisplay = document.getElementById("x");
+const yDisplay = document.getElementById("y");
+const zDisplay = document.getElementById("z");
 let fps = document.getElementById("fps");
 let movementStarted = false;
 let lastTimestamp = 0;
@@ -45,6 +51,12 @@ function handleMotion(event) {
   axDisplay.innerHTML = ax;
   ayDisplay.innerHTML = ay;
   azDisplay.innerHTML = az;
+  vxDisplay.innerHTML = cubeData.vx;
+  vyDisplay.innerHTML = cubeData.vy;
+  vzDisplay.innerHTML = cubeData.vz;
+  xDisplay.innerHTML = cubeData.x;
+  yDisplay.innerHTML = cubeData.y;
+  zDisplay.innerHTML = cubeData.z;
 
   const accel = new THREE.Vector3(ax, ay, az);
   accel.applyQuaternion(quart.normalize());
