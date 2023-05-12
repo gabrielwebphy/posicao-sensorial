@@ -30,7 +30,7 @@ function handleMotion(event) {
     frameCount++
   }
   else {
-    fps.innerHTML = frameCount + 'fps'
+    fps.innerHTML = frameCount + ' i/s'
   }
   if (!movementStarted) {
     return;
@@ -59,7 +59,7 @@ function handleMotion(event) {
   cubeData.y += cubeData.vy / 60;
   cubeData.z += cubeData.vz / 60;
 }
-setTimeout(() => { movementRegister = false }, 1000)
+setInterval(() => { frameCount = 0 }, 1000)
 let quart = new THREE.Quaternion();
 
 // Handle device orientation data
