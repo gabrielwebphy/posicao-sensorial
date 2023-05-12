@@ -30,13 +30,13 @@ function handleMotion(event) {
     frameCount++
   }
   else {
-    fps.innerHTML = frameCount + '\n' + event
+    fps.innerHTML = frameCount + 'fps'
   }
   if (!movementStarted) {
     return;
   }
   console.log(event);
-  const ax = event ? event.acceleration.x : 0.1;
+  const ax = event ? event.acceleration.x : 0;
   const ay = event ? event.acceleration.y : 0;
   const az = event ? event.acceleration.z : 0;
 
@@ -51,9 +51,9 @@ function handleMotion(event) {
   // cubeData.vy += accel.y / 60;
   // cubeData.vz += accel.z / 60;
 
-  cubeData.vx = accel.x / 60;
-  cubeData.vy = accel.y / 60;
-  cubeData.vz = accel.z / 60;
+  cubeData.vx += accel.x / 60;
+  cubeData.vy += accel.y / 60;
+  cubeData.vz += accel.z / 60;
 
   cubeData.x += cubeData.vx / 60;
   cubeData.y += cubeData.vy / 60;
