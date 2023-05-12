@@ -12,7 +12,7 @@ let movementStarted = false;
 
 function iniciarMovimento() {
   movementStarted = !movementStarted;
-  button.innerHTML = movementStarted ? 'Parar movimento': 'Iniciar movimento'
+  button.innerHTML = movementStarted ? 'Parar movimento' : 'Iniciar movimento'
 }
 
 let cubeData = {
@@ -26,14 +26,14 @@ let cubeData = {
 
 // Handle device motion data
 function handleMotion(event) {
-  if (!movementStarted) {
-    return;
-  }
-  if(movementRegister){
+  if (movementRegister) {
     frameCount++
   }
-  else{
-    fps.innerHTML = frameCount
+  else {
+    fps.innerHTML = frameCount + '\n' + event
+  }
+  if (!movementStarted) {
+    return;
   }
   console.log(event);
   const ax = event ? event.acceleration.x : 0.1;
@@ -59,7 +59,7 @@ function handleMotion(event) {
   cubeData.y += cubeData.vy / 60;
   cubeData.z += cubeData.vz / 60;
 }
-setTimeout(() => {movementRegister = false}, 1000)
+setTimeout(() => { movementRegister = false }, 1000)
 let quart = new THREE.Quaternion();
 
 // Handle device orientation data
@@ -137,7 +137,7 @@ scene.add(wiredCube);
 
 const animate = () => {
   controls.update();
-   handleMotion();
+  handleMotion();
   cube.position.set(cubeData.x, cubeData.y, cubeData.z);
   wiredCube.position.set(cubeData.x, cubeData.y, cubeData.z);
   cube.quaternion.copy(quart.normalize());
