@@ -14,7 +14,6 @@ const xDisplay = document.getElementById("x");
 const yDisplay = document.getElementById("y");
 const zDisplay = document.getElementById("z");
 const ts = document.getElementById("ts");
-const evDisplay = document.getElementById("event")
 let fps = document.getElementById("fps");
 let movementStarted = false;
 let lastTimestamp = 0;
@@ -60,7 +59,6 @@ function handleMotion(event) {
   yDisplay.innerHTML = cubeData.y;
   zDisplay.innerHTML = cubeData.z;
   // ts.innerHTML = lastTimestamp +'s '+timeDivision
-  evDisplay.innerHTML = event
 
   const accel = new THREE.Vector3(ax, ay, az);
   accel.applyQuaternion(quart.normalize());
@@ -85,7 +83,6 @@ let quart = new THREE.Quaternion();
 
 // Handle device orientation data
 function handleOrientation(event) {
-  console.log(event);
   const alpha = event.alpha || 0; // rotation around z-axis
   const beta = event.beta || 0; // rotation around x-axis
   const gamma = event.gamma || 0; // rotation around y-axis
