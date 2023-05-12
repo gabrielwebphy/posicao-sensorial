@@ -13,6 +13,7 @@ const vzDisplay = document.getElementById("vz");
 const xDisplay = document.getElementById("x");
 const yDisplay = document.getElementById("y");
 const zDisplay = document.getElementById("z");
+const ts= document.getElementById('ts')
 let fps = document.getElementById("fps");
 let movementStarted = false;
 let lastTimestamp = 0;
@@ -61,6 +62,8 @@ function handleMotion(event) {
   const accel = new THREE.Vector3(ax, ay, az);
   accel.applyQuaternion(quart.normalize());
   let timeDivision = 1000 / (event.timestamp - lastTimestamp);
+
+  ts.innerHTML = lastTimestamp +'s '+timeDivision
 
   cubeData.vx += accel.x / timeDivision;
   cubeData.vy += accel.y / timeDivision;
