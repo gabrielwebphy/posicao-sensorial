@@ -1,19 +1,19 @@
 window.addEventListener("deviceorientation", handleOrientation, true);
 window.addEventListener("devicemotion", handleMotion, true);
-const button = document.getElementById('botao')
-button.addEventListener("click", iniciarMovimento)
-const axDisplay = document.getElementById('ax')
-let movementRegister = true
-let frameCount = 0
-const ayDisplay = document.getElementById('ay')
-const azDisplay = document.getElementById('az')
-let fps = document.getElementById('fps')
+const button = document.getElementById("botao");
+button.addEventListener("click", iniciarMovimento);
+const axDisplay = document.getElementById("ax");
+let movementRegister = true;
+let frameCount = 0;
+const ayDisplay = document.getElementById("ay");
+const azDisplay = document.getElementById("az");
+let fps = document.getElementById("fps");
 let movementStarted = false;
-let lastTimestamp = 0
+let lastTimestamp = 0;
 
 function iniciarMovimento() {
   movementStarted = !movementStarted;
-  button.innerHTML = movementStarted ? 'Parar movimento' : 'Iniciar movimento'
+  button.innerHTML = movementStarted ? "Parar movimento" : "Iniciar movimento";
 }
 
 let cubeData = {
@@ -27,44 +27,44 @@ let cubeData = {
 
 // Handle device motion data
 function handleMotion(event) {
+  lastTimestamp = event.timestamp;
   if (movementRegister) {
-    frameCount++
-  }
-  else {
-    fps.innerHTML = frameCount + ' i/s'
-    movementRegister = true
-    frameCount = 0
+    frameCount++;
+  } else {
+    fps.innerHTML = frameCount + " i/s";
+    movementRegister = true;
+    frameCount = 0;
   }
   if (!movementStarted) {
     return;
   }
-  const ax = event ? event.acceleration.x : 0.01;
-  const ay = event ? event.acceleration.y : 0.01;
-  const az = event ? event.acceleration.z : 0.01;
+  const ax = event ? event.acceleration.x : 0;
+  const ay = event ? event.acceleration.y : 0;
+  const az = event ? event.acceleration.z : 0;
 
-  axDisplay.innerHTML = ax
-  ayDisplay.innerHTML = ay
-  azDisplay.innerHTML = az
+  axDisplay.innerHTML = ax;
+  ayDisplay.innerHTML = ay;
+  azDisplay.innerHTML = az;
 
   const accel = new THREE.Vector3(ax, ay, az);
   accel.applyQuaternion(quart.normalize());
-
-  let timeDivision = 1000 / (event.timestamp - lastTimestamp)
-  lastTimestamp = event.timestamp
+  let timeDivision = 1000 / (event.timestamp - lastTimestamp);
 
   cubeData.vx += accel.x / timeDivision;
   cubeData.vy += accel.y / timeDivision;
   cubeData.vz += accel.z / timeDivision;
 
-  cubeData.vx = accel.x === 0 ? 0: cubeData.vx
-  cubeData.vy = accel.y === 0 ? 0: cubeData.vy
-  cubeData.vz = accel.z === 0 ? 0: cubeData.vz
+  cubeData.vx = accel.x === 0 ? 0 : cubeData.vx;
+  cubeData.vy = accel.y === 0 ? 0 : cubeData.vy;
+  cubeData.vz = accel.z === 0 ? 0 : cubeData.vz;
 
   cubeData.x += cubeData.vx / timeDivision;
   cubeData.y += cubeData.vy / timeDivision;
   cubeData.z += cubeData.vz / timeDivision;
 }
-setInterval(() => { movementRegister = false }, 1000)
+setInterval(() => {
+  movementRegister = false;
+}, 1000);
 let quart = new THREE.Quaternion();
 
 // Handle device orientation data
