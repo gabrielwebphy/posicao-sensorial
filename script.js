@@ -53,12 +53,11 @@ function handleMotion(event) {
   if (!movementStarted) {
     return;
   }
+  const timestamp = event.timestamp || 0;
   if (lastTimestamp === 0) {
     lastTimestamp = timestamp;
     return;
   }
-
-  const timestamp = event.timestamp || 0;
 
   if (lastTimestamp === 0) {
     lastTimestamp = timestamp;
