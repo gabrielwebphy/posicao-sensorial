@@ -58,11 +58,9 @@ function handleMotion(event) {
   xDisplay.innerHTML = cubeData.x;
   yDisplay.innerHTML = cubeData.y;
   zDisplay.innerHTML = cubeData.z;
-  // ts.innerHTML = lastTimestamp +'s '+timeDivision
 
   const accel = new THREE.Vector3(ax, ay, az);
-  accel.applyQuaternion(quart.normalize());
-  // let timeDivision = 1000 / (event.timestamp - lastTimestamp);
+  accel.applyQuaternion(initialRotation.multiply(quart.normalize()));
 
   cubeData.vx += accel.x / 60;
   cubeData.vy += accel.y / 60;
@@ -73,13 +71,15 @@ function handleMotion(event) {
   cubeData.vz = Math.abs(accel.z) === 0 ? 0 : cubeData.vz;
 
   cubeData.x += cubeData.vx / 60;
-  cubeData.y += cubeData.vy / 60;
+  // cubeData.y += cubeData.vy / 60;
   cubeData.z += cubeData.vz / 60;
 }
 setInterval(() => {
   movementRegister = false;
 }, 1000);
+
 let quart = new THREE.Quaternion();
+let initialRotation = new THREE.Quaternion();
 
 // Handle device orientation data
 function handleOrientation(event) {
@@ -111,6 +111,7 @@ function handleOrientation(event) {
   const quaternion = new THREE.Quaternion();
   quaternion.fromArray(quaternionArray);
   quart = quaternion.normalize();
+  initialRotation = quart.clone();
 }
 
 const scene = new THREE.Scene();
@@ -157,8 +158,8 @@ const animate = () => {
   controls.update();
   cube.position.set(cubeData.x, cubeData.y, cubeData.z);
   wiredCube.position.set(cubeData.x, cubeData.y, cubeData.z);
-  cube.quaternion.copy(quart.normalize());
-  wiredCube.quaternion.copy(quart.normalize());
+  cube.quaternion.copy(initialRotation.multiply(quart.normalize()));
+  wiredCube.quaternion.copy(initialRotation.multiply(quart.normalize()));
   renderer.render(scene, camera);
 };
 
