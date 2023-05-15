@@ -20,7 +20,6 @@ let fps = document.getElementById("fps");
 let movementStarted = false;
 let lastFrameCount = 0
 let lastTimestamp = 0;
-const filterFactor = 0.2
 
 function iniciarMovimento() {
   movementStarted = !movementStarted;
@@ -121,10 +120,6 @@ function handleOrientation(event) {
   quaternion.fromArray(quaternionArray);
   quart = quaternion.normalize();
 
-  const smoothQuaternion = new THREE.Quaternion();
-  smoothQuaternion.slerp(quart, filterFactor);
-  quart = smoothQuaternion.normalize();
-
   if (!isCalibrated) {
     calibrationQuaternion = quart.clone();
     isCalibrated = true;
@@ -133,8 +128,6 @@ function handleOrientation(event) {
   // Calculate the relative orientation by subtracting the calibration orientation
   const relativeQuaternion = calibrationQuaternion.inverse().multiply(quart);
   quart = relativeQuaternion.normalize();
-
-
 }
 
 const scene = new THREE.Scene();
