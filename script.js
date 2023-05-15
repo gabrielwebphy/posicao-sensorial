@@ -75,9 +75,13 @@ function handleMotion(event) {
   cubeData.vy += Math.abs(accel.y) <= 0.11 ? 0 : accel.y / lastFrameCount;
   cubeData.vz += Math.abs(accel.z) <= 0.11 ? 0 : accel.z / lastFrameCount;
 
-  cubeData.x += Math.abs(accel.x) <= 0.11 ? cubeData.vx / lastFrameCount : 0;
+  cubeData.vx = Math.abs(accel.x) <= 0.11 ? 0 : cubeData.vx;
+  cubeData.vy = Math.abs(accel.y) <= 0.11 ? 0 : cubeData.vy;
+  cubeData.vz = Math.abs(accel.z) <= 0.11 ? 0 : cubeData.vz;
+
+  cubeData.x += cubeData.vx / lastFrameCount;
   // cubeData.y += cubeData.vy / 60;
-  cubeData.z += Math.abs(accel.z) <= 0.11 ? cubeData.vz / lastFrameCount : 0;
+  cubeData.z += cubeData.vz / lastFrameCount;
 }
 setInterval(() => {
   movementRegister = false;
