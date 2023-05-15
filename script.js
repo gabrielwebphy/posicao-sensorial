@@ -1,9 +1,9 @@
 window.addEventListener("deviceorientation", handleOrientation, true);
 window.addEventListener("devicemotion", handleMotion, true);
 const button = document.getElementById("botao");
-const calibra = document.getElementById("calibra")
+const calibra = document.getElementById("calibra");
 button.addEventListener("click", iniciarMovimento);
-calibra.addEventListener("click", calibrateOrientation)
+calibra.addEventListener("click", calibrateOrientation);
 const axDisplay = document.getElementById("ax");
 let movementRegister = true;
 let frameCount = 0;
@@ -18,19 +18,18 @@ const zDisplay = document.getElementById("z");
 const ts = document.getElementById("ts");
 let fps = document.getElementById("fps");
 let movementStarted = false;
-let lastFrameCount = 0
+let lastFrameCount = 0;
 let lastTimestamp = 0;
-let isCalibrated = false
+let isCalibrated = false;
 
 function iniciarMovimento() {
   movementStarted = !movementStarted;
   button.innerHTML = movementStarted ? "Parar movimento" : "Iniciar movimento";
 }
 function calibrateOrientation() {
-  calibrationQuaternion = quart.clone().inverse();
+  calibrationQuaternion.copy(quart).invert();
   isCalibrated = true;
 }
-
 
 let cubeData = {
   x: 0,
@@ -121,14 +120,8 @@ function handleOrientation(event) {
   quaternion.fromArray(quaternionArray);
   quart = quaternion.normalize();
 
-  if (!isCalibrated) {
-    calibrationQuaternion = quart.clone();
-    isCalibrated = true;
+  if (isCalibrated) {
   }
-
-  // Calculate the relative orientation by subtracting the calibration orientation
-  const relativeQuaternion = calibrationQuaternion.inverse().multiply(quart);
-  quart = relativeQuaternion.normalize();
 }
 
 const scene = new THREE.Scene();
@@ -175,8 +168,14 @@ const animate = () => {
   controls.update();
   cube.position.set(cubeData.x, cubeData.y, cubeData.z);
   wiredCube.position.set(cubeData.x, cubeData.y, cubeData.z);
-  cube.quaternion.copy(quart);
-  wiredCube.quaternion.copy(quart);
+  if (isCalibrated) {
+    const adjustedQuaternion = quart.clone().multiply(calibrationQuaternion);
+    cube.quaternion.copy(adjustedQuaternion);
+    wiredCube.quaternion.copy(adjustedQuaternion);
+  } else {
+    cube.quaternion.copy(quart);
+    wiredCube.quaternion.copy(quart);
+  }
   renderer.render(scene, camera);
 };
 
