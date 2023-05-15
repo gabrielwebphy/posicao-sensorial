@@ -53,7 +53,7 @@ function handleMotion(event) {
   if (!movementStarted) {
     return;
   }
-  const timestamp = event ? event.timestamp : 16.66;
+  const timestamp = event.timestamp || 0;
   if (lastTimestamp === 0) {
     lastTimestamp = timestamp;
     return;
@@ -62,7 +62,7 @@ function handleMotion(event) {
   const dt = (timestamp - lastTimestamp) / 1000;
   lastTimestamp = timestamp;
 
-  const ax = event ? event.acceleration.y : 0.1;
+  const ax = event ? event.acceleration.y : 0;
   const ay = event ? event.acceleration.z : 0;
   const az = event ? event.acceleration.x : 0;
 
@@ -181,7 +181,6 @@ const animate = () => {
   cube.position.set(cubeData.x, cubeData.y, cubeData.z);
   wiredCube.position.set(cubeData.x, cubeData.y, cubeData.z);
   cube.quaternion.copy(quart);
-  handleMotion()
   wiredCube.quaternion.copy(quart);
   renderer.render(scene, camera);
 };
