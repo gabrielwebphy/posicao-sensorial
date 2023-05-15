@@ -121,6 +121,8 @@ function handleOrientation(event) {
   quart = quaternion.normalize();
 
   if (isCalibrated) {
+    const adjustedQuaternion = quart.clone().multiply(calibrationQuaternion);
+    quart = adjustedQuaternion;
   }
 }
 
@@ -168,14 +170,8 @@ const animate = () => {
   controls.update();
   cube.position.set(cubeData.x, cubeData.y, cubeData.z);
   wiredCube.position.set(cubeData.x, cubeData.y, cubeData.z);
-  if (isCalibrated) {
-    const adjustedQuaternion = quart.clone().multiply(calibrationQuaternion);
-    cube.quaternion.copy(adjustedQuaternion);
-    wiredCube.quaternion.copy(adjustedQuaternion);
-  } else {
-    cube.quaternion.copy(quart);
-    wiredCube.quaternion.copy(quart);
-  }
+  cube.quaternion.copy(quart);
+  wiredCube.quaternion.copy(quart);
   renderer.render(scene, camera);
 };
 
