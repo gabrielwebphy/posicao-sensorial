@@ -42,7 +42,6 @@ let cubeData = {
 
 // Handle device motion data
 function handleMotion(event) {
-  lastTimestamp = event.timestamp;
   if (movementRegister) {
     frameCount++;
   } else {
@@ -54,6 +53,20 @@ function handleMotion(event) {
   if (!movementStarted) {
     return;
   }
+  if (lastTimestamp === 0) {
+    lastTimestamp = timestamp;
+    return;
+  }
+
+  const timestamp = event.timestamp || 0;
+
+  if (lastTimestamp === 0) {
+    lastTimestamp = timestamp;
+    return;
+  }
+  const dt = (timestamp - lastTimestamp) / 1000;
+  lastTimestamp = timestamp;
+
   const ax = event ? event.acceleration.y : 0;
   const ay = event ? event.acceleration.z : 0;
   const az = event ? event.acceleration.x : 0;
@@ -71,17 +84,18 @@ function handleMotion(event) {
   const accel = new THREE.Vector3(ax, ay, az);
   accel.applyQuaternion(quart);
 
-  cubeData.vx += Math.abs(accel.x) <= 0.11 ? 0 : accel.x / lastFrameCount;
-  cubeData.vy += Math.abs(accel.y) <= 0.11 ? 0 : accel.y / lastFrameCount;
-  cubeData.vz += Math.abs(accel.z) <= 0.11 ? 0 : accel.z / lastFrameCount;
+  cubeData.vx += Math.abs(accel.x) <= 0.11 ? 0 : accel.x * dt;
+  cubeData.vy += Math.abs(accel.y) <= 0.11 ? 0 : accel.y * dt;
+  cubeData.vz += Math.abs(accel.z) <= 0.11 ? 0 : accel.z * dt;
 
   cubeData.vx = Math.abs(accel.x) === 0 ? 0 : cubeData.vx;
   cubeData.vy = Math.abs(accel.y) === 0 ? 0 : cubeData.vy;
   cubeData.vz = Math.abs(accel.z) === 0 ? 0 : cubeData.vz;
 
-  cubeData.x += cubeData.vx / lastFrameCount;
+  cubeData.x += cubeData.vx * dt;
   // cubeData.y += cubeData.vy / 60;
-  cubeData.z += cubeData.vz / lastFrameCount;
+  cubeData.z += cubeData.vz * dt;
+  
 }
 setInterval(() => {
   movementRegister = false;
