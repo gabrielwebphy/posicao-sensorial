@@ -4,7 +4,6 @@ const button = document.getElementById("botao");
 button.addEventListener("click", iniciarMovimento);
 const axDisplay = document.getElementById("ax");
 let movementRegister = true;
-let firstAngle = true
 let frameCount = 0;
 const ayDisplay = document.getElementById("ay");
 const azDisplay = document.getElementById("az");
@@ -61,7 +60,7 @@ function handleMotion(event) {
   zDisplay.innerHTML = cubeData.z;
 
   const accel = new THREE.Vector3(ax, ay, az);
-  accel.applyQuaternion(initialRotation.multiply(quart.normalize()));
+  accel.applyQuaternion(quart);
 
   cubeData.vx += accel.x / 60;
   cubeData.vy += accel.y / 60;
@@ -112,10 +111,6 @@ function handleOrientation(event) {
   const quaternion = new THREE.Quaternion();
   quaternion.fromArray(quaternionArray);
   quart = quaternion.normalize();
-  if(firstAngle){
-    initialRotation = quart.clone();
-    firstAngle = false
-  }
 }
 
 const scene = new THREE.Scene();
@@ -162,8 +157,8 @@ const animate = () => {
   controls.update();
   cube.position.set(cubeData.x, cubeData.y, cubeData.z);
   wiredCube.position.set(cubeData.x, cubeData.y, cubeData.z);
-  cube.quaternion.copy(initialRotation.multiply(quart.normalize()));
-  wiredCube.quaternion.copy(initialRotation.multiply(quart.normalize()));
+  cube.quaternion.copy(quart);
+  wiredCube.quaternion.copy(quart);
   renderer.render(scene, camera);
 };
 
