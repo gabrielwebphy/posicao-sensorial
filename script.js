@@ -27,7 +27,7 @@ function iniciarMovimento() {
   button.innerHTML = movementStarted ? "Parar movimento" : "Iniciar movimento";
 }
 function calibrateOrientation() {
-  calibrationQuaternion = quart.clone();
+  calibrationQuaternion = quart.clone().inverse();
   isCalibrated = true;
 }
 
