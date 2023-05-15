@@ -59,7 +59,8 @@ function handleMotion(event) {
     return;
   }
 
-  const dt = (timestamp - lastTimestamp) / 1000;
+  let dt = (timestamp - lastTimestamp) / 1000;
+  dt = dt === 0 ? 0.016 : dt
   lastTimestamp = timestamp;
 
   const ax = event ? event.acceleration.y : 0;
