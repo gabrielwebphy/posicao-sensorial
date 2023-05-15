@@ -4,6 +4,7 @@ const button = document.getElementById("botao");
 button.addEventListener("click", iniciarMovimento);
 const axDisplay = document.getElementById("ax");
 let movementRegister = true;
+let firstAngle = true
 let frameCount = 0;
 const ayDisplay = document.getElementById("ay");
 const azDisplay = document.getElementById("az");
@@ -111,7 +112,10 @@ function handleOrientation(event) {
   const quaternion = new THREE.Quaternion();
   quaternion.fromArray(quaternionArray);
   quart = quaternion.normalize();
-  initialRotation = quart.clone();
+  if(firstAngle){
+    initialRotation = quart.clone();
+    firstAngle = false
+  }
 }
 
 const scene = new THREE.Scene();
