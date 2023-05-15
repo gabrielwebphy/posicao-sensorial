@@ -75,9 +75,9 @@ function handleMotion(event) {
   cubeData.vy += Math.abs(accel.y) <= 0.11 ? 0 : accel.y / lastFrameCount;
   cubeData.vz += Math.abs(accel.z) <= 0.11 ? 0 : accel.z / lastFrameCount;
 
-  cubeData.vx = Math.abs(accel.x) <= 0.11 ? 0 : cubeData.vx;
-  cubeData.vy = Math.abs(accel.y) <= 0.11 ? 0 : cubeData.vy;
-  cubeData.vz = Math.abs(accel.z) <= 0.11 ? 0 : cubeData.vz;
+  cubeData.vx = Math.abs(accel.x) === 0 ? 0 : cubeData.vx;
+  cubeData.vy = Math.abs(accel.y) === 0 ? 0 : cubeData.vy;
+  cubeData.vz = Math.abs(accel.z) === 0 ? 0 : cubeData.vz;
 
   cubeData.x += cubeData.vx / lastFrameCount;
   // cubeData.y += cubeData.vy / 60;
