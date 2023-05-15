@@ -1,7 +1,9 @@
 window.addEventListener("deviceorientation", handleOrientation, true);
 window.addEventListener("devicemotion", handleMotion, true);
 const button = document.getElementById("botao");
+const calibra = document.getElementById("calibra")
 button.addEventListener("click", iniciarMovimento);
+calibra.addEventListener("click", calibrateOrientation)
 const axDisplay = document.getElementById("ax");
 let movementRegister = true;
 let frameCount = 0;
@@ -16,12 +18,19 @@ const zDisplay = document.getElementById("z");
 const ts = document.getElementById("ts");
 let fps = document.getElementById("fps");
 let movementStarted = false;
+let lastFrameCount = 0
 let lastTimestamp = 0;
+const filterFactor = 0.2
 
 function iniciarMovimento() {
   movementStarted = !movementStarted;
   button.innerHTML = movementStarted ? "Parar movimento" : "Iniciar movimento";
 }
+function calibrateOrientation() {
+  calibrationQuaternion = quart.clone();
+  isCalibrated = true;
+}
+
 
 let cubeData = {
   x: 0,
@@ -111,6 +120,21 @@ function handleOrientation(event) {
   const quaternion = new THREE.Quaternion();
   quaternion.fromArray(quaternionArray);
   quart = quaternion.normalize();
+
+  const smoothQuaternion = new THREE.Quaternion();
+  smoothQuaternion.slerp(quart, filterFactor);
+  quart = smoothQuaternion.normalize();
+
+  if (!isCalibrated) {
+    calibrationQuaternion = quart.clone();
+    isCalibrated = true;
+  }
+
+  // Calculate the relative orientation by subtracting the calibration orientation
+  const relativeQuaternion = calibrationQuaternion.inverse().multiply(quart);
+  quart = relativeQuaternion.normalize();
+
+
 }
 
 const scene = new THREE.Scene();
