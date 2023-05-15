@@ -20,6 +20,7 @@ let fps = document.getElementById("fps");
 let movementStarted = false;
 let lastFrameCount = 0
 let lastTimestamp = 0;
+let isCalibrated = false
 
 function iniciarMovimento() {
   movementStarted = !movementStarted;
@@ -87,7 +88,7 @@ setInterval(() => {
 }, 1000);
 
 let quart = new THREE.Quaternion();
-let initialRotation = new THREE.Quaternion();
+let calibrationQuaternion = new THREE.Quaternion();
 
 // Handle device orientation data
 function handleOrientation(event) {
