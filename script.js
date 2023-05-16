@@ -1,9 +1,7 @@
 window.addEventListener("deviceorientation", handleOrientation, true);
 window.addEventListener("devicemotion", handleMotion, true);
 const button = document.getElementById("botao");
-//const calibra = document.getElementById("calibra");
 button.addEventListener("click", iniciarMovimento);
-//calibra.addEventListener("click", calibrateOrientation);
 const axDisplay = document.getElementById("ax");
 let movementRegister = true;
 let frameCount = 0;
@@ -20,15 +18,10 @@ let fps = document.getElementById("fps");
 let movementStarted = false;
 let lastFrameCount = 0;
 let lastTimestamp = 0;
-let isCalibrated = false;
 
 function iniciarMovimento() {
   movementStarted = !movementStarted;
   button.innerHTML = movementStarted ? "Parar movimento" : "Iniciar movimento";
-}
-function calibrateOrientation() {
-  calibrationQuaternion.copy(quart).invert();
-  isCalibrated = true;
 }
 
 let cubeData = {
@@ -80,9 +73,9 @@ function handleMotion(event) {
   const accel = new THREE.Vector3(ax, ay, az);
   accel.applyQuaternion(quart);
 
-  cubeData.vx += Math.abs(accel.x) <= 0.11 ? 0 : accel.x * 0.016;
-  cubeData.vy += Math.abs(accel.y) <= 0.11 ? 0 : accel.y * 0.016;
-  cubeData.vz += Math.abs(accel.z) <= 0.11 ? 0 : accel.z * 0.016;
+  cubeData.vx += accel.x * 0.016;
+  cubeData.vy += accel.y * 0.016;
+  cubeData.vz += accel.z * 0.016;
 
   cubeData.vx = Math.abs(accel.x) === 0 ? 0 : cubeData.vx;
   cubeData.vy = Math.abs(accel.y) === 0 ? 0 : cubeData.vy;
@@ -97,7 +90,6 @@ setInterval(() => {
 }, 1000);
 
 let quart = new THREE.Quaternion();
-let calibrationQuaternion = new THREE.Quaternion();
 
 // Handle device orientation data
 function handleOrientation(event) {
@@ -130,14 +122,27 @@ function handleOrientation(event) {
   quaternion.fromArray(quaternionArray);
   quart = quaternion.normalize();
 
-  if (isCalibrated) {
-    const adjustedQuaternion = quart.clone().multiply(calibrationQuaternion);
-    quart = adjustedQuaternion;
-  }
 }
 
 const scene = new THREE.Scene();
+const lineMaterial = new THREE.LineBasicMaterial({color : 0x26f7fd})
 scene.background = new THREE.Color(0x000000);
+const points = [
+  new THREE.Vector3(-0.215, 0, -0.225),
+  new THREE.Vector3(-0.215, 0, 0.225),
+  new THREE.Vector3(0.215, 0, 0.225),
+  new THREE.Vector3(0.215, 0, -0.225),
+  new THREE.Vector3(-0.215, 0, -0.225),
+  new THREE.Vector3(-0.215, 0, 0),
+  new THREE.Vector3(0.215, 0, 0),
+  new THREE.Vector3(0.215, 0, 0.225),
+  new THREE.Vector3(0, 0, 0.225),
+  new THREE.Vector3(0, 0, -0.225),
+];
+const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+const newLine = new THREE.Line(lineGeometry, lineMaterial);
+scene.add(newLine);
+
 const size = {
   width: window.innerWidth,
   height: window.innerHeight,
@@ -145,8 +150,9 @@ const size = {
 const aspect = size.width / size.height;
 const camera = new THREE.PerspectiveCamera(75, aspect);
 camera.position.z = 0;
-camera.position.y = 0;
+camera.position.y = 0.25;
 camera.position.x = -0.2;
+camera.lookAt(new THREE.Vector3(0,0,0))
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
 const threeCanvas = document.getElementById("three-canvas");
@@ -158,8 +164,8 @@ renderer.setSize(size.width, size.height);
 // const grid = new THREE.GridHelper(50, 30);
 // scene.add(grid);
 const axes = new THREE.AxesHelper(10);
-scene.add(axes);
-const controls = new THREE.OrbitControls(camera, threeCanvas);
+//scene.add(axes);
+//const controls = new THREE.OrbitControls(camera, threeCanvas);
 
 let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
 let materials = [];
@@ -177,7 +183,6 @@ scene.add(cube);
 scene.add(wiredCube);
 
 const animate = () => {
-  controls.update();
   cube.position.set(cubeData.x, cubeData.y, cubeData.z);
   wiredCube.position.set(cubeData.x, cubeData.y, cubeData.z);
   cube.quaternion.copy(quart);
