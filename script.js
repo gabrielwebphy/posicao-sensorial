@@ -20,9 +20,9 @@ let lastFrameCount = 0;
 let lastTimestamp = 0;
 
 let kalmanFilters = {
-  kfx: new KalmanFilter({R: 0.75}),
-  kfy: new KalmanFilter({R: 0.75}),
-  kfz: new KalmanFilter({R: 0.75}),
+  kfx: new KalmanFilter({R: 1}),
+  kfy: new KalmanFilter({R: 1}),
+  kfz: new KalmanFilter({R: 1}),
 }
 
 function iniciarMovimento() {
@@ -49,13 +49,14 @@ function handleMotion(event) {
     lastFrameCount = frameCount;
     frameCount = 0;
   }
-  if (!movementStarted) {
-    return;
-  }
 
   const ax = event ? kalmanFilters.kfx.filter(event.acceleration.y) : 0;
   const ay = event ? kalmanFilters.kfy.filter(event.acceleration.z) : 0;
   const az = event ? kalmanFilters.kfz.filter(event.acceleration.x) : 0;
+
+  if (!movementStarted) {
+    return;
+  }
 
   axDisplay.innerHTML = ax;
   ayDisplay.innerHTML = ay;
@@ -74,17 +75,12 @@ function handleMotion(event) {
   cubeData.vy += accel.y * 0.016;
   cubeData.vz += accel.z * 0.016;
 
-  // cubeData.vx = Math.abs(event.acceleration.y) <= 0.1 ? 0 : cubeData.vx;
-  // cubeData.vy = Math.abs(event.acceleration.z) <= 0.1 ? 0 : cubeData.vy;
-  // cubeData.vz = Math.abs(event.acceleration.x) <= 0.1 ? 0 : cubeData.vz;
+  cubeData.vx = Math.abs(event.acceleration.y) <= 0.1 ? 0 : cubeData.vx;
+  cubeData.vy = Math.abs(event.acceleration.z) <= 0.1 ? 0 : cubeData.vy;
+  cubeData.vz = Math.abs(event.acceleration.x) <= 0.1 ? 0 : cubeData.vz;
 
-  const vx = Math.abs(event.acceleration.y) <= 0.1 ? 0 : cubeData.vx;
-  const vy = Math.abs(event.acceleration.z) <= 0.1 ? 0 : cubeData.vy;
-  const vz = Math.abs(event.acceleration.x) <= 0.1 ? 0 : cubeData.vz;
-
-  cubeData.x += vx * 0.016;
-  cubeData.y += vy * 0.016 
-  cubeData.z += vz * 0.016;
+  cubeData.x += cubeData.vx * 0.016;
+  cubeData.z += cubeData.vz * 0.016;
 }
 setInterval(() => {
   movementRegister = false;
