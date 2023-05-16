@@ -74,9 +74,9 @@ function handleMotion(event) {
   cubeData.vy += accel.y * 0.016;
   cubeData.vz += accel.z * 0.016;
 
-  cubeData.vx = Math.abs(accel.x) === 0 ? 0 : cubeData.vx;
-  cubeData.vy = Math.abs(accel.y) === 0 ? 0 : cubeData.vy;
-  cubeData.vz = Math.abs(accel.z) === 0 ? 0 : cubeData.vz;
+  cubeData.vx = Math.abs(event.acceleration.y) <= 0.1 ? 0 : cubeData.vx;
+  cubeData.vy = Math.abs(event.acceleration.z) <= 0.1 ? 0 : cubeData.vy;
+  cubeData.vz = Math.abs(event.acceleration.x) <= 0.1 ? 0 : cubeData.vz;
 
   cubeData.x += cubeData.vx * 0.016;
   cubeData.z += cubeData.vz * 0.016;
