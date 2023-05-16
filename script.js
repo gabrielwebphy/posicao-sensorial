@@ -148,10 +148,10 @@ const size = {
   height: window.innerHeight,
 };
 const aspect = size.width / size.height;
-const camera = new THREE.PerspectiveCamera(75, aspect);
+const camera = new THREE.PerspectiveCamera(90, aspect);
 camera.position.z = 0;
-camera.position.y = 0.25;
-camera.position.x = -0.2;
+camera.position.y = 0.4;
+camera.position.x = -0.4;
 camera.lookAt(new THREE.Vector3(0,0,0))
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
