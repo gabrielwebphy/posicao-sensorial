@@ -20,9 +20,9 @@ let lastFrameCount = 0;
 let lastTimestamp = 0;
 
 let kalmanFilters = {
-  kfx: new KalmanFilter({R: 1}),
-  kfy: new KalmanFilter({R: 1}),
-  kfz: new KalmanFilter({R: 1}),
+  kfx: new KalmanFilter({R: 0.4, Q:2}),
+  kfy: new KalmanFilter({R: 0.4, Q:2}),
+  kfz: new KalmanFilter({R: 0.4, Q:2}),
 }
 
 function iniciarMovimento() {
