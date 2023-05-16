@@ -19,6 +19,12 @@ let movementStarted = false;
 let lastFrameCount = 0;
 let lastTimestamp = 0;
 
+let kalmanFilters = {
+  kfx: new KalmanFilter(),
+  kfy: new KalmanFilter(),
+  kfz: new KalmanFilter(),
+}
+
 function iniciarMovimento() {
   movementStarted = !movementStarted;
   button.innerHTML = movementStarted ? "Parar movimento" : "Iniciar movimento";
@@ -46,19 +52,10 @@ function handleMotion(event) {
   if (!movementStarted) {
     return;
   }
-  // const timestamp = event.timestamp || 0;
-  // if (lastTimestamp === 0) {
-  //   lastTimestamp = timestamp;
-  //   return;
-  // }
 
-  // let dt = (timestamp - lastTimestamp) / 1000;
-  // dt = dt === 0 ? 0.016 : dt
-  // lastTimestamp = timestamp;
-
-  const ax = event ? event.acceleration.y : 0;
-  const ay = event ? event.acceleration.z : 0;
-  const az = event ? event.acceleration.x : 0;
+  const ax = event ? kalmanFilters.kfx.filter(event.acceleration.y) : 0;
+  const ay = event ? kalmanFilters.kfy.filter(event.acceleration.z) : 0;
+  const az = event ? kalmanFilters.kfz.filter(event.acceleration.x) : 0;
 
   axDisplay.innerHTML = ax;
   ayDisplay.innerHTML = ay;
@@ -82,7 +79,6 @@ function handleMotion(event) {
   cubeData.vz = Math.abs(accel.z) === 0 ? 0 : cubeData.vz;
 
   cubeData.x += cubeData.vx * 0.016;
-  // cubeData.y += cubeData.vy / 60;
   cubeData.z += cubeData.vz * 0.016;
 }
 setInterval(() => {
