@@ -20,9 +20,9 @@ let lastFrameCount = 0;
 let lastTimestamp = 0;
 
 let kalmanFilters = {
-  kfx: new KalmanFilter({R: 0.4, Q:2}),
-  kfy: new KalmanFilter({R: 0.4, Q:2}),
-  kfz: new KalmanFilter({R: 0.4, Q:2}),
+  kfx: new KalmanFilter({R: 0.25, Q:1}),
+  kfy: new KalmanFilter({R: 0.25, Q:1}),
+  kfz: new KalmanFilter({R: 0.25, Q:1}),
 }
 
 function iniciarMovimento() {
@@ -75,9 +75,9 @@ function handleMotion(event) {
   cubeData.vy += accel.y * 0.016;
   cubeData.vz += accel.z * 0.016;
 
-  cubeData.vx = Math.abs(ax) <= 0.1 ? 0 : cubeData.vx;
-  cubeData.vy = Math.abs(ay) <= 0.1 ? 0 : cubeData.vy;
-  cubeData.vz = Math.abs(az) <= 0.1 ? 0 : cubeData.vz;
+  cubeData.vx = Math.abs(ax) <= 0.025 ? 0 : cubeData.vx;
+  cubeData.vy = Math.abs(ay) <= 0.025 ? 0 : cubeData.vy;
+  cubeData.vz = Math.abs(az) <= 0.025 ? 0 : cubeData.vz;
 
   cubeData.x += cubeData.vx * 0.016;
   cubeData.z += cubeData.vz * 0.016;
@@ -123,33 +123,65 @@ function handleOrientation(event) {
 
 const scene = new THREE.Scene();
 const lineMaterial = new THREE.LineBasicMaterial({color : 0x26f7fd})
+const redLineMaterial = new THREE.LineBasicMaterial({color : 0xff0000})
+const purpleLineMaterial = new THREE.LineBasicMaterial({color : 0xaa00ff})
+
 scene.background = new THREE.Color(0x000000);
 const points = [
-  new THREE.Vector3(-0.215, 0, -0.225),
-  new THREE.Vector3(-0.215, 0, 0.225),
-  new THREE.Vector3(0.215, 0, 0.225),
-  new THREE.Vector3(0.215, 0, -0.225),
-  new THREE.Vector3(-0.215, 0, -0.225),
-  new THREE.Vector3(-0.215, 0, 0),
-  new THREE.Vector3(0.215, 0, 0),
-  new THREE.Vector3(0.215, 0, 0.225),
-  new THREE.Vector3(0, 0, 0.225),
-  new THREE.Vector3(0, 0, -0.225),
+  new THREE.Vector3(-0.3,0,-0.3),
+  new THREE.Vector3(-0.3,0,-0.9),
+  new THREE.Vector3(0.3,0,-0.9),
+  new THREE.Vector3(0.3,0,-0.3),
+  new THREE.Vector3(0.9,0,-0.3),
+  new THREE.Vector3(0.9,0,-0.9),
+  new THREE.Vector3(0.9,0,0.3),
+  new THREE.Vector3(0.3,0,0.3),
+  new THREE.Vector3(1.5,0,0.3),
+  new THREE.Vector3(1.5,0,-0.3),
+  new THREE.Vector3(0.9,0,-0.3),
+  new THREE.Vector3(0.9,0,-0.9),
+  new THREE.Vector3(1.5,0,-0.9),
+
+  new THREE.Vector3(0.3,0,-0.9),
+  new THREE.Vector3(0.3,0,-0.3),
+  new THREE.Vector3(1.5,0,-0.3),
+  new THREE.Vector3(1.5,0,0.3),
+  new THREE.Vector3(2.1,0,0.3),
+  new THREE.Vector3(2.1,0,-0.3),
+
+];
+const points2 = [
+  new THREE.Vector3(0.3,0,0.3),
+  new THREE.Vector3(0.3,0,-0.3),
+  new THREE.Vector3(-0.3,0,-0.3),
+  new THREE.Vector3(-0.3,0,0.3),
+  new THREE.Vector3(0.3,0,0.3),
+];
+const points3 = [
+  new THREE.Vector3(2.1,0,-0.3),
+  new THREE.Vector3(2.1,0,-0.9),
+  new THREE.Vector3(1.5,0,-0.9),
+  new THREE.Vector3(1.5,0,-0.3),
+  new THREE.Vector3(2.1,0,-0.3),
 ];
 const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+const lineGeometry2 = new THREE.BufferGeometry().setFromPoints(points2);
+const lineGeometry3 = new THREE.BufferGeometry().setFromPoints(points3); 
 const newLine = new THREE.Line(lineGeometry, lineMaterial);
-scene.add(newLine);
+const startLine = new THREE.Line(lineGeometry2, redLineMaterial);
+const endLine = new THREE.Line(lineGeometry3, purpleLineMaterial);
+scene.add(newLine, startLine, endLine);
 
 const size = {
   width: window.innerWidth,
   height: window.innerHeight,
 };
 const aspect = size.width / size.height;
-const camera = new THREE.PerspectiveCamera(90, aspect);
-camera.position.z = 0;
-camera.position.y = 0.4;
-camera.position.x = -0.4;
-camera.lookAt(new THREE.Vector3(0,0,0))
+const camera = new THREE.PerspectiveCamera(102, aspect);
+camera.position.z = -0.3;
+camera.position.y = 1.25;
+camera.position.x = -0.2;
+camera.lookAt(new THREE.Vector3(0.6,0,-0.3))
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
 const threeCanvas = document.getElementById("three-canvas");
@@ -158,8 +190,6 @@ const renderer = new THREE.WebGLRenderer({
   alpha: true,
 });
 renderer.setSize(size.width, size.height);
-// const grid = new THREE.GridHelper(50, 30);
-// scene.add(grid);
 const axes = new THREE.AxesHelper(10);
 //scene.add(axes);
 //const controls = new THREE.OrbitControls(camera, threeCanvas);
