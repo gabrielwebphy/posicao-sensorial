@@ -20,9 +20,9 @@ let lastFrameCount = 0;
 let lastTimestamp = 0;
 
 let kalmanFilters = {
-  kfx: new KalmanFilter({R: 0.25, Q:1}),
-  kfy: new KalmanFilter({R: 0.25, Q:1}),
-  kfz: new KalmanFilter({R: 0.25, Q:1}),
+  kfx: new KalmanFilter({R: 0.001, Q:0.01}),
+  kfy: new KalmanFilter({R: 0.001, Q:0.01}),
+  kfz: new KalmanFilter({R: 0.001, Q:0.01}),
 }
 
 function iniciarMovimento() {
@@ -50,7 +50,7 @@ function handleMotion(event) {
     frameCount = 0;
   }
 
-  const ax = event ? kalmanFilters.kfx.filter(event.acceleration.y) : 0;
+  const ax = event ? kalmanFilters.kfx.filter(event.acceleration.y) : 1;
   const ay = event ? kalmanFilters.kfy.filter(event.acceleration.z) : 0;
   const az = event ? kalmanFilters.kfz.filter(event.acceleration.x) : 0;
 
@@ -75,12 +75,12 @@ function handleMotion(event) {
   cubeData.vy += accel.y * 0.016;
   cubeData.vz += accel.z * 0.016;
 
-  cubeData.vx = Math.abs(ax) <= 0.025 ? 0 : cubeData.vx;
-  cubeData.vy = Math.abs(ay) <= 0.025 ? 0 : cubeData.vy;
-  cubeData.vz = Math.abs(az) <= 0.025 ? 0 : cubeData.vz;
+  cubeData.x += Math.abs(ax) <= 0.05 ? 0 : cubeData.vx * 0.016;
+  cubeData.z += Math.abs(az) <= 0.05 ? 0 : cubeData.vz * 0.016;
 
-  cubeData.x += cubeData.vx * 0.016;
-  cubeData.z += cubeData.vz * 0.016;
+  arrowHelper.setLength(accel.length())
+  arrowHelper.setDirection(accel.normalize())
+  arrowHelper.position.set(new THREE.Vector3(cubeData.x, cubeData.y, cubeData.z))
 }
 setInterval(() => {
   movementRegister = false;
@@ -190,6 +190,8 @@ const renderer = new THREE.WebGLRenderer({
   alpha: true,
 });
 renderer.setSize(size.width, size.height);
+// const grid = new THREE.GridHelper(50, 30);
+// scene.add(grid);
 const axes = new THREE.AxesHelper(10);
 //scene.add(axes);
 //const controls = new THREE.OrbitControls(camera, threeCanvas);
@@ -208,12 +210,23 @@ let wiredCube = new THREE.Mesh(geometry, wireframeMaterial);
 
 scene.add(cube);
 scene.add(wiredCube);
+const dir = new THREE.Vector3( 1, 2, 0 );
+
+//normalize the direction vector (convert to vector of length 1)
+dir.normalize();
+
+let origin = new THREE.Vector3( 0, 0, 0 );
+let length = 0;
+
+const arrowHelper = new THREE.ArrowHelper( dir, origin, length, 0xffffff );
+scene.add( arrowHelper );
 
 const animate = () => {
   cube.position.set(cubeData.x, cubeData.y, cubeData.z);
   wiredCube.position.set(cubeData.x, cubeData.y, cubeData.z);
   cube.quaternion.copy(quart);
   wiredCube.quaternion.copy(quart);
+  handleMotion()
   renderer.render(scene, camera);
 };
 
