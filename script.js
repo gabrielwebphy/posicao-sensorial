@@ -1,3 +1,7 @@
+const xCoord = document.getElementById('xcoord')
+const yCoord = document.getElementById('ycoord')
+const zCoord = document.getElementById('zcoord')
+
 async function activateXR() {
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
   const canvas = document.createElement("canvas");
@@ -72,7 +76,11 @@ async function activateXR() {
     const pose = frame.getViewerPose(referenceSpace);
     if (pose) {
       const view = pose.views[0];
-      console.log(view)
+      console.log(view.transform.position.x,view.transform.position.y,view.transform.position.z )
+      xCoord.innerHTML = 'x: '+view.transform.position.x
+      yCoord.innerHTML = 'y: '+view.transform.position.y
+      zCoord.innerHTML = 'z: '+view.transform.position.z
+      
       const viewport = session.renderState.baseLayer.getViewport(view);
       renderer.setSize(viewport.width, viewport.height);
 
