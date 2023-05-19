@@ -82,7 +82,7 @@ async function activateXR() {
       zCoord.innerHTML = 'z: '+view.transform.position.z
       
       const viewport = session.renderState.baseLayer.getViewport(view);
-      renderer.setSize(viewport.width, viewport.height);
+      renderer.setSize(viewport.width, viewport.height*3/4);
 
       // Use the view's transform matrix and projection matrix to configure the THREE.camera.
       camera.matrix.fromArray(view.transform.matrix);
