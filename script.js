@@ -6,52 +6,43 @@ async function activateXR() {
 
   // To be continued in upcoming steps.
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x000000)
+  const lineMaterial = new THREE.LineBasicMaterial({ color: 0x26f7fd });
+  const redLineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+  const purpleLineMaterial = new THREE.LineBasicMaterial({ color: 0xaa00ff });
+
+  scene.background = new THREE.Color(0x000000);
   const points = [
-    new THREE.Vector3(-0.3,0,-0.3),
-    new THREE.Vector3(-0.3,0,-0.9),
-    new THREE.Vector3(0.3,0,-0.9),
-    new THREE.Vector3(0.3,0,-0.3),
-    new THREE.Vector3(0.9,0,-0.3),
-    new THREE.Vector3(0.9,0,-0.9),
-    new THREE.Vector3(0.9,0,0.3),
-    new THREE.Vector3(0.3,0,0.3),
-    new THREE.Vector3(1.5,0,0.3),
-    new THREE.Vector3(1.5,0,-0.3),
-    new THREE.Vector3(0.9,0,-0.3),
-    new THREE.Vector3(0.9,0,-0.9),
-    new THREE.Vector3(1.5,0,-0.9),
-  
-    new THREE.Vector3(0.3,0,-0.9),
-    new THREE.Vector3(0.3,0,-0.3),
-    new THREE.Vector3(1.5,0,-0.3),
-    new THREE.Vector3(1.5,0,0.3),
-    new THREE.Vector3(2.1,0,0.3),
-    new THREE.Vector3(2.1,0,-0.3),
-  
+    new THREE.Vector3(-0.3, 0, -0.3),
+    new THREE.Vector3(-0.3, 0, -0.9),
+    new THREE.Vector3(0.3, 0, -0.9),
+    new THREE.Vector3(0.3, 0, -0.3),
+    new THREE.Vector3(0.9, 0, -0.3),
+    new THREE.Vector3(0.9, 0, -0.9),
+    new THREE.Vector3(0.9, 0, 0.3),
+    new THREE.Vector3(0.3, 0, 0.3),
+    new THREE.Vector3(1.5, 0, 0.3),
+    new THREE.Vector3(1.5, 0, -0.3),
+    new THREE.Vector3(0.9, 0, -0.3),
+    new THREE.Vector3(0.9, 0, -0.9),
+    new THREE.Vector3(1.5, 0, -0.9),
+
+    new THREE.Vector3(0.3, 0, -0.9),
+    new THREE.Vector3(0.3, 0, -0.3),
+    new THREE.Vector3(1.5, 0, -0.3),
+    new THREE.Vector3(1.5, 0, 0.3),
+    new THREE.Vector3(2.1, 0, 0.3),
+    new THREE.Vector3(2.1, 0, -0.3),
   ];
-  const points2 = [
-    new THREE.Vector3(0.3,0,0.3),
-    new THREE.Vector3(0.3,0,-0.3),
-    new THREE.Vector3(-0.3,0,-0.3),
-    new THREE.Vector3(-0.3,0,0.3),
-    new THREE.Vector3(0.3,0,0.3),
-  ];
-  const points3 = [
-    new THREE.Vector3(2.1,0,-0.3),
-    new THREE.Vector3(2.1,0,-0.9),
-    new THREE.Vector3(1.5,0,-0.9),
-    new THREE.Vector3(1.5,0,-0.3),
-    new THREE.Vector3(2.1,0,-0.3),
-  ];
+  const points2 = [new THREE.Vector3(0.3, 0, 0.3), new THREE.Vector3(0.3, 0, -0.3), new THREE.Vector3(-0.3, 0, -0.3), new THREE.Vector3(-0.3, 0, 0.3), new THREE.Vector3(0.3, 0, 0.3)];
+  const points3 = [new THREE.Vector3(2.1, 0, -0.3), new THREE.Vector3(2.1, 0, -0.9), new THREE.Vector3(1.5, 0, -0.9), new THREE.Vector3(1.5, 0, -0.3), new THREE.Vector3(2.1, 0, -0.3)];
   const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
   const lineGeometry2 = new THREE.BufferGeometry().setFromPoints(points2);
-  const lineGeometry3 = new THREE.BufferGeometry().setFromPoints(points3); 
+  const lineGeometry3 = new THREE.BufferGeometry().setFromPoints(points3);
   const newLine = new THREE.Line(lineGeometry, lineMaterial);
   const startLine = new THREE.Line(lineGeometry2, redLineMaterial);
   const endLine = new THREE.Line(lineGeometry3, purpleLineMaterial);
   scene.add(newLine, startLine, endLine);
-  
+
   const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3);
   directionalLight.position.set(10, 15, 10);
   // scene.add(directionalLight);
