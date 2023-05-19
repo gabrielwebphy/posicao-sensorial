@@ -16,29 +16,28 @@ async function activateXR() {
   const purpleLineMaterial = new THREE.LineBasicMaterial({ color: 0xaa00ff });
 
   const points = [
-    new THREE.Vector3(-0.3, 0, -0.3),
-    new THREE.Vector3(-0.3, 0, -0.9),
-    new THREE.Vector3(0.3, 0, -0.9),
-    new THREE.Vector3(0.3, 0, -0.3),
-    new THREE.Vector3(0.9, 0, -0.3),
-    new THREE.Vector3(0.9, 0, -0.9),
-    new THREE.Vector3(0.9, 0, 0.3),
-    new THREE.Vector3(0.3, 0, 0.3),
-    new THREE.Vector3(1.5, 0, 0.3),
-    new THREE.Vector3(1.5, 0, -0.3),
-    new THREE.Vector3(0.9, 0, -0.3),
-    new THREE.Vector3(0.9, 0, -0.9),
-    new THREE.Vector3(1.5, 0, -0.9),
-
-    new THREE.Vector3(0.3, 0, -0.9),
-    new THREE.Vector3(0.3, 0, -0.3),
-    new THREE.Vector3(1.5, 0, -0.3),
-    new THREE.Vector3(1.5, 0, 0.3),
-    new THREE.Vector3(2.1, 0, 0.3),
-    new THREE.Vector3(2.1, 0, -0.3),
+    new THREE.Vector3(-0.3,-1.5, -0.3),
+    new THREE.Vector3(-0.3,-1.5, -0.9),
+    new THREE.Vector3(0.3, -1.5, -0.9),
+    new THREE.Vector3(0.3, -1.5, -0.3),
+    new THREE.Vector3(0.9, -1.5, -0.3),
+    new THREE.Vector3(0.9, -1.5, -0.9),
+    new THREE.Vector3(0.9, -1.5, 0.3),
+    new THREE.Vector3(0.3, -1.5, 0.3),
+    new THREE.Vector3(1.5, -1.5, 0.3),
+    new THREE.Vector3(1.5, -1.5, -0.3),
+    new THREE.Vector3(0.9, -1.5, -0.3),
+    new THREE.Vector3(0.9, -1.5, -0.9),
+    new THREE.Vector3(1.5, -1.5, -0.9),
+    new THREE.Vector3(0.3, -1.5, -0.9),
+    new THREE.Vector3(0.3, -1.5, -0.3),
+    new THREE.Vector3(1.5, -1.5, -0.3),
+    new THREE.Vector3(1.5, -1.5, 0.3),
+    new THREE.Vector3(2.1, -1.5, 0.3),
+    new THREE.Vector3(2.1, -1.5, -0.3),
   ];
-  const points2 = [new THREE.Vector3(0.3, 0, 0.3), new THREE.Vector3(0.3, 0, -0.3), new THREE.Vector3(-0.3, 0, -0.3), new THREE.Vector3(-0.3, 0, 0.3), new THREE.Vector3(0.3, 0, 0.3)];
-  const points3 = [new THREE.Vector3(2.1, 0, -0.3), new THREE.Vector3(2.1, 0, -0.9), new THREE.Vector3(1.5, 0, -0.9), new THREE.Vector3(1.5, 0, -0.3), new THREE.Vector3(2.1, 0, -0.3)];
+  const points2 = [new THREE.Vector3(0.3, -1.5, 0.3), new THREE.Vector3(0.3, -1.5, -0.3), new THREE.Vector3(-0.3, -1.5, -0.3), new THREE.Vector3(-0.3, -1.5, 0.3), new THREE.Vector3(0.3, -1.5, 0.3)];
+  const points3 = [new THREE.Vector3(2.1, -1.5, -0.3), new THREE.Vector3(2.1, -1.5, -0.9), new THREE.Vector3(1.5, -1.5, -0.9), new THREE.Vector3(1.5, -1.5, -0.3), new THREE.Vector3(2.1, -1.5, -0.3)];
   const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
   const lineGeometry2 = new THREE.BufferGeometry().setFromPoints(points2);
   const lineGeometry3 = new THREE.BufferGeometry().setFromPoints(points3);
@@ -82,7 +81,7 @@ async function activateXR() {
       zCoord.innerHTML = 'z: '+view.transform.position.z
       
       const viewport = session.renderState.baseLayer.getViewport(view);
-      renderer.setSize(viewport.width, viewport.height*3/4);
+      renderer.setSize(viewport.width, viewport.height);
 
       // Use the view's transform matrix and projection matrix to configure the THREE.camera.
       camera.matrix.fromArray(view.transform.matrix);
