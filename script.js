@@ -10,7 +10,7 @@ async function activateXR() {
 
   // To be continued in upcoming steps.
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x000000)
+  //scene.background = new THREE.Color(0x000000)
   const lineMaterial = new THREE.LineBasicMaterial({ color: 0x26f7fd });
   const redLineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
   const purpleLineMaterial = new THREE.LineBasicMaterial({ color: 0xaa00ff });
