@@ -72,7 +72,7 @@ async function activateXR() {
     const pose = frame.getViewerPose(referenceSpace);
     if (pose) {
       const view = pose.views[0];
-
+      console.log(view)
       const viewport = session.renderState.baseLayer.getViewport(view);
       renderer.setSize(viewport.width, viewport.height);
 
