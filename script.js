@@ -1,15 +1,12 @@
 const xCoord = document.getElementById('xcoord')
 const yCoord = document.getElementById('ycoord')
 const zCoord = document.getElementById('zcoord')
-//const canvas = document.getElementById('myCanvas');
-//const ctx = canvas.getContext('2d');
-const uiElement = document.getElementById('dom-over')
 
 async function activateXR() {
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
   const canvas = document.createElement("canvas");
   document.body.appendChild(canvas);
-  const gl = canvas.getContext("webgl", { xrCompatible: true });
+  const gl = canvas.getContext("webgl", { xrCompatible: true });  
 
   // To be continued in upcoming steps.
   const scene = new THREE.Scene();
@@ -59,6 +56,28 @@ async function activateXR() {
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
 
+  const container = new ThreeMeshUI.Block({
+    width: 1.2,
+    height: 0.7,
+    padding: 0.2,
+    fontFamily: './assets/Roboto-msdf.json',
+    fontTexture: './assets/Roboto-msdf.png',
+   });
+   const text1 = new ThreeMeshUI.Text({
+    content: "x: 0"
+   });
+   const text2 = new ThreeMeshUI.Text({
+    content: "y: 0"
+   });
+   const text3 = new ThreeMeshUI.Text({
+    content: "z: 0"
+   });
+
+   container.add( text1, text2, text3 );
+   
+   // scene is a THREE.Scene (see three.js)
+   scene.add( container );
+
   // Set up the WebGLRenderer, which handles rendering to the session's base layer.
   const renderer = new THREE.WebGLRenderer({
     alpha: true,
@@ -69,10 +88,7 @@ async function activateXR() {
   renderer.autoClear = false;
   camera.matrixAutoUpdate = false;
 
-  const session = await navigator.xr.requestSession("immersive-ar", {
-    requiredFeatures: ["camera-access, dom-overlay"],
-    domOverlay: { root: uiElement }
-  });
+  const session = await navigator.xr.requestSession("immersive-ar", {});
   session.updateRenderState({
     baseLayer: new XRWebGLLayer(session, gl),
   });
@@ -88,14 +104,15 @@ async function activateXR() {
     if (pose) {
       const view = pose.views[0];
       if (view.camera) {
+        console.log('tem câmera')
         //const cameraTexture = binding.getCameraImage(view.camera);
         //ctx.drawImage(cameraTexture, 0,0)
       }
     
       console.log(view.transform.position.x, view.transform.position.y, view.transform.position.z)
-      xCoord.innerHTML = 'x: ' + view.transform.position.x
-      yCoord.innerHTML = 'y: ' + view.transform.position.y
-      zCoord.innerHTML = 'z: ' + view.transform.position.z
+      text1.set({content: `x: ${view.transform.position.x}`})
+      text2.set({content: `y: ${view.transform.position.y}`})
+      text3.set({content: `z: ${view.transform.position.z}`})
 
       const viewport = session.renderState.baseLayer.getViewport(view);
       renderer.setSize(viewport.width, viewport.height);
@@ -104,6 +121,8 @@ async function activateXR() {
       camera.matrix.fromArray(view.transform.matrix);
       camera.projectionMatrix.fromArray(view.projectionMatrix);
       camera.updateMatrixWorld(true);
+
+      ThreeMeshUI.update()
 
       renderer.render(scene, camera);
     }
