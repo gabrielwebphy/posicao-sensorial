@@ -3,6 +3,7 @@ const yCoord = document.getElementById('ycoord')
 const zCoord = document.getElementById('zcoord')
 //const canvas = document.getElementById('myCanvas');
 //const ctx = canvas.getContext('2d');
+const uiElement = document.getElementById('dom-over')
 
 async function activateXR() {
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
@@ -68,7 +69,10 @@ async function activateXR() {
   renderer.autoClear = false;
   camera.matrixAutoUpdate = false;
 
-  const session = await navigator.xr.requestSession("immersive-ar", {requiredFeatures: ["camera-access"]});
+  const session = await navigator.xr.requestSession("immersive-ar", {
+    requiredFeatures: ["camera-access, dom-overlay"],
+    domOverlay: { root: uiElement }
+  });
   session.updateRenderState({
     baseLayer: new XRWebGLLayer(session, gl),
   });
