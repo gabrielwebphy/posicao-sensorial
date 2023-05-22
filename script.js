@@ -69,7 +69,9 @@ async function activateXR() {
     content: "z: 0"
    });
 
-   container.add( xCoordinate, yCoordinate, zCoordinate );
+   container.add( xCoordinate );
+   container.add( yCoordinate );
+   container.add( zCoordinate );
    
    // scene is a THREE.Scene (see three.js)
    scene.add( container );
@@ -106,9 +108,9 @@ async function activateXR() {
       }
     
       console.log(view.transform.position.x, view.transform.position.y, view.transform.position.z)
-      xCoordinate.set({content: `x: ${view.transform.position.x}`})
-      yCoordinate.set({content: `y: ${view.transform.position.y}`})
-      zCoordinate.set({content: `z: ${view.transform.position.z}`})
+      //xCoordinate.set({content: `x: ${view.transform.position.x}`})
+      //yCoordinate.set({content: `y: ${view.transform.position.y}`})
+      //zCoordinate.set({content: `z: ${view.transform.position.z}`})
 
       const viewport = session.renderState.baseLayer.getViewport(view);
       renderer.setSize(viewport.width, viewport.height);
