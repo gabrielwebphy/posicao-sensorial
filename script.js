@@ -1,8 +1,34 @@
-const xCoord = document.getElementById('xCoord')
-const yCoord = document.getElementById('yCoord')
-const zCoord = document.getElementById('zCoord')
-const myCanvas = document.getElementById('myCanvas')
-const ctx = myCanvas.getContext('2d')
+const xCoord = document.getElementById("xCoord");
+const yCoord = document.getElementById("yCoord");
+const zCoord = document.getElementById("zCoord");
+const myCanvas = document.getElementById("myCanvas");
+const ctx = myCanvas.getContext("2d");
+
+navigator.mediaDevices.getUserMedia({ video: true }).then(handleSuccess).catch(handleError);
+
+function handleSuccess(stream) {
+  // Create a video element and set the stream as the source
+  const video = document.createElement("video");
+  video.srcObject = stream;
+  video.play();
+
+  function captureFrame() {
+    myCanvas.width = video.videoWidth / 2;
+    myCanvas.height = video.videoHeight / 2;
+    ctx.drawImage(video, 0, 0, myCanvas.width, myCanvas.height);
+    const imageData = context.getImageData(0, 0, myCanvas.width, myCanvas.height);
+    const imageDataArray = imageData.data;
+    // Process the image data as needed
+    requestAnimationFrame(captureFrame);
+  }
+
+  // Start capturing frames
+  captureFrame();
+}
+
+function handleError(error) {
+  console.error("Error accessing camera:", error);
+}
 
 async function activateXR() {
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
@@ -68,12 +94,10 @@ async function activateXR() {
   renderer.autoClear = false;
   camera.matrixAutoUpdate = false;
 
-  const session = await navigator.xr.requestSession("immersive-ar", {optionalFeatures: ['dom-overlay'], overlayElement: '#overlay'});
+  const session = await navigator.xr.requestSession("immersive-ar", { optionalFeatures: ["dom-overlay"], overlayElement: "#overlay" });
   session.updateRenderState({
     baseLayer: new XRWebGLLayer(session, gl),
   });
-  const binding = new XRWebGLBinding(session, gl);
-
   const referenceSpace = await session.requestReferenceSpace("local");
 
   const onXRFrame = (time, frame) => {
@@ -83,15 +107,10 @@ async function activateXR() {
     const pose = frame.getViewerPose(referenceSpace);
     if (pose) {
       const view = pose.views[0];
-      if (view.camera) {
-        console.log("tem câmera");
-        const cameraTexture = binding.getCameraImage(view.camera);
-        ctx.drawImage(cameraTexture, 0,0)
-      }
 
-      xCoord.innerHTML = 'x: '+view.transform.position.x
-      yCoord.innerHTML = 'x: '+view.transform.position.y
-      zCoord.innerHTML = 'x: '+view.transform.position.z
+      xCoord.innerHTML = "x: " + view.transform.position.x;
+      yCoord.innerHTML = "x: " + view.transform.position.y;
+      zCoord.innerHTML = "x: " + view.transform.position.z;
 
       console.log(view.transform.position.x, view.transform.position.y, view.transform.position.z);
       const viewport = session.renderState.baseLayer.getViewport(view);
@@ -104,9 +123,9 @@ async function activateXR() {
 
       renderer.render(scene, camera);
     } else {
-      xCoord.innerHTML = 'x: No pose'
-      yCoord.innerHTML = 'y: No pose'
-      zCoord.innerHTML = 'z: No pose'
+      xCoord.innerHTML = "x: No pose";
+      yCoord.innerHTML = "y: No pose";
+      zCoord.innerHTML = "z: No pose";
     }
   };
   session.requestAnimationFrame(onXRFrame);
