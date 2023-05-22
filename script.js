@@ -1,6 +1,8 @@
 const xCoord = document.getElementById('xCoord')
 const yCoord = document.getElementById('yCoord')
 const zCoord = document.getElementById('zCoord')
+const myCanvas = document.getElementById('myCanvas')
+const ctx = myCanvas.getContext('2d')
 
 async function activateXR() {
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
@@ -83,8 +85,8 @@ async function activateXR() {
       const view = pose.views[0];
       if (view.camera) {
         console.log("tem câmera");
-        //const cameraTexture = binding.getCameraImage(view.camera);
-        //ctx.drawImage(cameraTexture, 0,0)
+        const cameraTexture = binding.getCameraImage(view.camera);
+        ctx.drawImage(cameraTexture, 0,0)
       }
 
       xCoord.innerHTML = 'x: '+view.transform.position.x
