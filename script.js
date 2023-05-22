@@ -1,7 +1,3 @@
-const xCoord = document.getElementById('xcoord')
-const yCoord = document.getElementById('ycoord')
-const zCoord = document.getElementById('zcoord')
-
 async function activateXR() {
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
   const canvas = document.createElement("canvas");
@@ -63,17 +59,17 @@ async function activateXR() {
     fontFamily: './assets/Roboto-msdf.json',
     fontTexture: './assets/Roboto-msdf.png',
    });
-   const text1 = new ThreeMeshUI.Text({
+   const xCoordinate = new ThreeMeshUI.Text({
     content: "x: 0"
    });
-   const text2 = new ThreeMeshUI.Text({
+   const yCoordinate = new ThreeMeshUI.Text({
     content: "y: 0"
    });
-   const text3 = new ThreeMeshUI.Text({
+   const zCoordinate = new ThreeMeshUI.Text({
     content: "z: 0"
    });
 
-   container.add( text1, text2, text3 );
+   container.add( xCoordinate, yCoordinate, zCoordinate );
    
    // scene is a THREE.Scene (see three.js)
    scene.add( container );
@@ -110,9 +106,9 @@ async function activateXR() {
       }
     
       console.log(view.transform.position.x, view.transform.position.y, view.transform.position.z)
-      text1.set({content: `x: ${view.transform.position.x}`})
-      text2.set({content: `y: ${view.transform.position.y}`})
-      text3.set({content: `z: ${view.transform.position.z}`})
+      xCoordinate.set({content: `x: ${view.transform.position.x}`})
+      yCoordinate.set({content: `y: ${view.transform.position.y}`})
+      zCoordinate.set({content: `z: ${view.transform.position.z}`})
 
       const viewport = session.renderState.baseLayer.getViewport(view);
       renderer.setSize(viewport.width, viewport.height);
