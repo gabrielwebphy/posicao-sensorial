@@ -16,8 +16,8 @@ async function activateXR() {
   const purpleLineMaterial = new THREE.LineBasicMaterial({ color: 0xaa00ff });
 
   const points = [
-    new THREE.Vector3(-0.3,-1.5, -0.3),
-    new THREE.Vector3(-0.3,-1.5, -0.9),
+    new THREE.Vector3(-0.3, -1.5, -0.3),
+    new THREE.Vector3(-0.3, -1.5, -0.9),
     new THREE.Vector3(0.3, -1.5, -0.9),
     new THREE.Vector3(0.3, -1.5, -0.3),
     new THREE.Vector3(0.9, -1.5, -0.3),
@@ -37,18 +37,28 @@ async function activateXR() {
     new THREE.Vector3(2.1, -1.5, -0.3),
   ];
   const points2 = [new THREE.Vector3(0.3, -1.5, 0.3), new THREE.Vector3(0.3, -1.5, -0.3), new THREE.Vector3(-0.3, -1.5, -0.3), new THREE.Vector3(-0.3, -1.5, 0.3), new THREE.Vector3(0.3, -1.5, 0.3)];
-  const points3 = [new THREE.Vector3(2.1, -1.5, -0.3), new THREE.Vector3(2.1, -1.5, -0.9), new THREE.Vector3(1.5, -1.5, -0.9), new THREE.Vector3(1.5, -1.5, -0.3), new THREE.Vector3(2.1, -1.5, -0.3)];
+  const points3 = [new THREE.Vector3(2.7, -1.5, -0.3), new THREE.Vector3(2.7, -1.5, -0.9), new THREE.Vector3(2.1, -1.5, -0.9), new THREE.Vector3(2.1, -1.5, -0.3), new THREE.Vector3(2.7, -1.5, -0.3)];
   const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
   const lineGeometry2 = new THREE.BufferGeometry().setFromPoints(points2);
   const lineGeometry3 = new THREE.BufferGeometry().setFromPoints(points3);
   const newLine = new THREE.Line(lineGeometry, lineMaterial);
   const startLine = new THREE.Line(lineGeometry2, redLineMaterial);
   const endLine = new THREE.Line(lineGeometry3, purpleLineMaterial);
-  scene.add(newLine, startLine, endLine);
+  let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
+  let materials = [];
+  for (let i = 0; i < 6; i++) {
+    materials.push(new THREE.MeshStandardMaterial({ color: colors[i] }));
+  }
+  const cube = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.01, 0.07), materials)
+  scene.add(newLine, startLine, endLine, cube);
 
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3);
-  directionalLight.position.set(10, 15, 10);
-  // scene.add(directionalLight);
+  const camera = new THREE.PerspectiveCamera(102, aspect);
+  camera.position.z = -0.3;
+  camera.position.y = 1.25;
+  camera.position.x = -0.2;
+  camera.lookAt(new THREE.Vector3(0.6, 0, -0.3))
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+  scene.add(ambientLight);
 
   // Set up the WebGLRenderer, which handles rendering to the session's base layer.
   const renderer = new THREE.WebGLRenderer({
@@ -58,10 +68,9 @@ async function activateXR() {
     context: gl,
   });
   renderer.autoClear = false;
-  const camera = new THREE.PerspectiveCamera();
   camera.matrixAutoUpdate = false;
 
-  const session = await navigator.xr.requestSession("immersive-ar", { requiredFeatures: ["hit-test"] });
+  const session = await navigator.xr.requestSession("immersive-ar", {requiredFeatures: ["camera-access"]});
   session.updateRenderState({
     baseLayer: new XRWebGLLayer(session, gl),
   });
@@ -75,11 +84,15 @@ async function activateXR() {
     const pose = frame.getViewerPose(referenceSpace);
     if (pose) {
       const view = pose.views[0];
-      console.log(view.transform.position.x,view.transform.position.y,view.transform.position.z )
-      xCoord.innerHTML = 'x: '+view.transform.position.x
-      yCoord.innerHTML = 'y: '+view.transform.position.y
-      zCoord.innerHTML = 'z: '+view.transform.position.z
-      
+      if (view.camera) {
+        const cameraTexture = binding.getCameraImage(view.camera);
+      }
+    
+      console.log(view.transform.position.x, view.transform.position.y, view.transform.position.z)
+      xCoord.innerHTML = 'x: ' + view.transform.position.x
+      yCoord.innerHTML = 'y: ' + view.transform.position.y
+      zCoord.innerHTML = 'z: ' + view.transform.position.z
+
       const viewport = session.renderState.baseLayer.getViewport(view);
       renderer.setSize(viewport.width, viewport.height);
 
@@ -90,7 +103,7 @@ async function activateXR() {
 
       renderer.render(scene, camera);
     }
-    else{
+    else {
       xCoord.innerHTML = 'x: No pose'
       yCoord.innerHTML = 'y: No pose'
       zCoord.innerHTML = 'z: No pose'
