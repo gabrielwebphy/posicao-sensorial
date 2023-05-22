@@ -125,9 +125,9 @@ async function activateXR() {
       renderer.render(scene, camera);
     }
     else {
-      xCoord.innerHTML = 'x: No pose'
-      yCoord.innerHTML = 'y: No pose'
-      zCoord.innerHTML = 'z: No pose'
+      // xCoord.innerHTML = 'x: No pose'
+      // yCoord.innerHTML = 'y: No pose'
+      // zCoord.innerHTML = 'z: No pose'
     }
   };
   session.requestAnimationFrame(onXRFrame);
