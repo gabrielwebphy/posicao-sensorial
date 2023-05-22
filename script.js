@@ -16,7 +16,7 @@ function handleSuccess(stream) {
     myCanvas.width = video.videoWidth / 2;
     myCanvas.height = video.videoHeight / 2;
     ctx.drawImage(video, 0, 0, myCanvas.width, myCanvas.height);
-    const imageData = context.getImageData(0, 0, myCanvas.width, myCanvas.height);
+    const imageData = ctx.getImageData(0, 0, myCanvas.width, myCanvas.height);
     const imageDataArray = imageData.data;
     // Process the image data as needed
     requestAnimationFrame(captureFrame);
@@ -108,9 +108,9 @@ async function activateXR() {
     if (pose) {
       const view = pose.views[0];
 
-      xCoord.innerHTML = "x: " + view.transform.position.x;
-      yCoord.innerHTML = "x: " + view.transform.position.y;
-      zCoord.innerHTML = "x: " + view.transform.position.z;
+      // xCoord.innerHTML = "x: " + view.transform.position.x;
+      // yCoord.innerHTML = "x: " + view.transform.position.y;
+      // zCoord.innerHTML = "x: " + view.transform.position.z;
 
       console.log(view.transform.position.x, view.transform.position.y, view.transform.position.z);
       const viewport = session.renderState.baseLayer.getViewport(view);
@@ -123,9 +123,9 @@ async function activateXR() {
 
       renderer.render(scene, camera);
     } else {
-      xCoord.innerHTML = "x: No pose";
-      yCoord.innerHTML = "y: No pose";
-      zCoord.innerHTML = "z: No pose";
+      // xCoord.innerHTML = "x: No pose";
+      // yCoord.innerHTML = "y: No pose";
+      // zCoord.innerHTML = "z: No pose";
     }
   };
   session.requestAnimationFrame(onXRFrame);
