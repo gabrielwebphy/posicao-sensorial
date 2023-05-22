@@ -1,6 +1,8 @@
 const xCoord = document.getElementById('xcoord')
 const yCoord = document.getElementById('ycoord')
 const zCoord = document.getElementById('zcoord')
+//const canvas = document.getElementById('myCanvas');
+//const ctx = canvas.getContext('2d');
 
 async function activateXR() {
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
@@ -37,7 +39,7 @@ async function activateXR() {
     new THREE.Vector3(2.1, -1.5, -0.3),
   ];
   const points2 = [new THREE.Vector3(0.3, -1.5, 0.3), new THREE.Vector3(0.3, -1.5, -0.3), new THREE.Vector3(-0.3, -1.5, -0.3), new THREE.Vector3(-0.3, -1.5, 0.3), new THREE.Vector3(0.3, -1.5, 0.3)];
-  const points3 = [new THREE.Vector3(2.7, -1.5, -0.3), new THREE.Vector3(2.7, -1.5, -0.9), new THREE.Vector3(2.1, -1.5, -0.9), new THREE.Vector3(2.1, -1.5, -0.3), new THREE.Vector3(2.7, -1.5, -0.3)];
+  const points3 = [new THREE.Vector3(2.1, -1.5, -0.3), new THREE.Vector3(2.1, -1.5, -0.9), new THREE.Vector3(1.5, -1.5, -0.9), new THREE.Vector3(1.5, -1.5, -0.3), new THREE.Vector3(2.1, -1.5, -0.3)];
   const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
   const lineGeometry2 = new THREE.BufferGeometry().setFromPoints(points2);
   const lineGeometry3 = new THREE.BufferGeometry().setFromPoints(points3);
@@ -49,14 +51,10 @@ async function activateXR() {
   for (let i = 0; i < 6; i++) {
     materials.push(new THREE.MeshStandardMaterial({ color: colors[i] }));
   }
-  const cube = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.01, 0.07), materials)
-  scene.add(newLine, startLine, endLine, cube);
+  //const cube = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.01, 0.07), materials)
+  scene.add(newLine, startLine, endLine)//, cube);
 
-  const camera = new THREE.PerspectiveCamera(102, aspect);
-  camera.position.z = -0.3;
-  camera.position.y = 1.25;
-  camera.position.x = -0.2;
-  camera.lookAt(new THREE.Vector3(0.6, 0, -0.3))
+  const camera = new THREE.PerspectiveCamera();
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
 
@@ -74,6 +72,7 @@ async function activateXR() {
   session.updateRenderState({
     baseLayer: new XRWebGLLayer(session, gl),
   });
+  const binding = new XRWebGLBinding(session, gl)
 
   const referenceSpace = await session.requestReferenceSpace("local");
 
@@ -85,7 +84,8 @@ async function activateXR() {
     if (pose) {
       const view = pose.views[0];
       if (view.camera) {
-        const cameraTexture = binding.getCameraImage(view.camera);
+        //const cameraTexture = binding.getCameraImage(view.camera);
+        //ctx.drawImage(cameraTexture, 0,0)
       }
     
       console.log(view.transform.position.x, view.transform.position.y, view.transform.position.z)
