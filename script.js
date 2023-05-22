@@ -1,5 +1,6 @@
-import FontJSON from './assets/Roboto-msdf.json';
-import FontImage from './assets/Roboto-msdf.png';
+const xCoord = document.getElementById('xCoord')
+const yCoord = document.getElementById('yCoord')
+const zCoord = document.getElementById('zCoord')
 
 async function activateXR() {
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
@@ -55,32 +56,6 @@ async function activateXR() {
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
 
-  const container = new ThreeMeshUI.Block({
-    width: 0.4,
-    height: 1,
-    padding: 0.2,
-    fontFamily: FontJSON,
-    fontTexture: FontImage,
-  });
-  const xCoordinate = new ThreeMeshUI.Text({
-    content: "x: 0",
-  });
-  const yCoordinate = new ThreeMeshUI.Text({
-    content: "y: 0",
-  });
-  const zCoordinate = new ThreeMeshUI.Text({
-    content: "z: 0",
-  });
-  container.position.set(1.5, 0.6, -0.5);
-  container.rotation.x = -0.55;
-
-  container.add(xCoordinate);
-  container.add(yCoordinate);
-  container.add(zCoordinate);
-
-  // scene is a THREE.Scene (see three.js)
-  scene.add(container);
-
   // Set up the WebGLRenderer, which handles rendering to the session's base layer.
   const renderer = new THREE.WebGLRenderer({
     alpha: true,
@@ -91,7 +66,7 @@ async function activateXR() {
   renderer.autoClear = false;
   camera.matrixAutoUpdate = false;
 
-  const session = await navigator.xr.requestSession("immersive-ar");
+  const session = await navigator.xr.requestSession("immersive-ar", {optionalFeatures: ['dom-overlay'], overlayElement: '#overlay'});
   session.updateRenderState({
     baseLayer: new XRWebGLLayer(session, gl),
   });
@@ -112,11 +87,11 @@ async function activateXR() {
         //ctx.drawImage(cameraTexture, 0,0)
       }
 
-      console.log(view.transform.position.x, view.transform.position.y, view.transform.position.z);
-      //xCoordinate.set({content: `x: ${view.transform.position.x}`})
-      //yCoordinate.set({content: `y: ${view.transform.position.y}`})
-      //zCoordinate.set({content: `z: ${view.transform.position.z}`})
+      xCoord.innerHTML = 'x: '+view.transform.position.x
+      yCoord.innerHTML = 'x: '+view.transform.position.y
+      zCoord.innerHTML = 'x: '+view.transform.position.z
 
+      console.log(view.transform.position.x, view.transform.position.y, view.transform.position.z);
       const viewport = session.renderState.baseLayer.getViewport(view);
       renderer.setSize(viewport.width, viewport.height);
 
@@ -125,13 +100,11 @@ async function activateXR() {
       camera.projectionMatrix.fromArray(view.projectionMatrix);
       camera.updateMatrixWorld(true);
 
-      ThreeMeshUI.update();
-
       renderer.render(scene, camera);
     } else {
-      // xCoord.innerHTML = 'x: No pose'
-      // yCoord.innerHTML = 'y: No pose'
-      // zCoord.innerHTML = 'z: No pose'
+      xCoord.innerHTML = 'x: No pose'
+      yCoord.innerHTML = 'y: No pose'
+      zCoord.innerHTML = 'z: No pose'
     }
   };
   session.requestAnimationFrame(onXRFrame);
