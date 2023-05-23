@@ -3,7 +3,8 @@ const yCoord = document.getElementById("ycoord");
 const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
 const ctx = myCanvas.getContext("2d");
-
+const button = document.getElementById('ar-button')
+button.addEventListener('click', activateXR)
 async function activateXR() {
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
   const canvas = document.createElement("canvas");
