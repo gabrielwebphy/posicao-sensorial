@@ -7,6 +7,7 @@ let xrButton = document.getElementById("ar-button");
 let xrSession = null;
 let xrRefSpace = null;
 let gl = null;
+let binding = null
 
 function checkSupportedState() {
   navigator.xr.isSessionSupported("immersive-ar").then((supported) => {
@@ -51,6 +52,7 @@ function onSessionStarted(session) {
   gl = canvas.getContext("webgl", {
     xrCompatible: true,
   });
+  binding = new XRWebGLBinding(session, gl)
   session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
   session.requestReferenceSpace("local").then((refSpace) => {
     xrRefSpace = refSpace;
@@ -76,13 +78,15 @@ function onXRFrame(time, frame) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
 
   let pose = frame.getViewerPose(xrRefSpace);
-  for (const view of pose.views) {
-    if (view.camera) {
-      console.log('tem câmera');
-    }
-  }
   
   if (pose) {
+    for (const view of pose.views) {
+      if (view.camera) {
+        const cameraTexture = binding.getCameraImage(view.camera);
+        console.log('tem câmera', cameraTexture);
+      }
+    }
+
     const p = pose.transform.position;
     xCoord.innerHTML = "x: " + p.x;
     yCoord.innerHTML = "y: " + p.y;
