@@ -9,7 +9,7 @@ let xrSession = null;
 let xrRefSpace = null;
 let gl = null;
 let binding = null;
-let SSCapture = false;
+let SSCapture = true //false;
 
 SSButton.addEventListener("click", onScreenshot)
 
@@ -91,8 +91,8 @@ function onXRFrame(time, frame) {
     for (const view of pose.views) {
       if (view.camera && SSCapture) {
         const cameraTexture = binding.getCameraImage(view.camera);
-        createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height)
-        SSCapture = false;
+        createImageFromTexture(gl, cameraTexture, 200,200)// view.camera.width, view.camera.height)
+        SSCapture = true //false;
       }
     }
     const p = pose.transform.position;
@@ -125,7 +125,7 @@ function createImageFromTexture(gl, texture, width, height) {
   // Copy the pixels to a 2D canvas
   let imageData = ctx.createImageData(width, height);
   imageData.data.set(data);
-  ctx.putImageData(imageData, 0, 0, 0, 0, 200, 200);
+  ctx.putImageData(imageData, 0, 0);
 }
 
 initXR();
