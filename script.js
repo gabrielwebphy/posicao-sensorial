@@ -84,7 +84,7 @@ function onXRFrame(time, frame) {
       if (view.camera) {
         const cameraTexture = binding.getCameraImage(view.camera);
         console.log("tem câmera", cameraTexture, view.camera);
-        createImageFromTexture(gl, cameraTexture, 200, 200)
+        createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height)
       }
     }
     const p = pose.transform.position;
