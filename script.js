@@ -7,7 +7,7 @@ let xrButton = document.getElementById("ar-button");
 let xrSession = null;
 let xrRefSpace = null;
 let gl = null;
-let binding = null
+let binding = null;
 
 function checkSupportedState() {
   navigator.xr.isSessionSupported("immersive-ar").then((supported) => {
@@ -52,7 +52,7 @@ function onSessionStarted(session) {
   gl = canvas.getContext("webgl", {
     xrCompatible: true,
   });
-  binding = new XRWebGLBinding(session, gl)
+  binding = new XRWebGLBinding(session, gl);
   session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
   session.requestReferenceSpace("local").then((refSpace) => {
     xrRefSpace = refSpace;
@@ -78,12 +78,30 @@ function onXRFrame(time, frame) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
 
   let pose = frame.getViewerPose(xrRefSpace);
-  
+
   if (pose) {
     for (const view of pose.views) {
       if (view.camera) {
         const cameraTexture = binding.getCameraImage(view.camera);
-        console.log('tem câmera', cameraTexture);
+        console.log("tem câmera", cameraTexture);
+
+        var scaledWidth = 200; // Example width
+        var scaledHeight = 200; // Example height
+
+        // Create an intermediate WebGL framebuffer
+        var framebuffer = gl.createFramebuffer();
+        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, cameraTexture, 0);
+
+        // Set the viewport to match the scaled dimensions
+        gl.viewport(0, 0, scaledWidth, scaledHeight);
+
+        // Bind the canvas 2D context and draw the framebuffer onto the canvas
+        ctx.drawImage(gl.canvas, 0, 0, scaledWidth, scaledHeight);
+
+        // Reset the WebGL framebuffer and viewport
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.viewport(0, 0, myCanvas.width, myCanvas.height);
       }
     }
 
