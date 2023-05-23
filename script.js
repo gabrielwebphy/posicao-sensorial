@@ -4,11 +4,14 @@ const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
 const ctx = myCanvas.getContext("2d");
 let xrButton = document.getElementById("ar-button");
+let SSButton = document.getElementById("ss-button")
 let xrSession = null;
 let xrRefSpace = null;
 let gl = null;
 let binding = null;
 let SSCapture = false;
+
+SSButton.addEventListener("click", onScreenshot)
 
 function checkSupportedState() {
   navigator.xr.isSessionSupported("immersive-ar").then((supported) => {
