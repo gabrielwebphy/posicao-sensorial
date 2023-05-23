@@ -84,7 +84,7 @@ function onXRFrame(time, frame) {
       if (view.camera) {
         const cameraTexture = binding.getCameraImage(view.camera);
         console.log("tem câmera", cameraTexture);
-        ctx.drawImage(cameraTexture, 0, 0, 200, 200);
+        createImageFromTexture(gl, cameraTexture, 200, 200)
       }
     }
 
@@ -100,20 +100,27 @@ function onXRFrame(time, frame) {
   }
 }
 
-function takeScreenshot(session) {
-  const framebuffer = session.renderState.baseLayer.framebuffer;
-  const width = framebuffer.width;
-  const height = framebuffer.height;
+function createImageFromTexture(gl, texture, width, height) {
+  // Create a framebuffer backed by the texture
+  var framebuffer = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
 
-  if (width && height) {
-    const pixels = new Uint8Array(width * height * 4);
-    gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+  // Read the contents of the framebuffer
+  var data = new Uint8Array(width * height * 4);
+  gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
 
-    const imageData = new ImageData(new Uint8ClampedArray(pixels), width, height);
+  gl.deleteFramebuffer(framebuffer);
 
-    ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-    ctx.putImageData(imageData, 0, 0);
-  }
+  // Create a 2D canvas to store the result 
+  myCanvas.width = width;
+  myCanvas.height = height;
+
+  // Copy the pixels to a 2D canvas
+  var imageData = ctx.createImageData(width, height);
+  imageData.data.set(data);
+  ctx.putImageData(imageData, 0, 0);
 }
+
 
 initXR();
