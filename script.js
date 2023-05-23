@@ -81,14 +81,14 @@ function onXRFrame(time, frame) {
   let pose = frame.getViewerPose(xrRefSpace);
   if (pose) {
     const p = pose.transform.position;
-    xCoord.innerHTML = 'x: '+p.x
-    yCoord.innerHTML = 'y: '+p.y
-    zCoord.innerHTML = 'z: '+p.z
-    takeScreenshot(session)
+    xCoord.innerHTML = "x: " + p.x;
+    yCoord.innerHTML = "y: " + p.y;
+    zCoord.innerHTML = "z: " + p.z;
+    takeScreenshot(session);
   } else {
-    xCoord.innerHTML = 'No pose'
-    yCoord.innerHTML = 'No pose'
-    zCoord.innerHTML = 'No pose'
+    xCoord.innerHTML = "No pose";
+    yCoord.innerHTML = "No pose";
+    zCoord.innerHTML = "No pose";
   }
 }
 
@@ -97,14 +97,15 @@ function takeScreenshot(session) {
   const width = framebuffer.width;
   const height = framebuffer.height;
 
-  const pixels = new Uint8Array(width * height * 4);
-  gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+  if (width && height) {
+    const pixels = new Uint8Array(width * height * 4);
+    gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-  const imageData = new ImageData(new Uint8ClampedArray(pixels), width, height);
+    const imageData = new ImageData(new Uint8ClampedArray(pixels), width, height);
 
-  ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-  ctx.putImageData(imageData, 0, 0);
+    ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+    ctx.putImageData(imageData, 0, 0);
+  }
 }
-
 
 initXR();
