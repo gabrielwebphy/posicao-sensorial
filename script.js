@@ -43,7 +43,7 @@ function onButtonClicked() {
 
 function onSessionStarted(session) {
   xrSession = session;
-  xrButton.innerHTML = "Exit AR";
+  xrButton.innerHTML = "Start Hello WebXR";
 
   session.addEventListener("end", onSessionEnded);
   let canvas = document.createElement("canvas");
@@ -82,13 +82,29 @@ function onXRFrame(time, frame) {
   if (pose) {
     const p = pose.transform.position;
     xCoord.innerHTML = 'x: '+p.x
-    yCoord.innerHTML = 'x: '+p.y
-    zCoord.innerHTML = 'x: '+p.z
+    yCoord.innerHTML = 'y: '+p.y
+    zCoord.innerHTML = 'z: '+p.z
+    takeScreenshot(session)
   } else {
     xCoord.innerHTML = 'No pose'
     yCoord.innerHTML = 'No pose'
     zCoord.innerHTML = 'No pose'
   }
 }
+
+function takeScreenshot(session) {
+  const framebuffer = session.renderState.baseLayer.framebuffer;
+  const width = framebuffer.width;
+  const height = framebuffer.height;
+
+  const pixels = new Uint8Array(width * height * 4);
+  gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+  const imageData = new ImageData(new Uint8ClampedArray(pixels), width, height);
+
+  ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+  ctx.putImageData(imageData, 0, 0);
+}
+
 
 initXR();
