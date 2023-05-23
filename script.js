@@ -32,6 +32,7 @@ function onButtonClicked() {
     // Ask for an optional DOM Overlay, see https://immersive-web.github.io/dom-overlays/
     navigator.xr
       .requestSession("immersive-ar", {
+        requiredFeatures: ["camera-access"],
         optionalFeatures: ["dom-overlay"],
         domOverlay: { root: document.getElementById("overlay") },
       })
@@ -62,13 +63,9 @@ function onRequestSessionError(ex) {
   console.error(ex.message);
 }
 
-function onEndSession(session) {
-  session.end();
-}
-
 function onSessionEnded(event) {
   xrSession = null;
-  xrButton.innerHTML = "Enter AR";
+  xrButton.innerHTML = "Start Hello WebXR";
   gl = null;
 }
 
@@ -79,6 +76,12 @@ function onXRFrame(time, frame) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
 
   let pose = frame.getViewerPose(xrRefSpace);
+  for (const view of pose.views) {
+    if (view.camera) {
+      console.log('tem câmera');
+    }
+  }
+  
   if (pose) {
     const p = pose.transform.position;
     xCoord.innerHTML = "x: " + p.x;
