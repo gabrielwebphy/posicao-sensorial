@@ -101,13 +101,13 @@ function onXRFrame(time, frame) {
 function createImageFromTexture(gl, texture, width, height) {
   // Create a framebuffer backed by the texture
   let framebuffer = gl.createFramebuffer();
-  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
   gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
   gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
 
   // Read the contents of the framebuffer
   let data = new Uint8Array(width * height * 4);
   gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
   gl.deleteFramebuffer(framebuffer);
 
