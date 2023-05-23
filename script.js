@@ -87,12 +87,10 @@ function onXRFrame(time, frame) {
         createImageFromTexture(gl, cameraTexture, 200, 200)
       }
     }
-
     const p = pose.transform.position;
     xCoord.innerHTML = "x: " + p.x;
     yCoord.innerHTML = "y: " + p.y;
     zCoord.innerHTML = "z: " + p.z;
-    takeScreenshot(session);
   } else {
     xCoord.innerHTML = "No pose";
     yCoord.innerHTML = "No pose";
