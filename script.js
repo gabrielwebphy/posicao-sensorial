@@ -1,6 +1,6 @@
-const xCoord = document.getElementById("xCoord");
-const yCoord = document.getElementById("yCoord");
-const zCoord = document.getElementById("zCoord");
+const xCoord = document.getElementById("xcoord");
+const yCoord = document.getElementById("ycoord");
+const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
 const ctx = myCanvas.getContext("2d");
 
