@@ -4,32 +4,6 @@ const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
 const ctx = myCanvas.getContext("2d");
 
-navigator.mediaDevices.getUserMedia({ video: true }).then(handleSuccess).catch(handleError);
-
-function handleSuccess(stream) {
-  // Create a video element and set the stream as the source
-  const video = document.createElement("video");
-  video.srcObject = stream;
-  video.play();
-
-  function captureFrame() {
-    myCanvas.width = video.videoWidth / 2;
-    myCanvas.height = video.videoHeight / 2;
-    ctx.drawImage(video, 0, 0, myCanvas.width, myCanvas.height);
-    const imageData = ctx.getImageData(0, 0, myCanvas.width, myCanvas.height);
-    const imageDataArray = imageData.data;
-    // Process the image data as needed
-    requestAnimationFrame(captureFrame);
-  }
-
-  // Start capturing frames
-  captureFrame();
-}
-
-function handleError(error) {
-  console.error("Error accessing camera:", error);
-}
-
 async function activateXR() {
   // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
   const canvas = document.createElement("canvas");
@@ -111,24 +85,23 @@ async function activateXR() {
     if (pose) {
       const view = pose.views[0];
 
-      // xCoord.innerHTML = "x: " + view.transform.position.x;
-      // yCoord.innerHTML = "x: " + view.transform.position.y;
-      // zCoord.innerHTML = "x: " + view.transform.position.z;
+      xCoord.innerHTML = "x: " + view.transform.position.x;
+      yCoord.innerHTML = "x: " + view.transform.position.y;
+      zCoord.innerHTML = "x: " + view.transform.position.z;
 
       console.log(view.transform.position.x, view.transform.position.y, view.transform.position.z);
       const viewport = session.renderState.baseLayer.getViewport(view);
       renderer.setSize(viewport.width, viewport.height);
 
-      // Use the view's transform matrix and projection matrix to configure the THREE.camera.
       camera.matrix.fromArray(view.transform.matrix);
       camera.projectionMatrix.fromArray(view.projectionMatrix);
       camera.updateMatrixWorld(true);
 
       renderer.render(scene, camera);
     } else {
-      // xCoord.innerHTML = "x: No pose";
-      // yCoord.innerHTML = "y: No pose";
-      // zCoord.innerHTML = "z: No pose";
+      xCoord.innerHTML = "x: No pose";
+      yCoord.innerHTML = "y: No pose";
+      zCoord.innerHTML = "z: No pose";
     }
   };
   session.requestAnimationFrame(onXRFrame);
