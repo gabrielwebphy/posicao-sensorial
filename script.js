@@ -84,7 +84,7 @@ function onXRFrame(time, frame) {
       if (view.camera) {
         const cameraTexture = binding.getCameraImage(view.camera);
         console.log("tem câmera", cameraTexture, view.camera);
-        createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height)
+        createImageFromTexture(gl, cameraTexture, 200, 200 )// view.camera.width, view.camera.height)
       }
     }
     const p = pose.transform.position;
@@ -107,7 +107,6 @@ function createImageFromTexture(gl, texture, width, height) {
   // Read the contents of the framebuffer
   let data = new Uint8Array(width * height * 4);
   gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
-  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
   gl.deleteFramebuffer(framebuffer);
 
@@ -120,6 +119,5 @@ function createImageFromTexture(gl, texture, width, height) {
   imageData.data.set(data);
   ctx.putImageData(imageData, 0, 0);
 }
-
 
 initXR();
