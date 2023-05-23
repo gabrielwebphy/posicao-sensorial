@@ -101,6 +101,7 @@ function onXRFrame(time, frame) {
 function createImageFromTexture(gl, texture, width, height) {
   // Create a framebuffer backed by the texture
   let framebuffer = gl.createFramebuffer();
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
   gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
   gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
 
