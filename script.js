@@ -8,6 +8,7 @@ let xrSession = null;
 let xrRefSpace = null;
 let gl = null;
 let binding = null;
+let SSCapture = false;
 
 function checkSupportedState() {
   navigator.xr.isSessionSupported("immersive-ar").then((supported) => {
@@ -71,6 +72,10 @@ function onSessionEnded(event) {
   gl = null;
 }
 
+function onScreenshot() {
+  SSCapture = true;
+}
+
 function onXRFrame(time, frame) {
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
@@ -81,10 +86,10 @@ function onXRFrame(time, frame) {
 
   if (pose) {
     for (const view of pose.views) {
-      if (view.camera) {
+      if (view.camera && SSCapture) {
         const cameraTexture = binding.getCameraImage(view.camera);
-        console.log("tem câmera", cameraTexture, view.camera);
-        createImageFromTexture(gl, cameraTexture, 200, 200 )// view.camera.width, view.camera.height)
+        createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height)
+        SSCapture = false;
       }
     }
     const p = pose.transform.position;
@@ -110,14 +115,14 @@ function createImageFromTexture(gl, texture, width, height) {
 
   gl.deleteFramebuffer(framebuffer);
 
-  // Create a 2D canvas to store the result 
+  // Create a 2D canvas to store the result
   myCanvas.width = width;
   myCanvas.height = height;
 
   // Copy the pixels to a 2D canvas
   let imageData = ctx.createImageData(width, height);
   imageData.data.set(data);
-  ctx.putImageData(imageData, 0, 0);
+  ctx.putImageData(imageData, 0, 0, 0, 0, 200, 200);
 }
 
 initXR();
