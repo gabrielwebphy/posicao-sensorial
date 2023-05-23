@@ -8,16 +8,15 @@
   <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
 </head>
 <body>
-
 <!-- Starting an immersive WebXR session requires user interaction.
     We start this one with a simple button. -->
-<button onclick="activateXR()">Start Hello WebXR</button>
 <div id="overlay">
+  <button onclick="activateXR()">Start Hello WebXR</button>
   <div id="xcoord">x: 0</div>
   <div id="ycoord">y: 0</div>
   <div id="zcoord">z: 0</div>
   <canvas id="myCanvas" width="128" height="128" style="position: absolute; right: 10px; bottom: 10px;"></canvas>
 </div>
-<script src="script.js"></script>
+<script type="module" src="script.js"></script>
 </body>
 </html>
