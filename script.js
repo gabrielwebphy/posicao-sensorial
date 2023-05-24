@@ -91,7 +91,7 @@ function onXRFrame(time, frame) {
     for (const view of pose.views) {
       if (view.camera && SSCapture) {
         const cameraTexture = binding.getCameraImage(view.camera);
-        createImageFromTexture(gl, cameraTexture, 200,200)// view.camera.width, view.camera.height)
+        createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height)
         SSCapture = true //false;
       }
     }
