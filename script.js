@@ -65,7 +65,7 @@ function onSessionStarted(session) {
   for (let i = 0; i < colors.length; i++) {
     materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
   }
-  let geometry = new THREE.BoxGeometry(1, 1, 1);
+  let geometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
   let cube = new THREE.Mesh(geometry, materials);
   cube.position.z = -2
   scene.add(cube);
