@@ -14,7 +14,6 @@ let screenshotCapture = false;
 let camera = null;
 let scene = null;
 let cube = null;
-const loader = new GLTFLoader();
 
 SSButton.addEventListener("click", downloadImage);
 
@@ -62,6 +61,7 @@ function onSessionStarted(session) {
     xrCompatible: true,
   });
   scene = new THREE.Scene();
+  const loader = new GLTFLoader();
   loader.load("./textures/apart_06.glb", (object) => {
     scene.add(object.scene);
   });
