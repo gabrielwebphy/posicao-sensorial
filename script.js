@@ -22,9 +22,9 @@ SSButton.addEventListener("click", downloadImage);
 function checkSupportedState() {
   navigator.xr.isSessionSupported("immersive-ar").then((supported) => {
     if (supported) {
-      xrButton.innerHTML = "Start Hello WebXR";
+      xrButton.innerHTML = "Começar WebXR";
     } else {
-      xrButton.innerHTML = "AR not found";
+      xrButton.innerHTML = "AR não achado";
     }
     xrButton.disabled = !supported;
   });
@@ -55,7 +55,7 @@ function onButtonClicked() {
 
 function onSessionStarted(session) {
   xrSession = session;
-  xrButton.innerHTML = "Start Hello WebXR";
+  xrButton.innerHTML = "Começar WebXR";
 
   session.addEventListener("end", onSessionEnded);
   let canvas = document.createElement("canvas");
@@ -111,13 +111,13 @@ function onSessionStarted(session) {
 }
 
 function onRequestSessionError(ex) {
-  alert("Failed to start immersive AR session.");
+  alert("A sessão AR falhou.");
   console.error(ex.message);
 }
 
 function onSessionEnded(event) {
   xrSession = null;
-  xrButton.innerHTML = "Start Hello WebXR";
+  xrButton.innerHTML = "Começar WebXR";
   gl = null;
 }
 
