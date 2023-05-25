@@ -126,6 +126,7 @@ function onXRFrame(time, frame) {
         createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height);
       }
     }
+    const view = pose.views[0]
     const viewport = session.renderState.baseLayer.getViewport(view);
     renderer.setSize(viewport.width, viewport.height);
 
