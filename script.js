@@ -10,6 +10,7 @@ let xrRefSpace = null;
 let gl = null;
 let binding = null;
 let renderer = null;
+let screenshotCapture = false
 let camera = null;
 let scene = null;
 
@@ -59,7 +60,16 @@ function onSessionStarted(session) {
     xrCompatible: true,
   });
   scene = new THREE.Scene();
-  loadScene()
+  let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
+  let materials = [];
+  for (let i = 0; i < colors.length; i++) {
+    materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
+  }
+  let geometry = new THREE.BoxGeometry(1, 1, 1);
+  let cube = new THREE.Mesh(geometry, materials);
+  cube.position.z = -2
+  scene.add(cube);
+
   camera = new THREE.PerspectiveCamera();
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
@@ -81,17 +91,6 @@ function onSessionStarted(session) {
   });
 }
 
-function loadScene() {
-  let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
-  let materials = [];
-  for (let i = 0; i < colors.length; i++) {
-    materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
-  }
-  let geometry = new THREE.BoxGeometry(1, 1, 1);
-  let cube = new THREE.Mesh(geometry, materials);
-  cube.position.z = -2
-  scene.add(cube);
-}
 
 function onRequestSessionError(ex) {
   alert("Failed to start immersive AR session.");
@@ -105,10 +104,7 @@ function onSessionEnded(event) {
 }
 
 function downloadImage() {
-  var link = document.createElement("a");
-  link.download = "screenshot.png";
-  link.href = myCanvas.toDataURL();
-  link.click();
+  screenshotCapture = true
 }
 
 function onXRFrame(time, frame) {
@@ -120,18 +116,19 @@ function onXRFrame(time, frame) {
   let pose = frame.getViewerPose(xrRefSpace);
 
   if (pose) {
-    for (const view of pose.views) {
-      if (view.camera) {
+    for (let view of pose.views) {
+      if (view.camera && screenshotCapture) {
         const cameraTexture = binding.getCameraImage(view.camera);
         createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height);
+        screenshotCapture = false
       }
     }
-    const view = pose.views[0]
-    const viewport = session.renderState.baseLayer.getViewport(view);
+    const firstView = pose.views[0]
+    const viewport = session.renderState.baseLayer.getViewport(firstView);
     renderer.setSize(viewport.width, viewport.height);
 
-    camera.matrix.fromArray(view.transform.matrix);
-    camera.projectionMatrix.fromArray(view.projectionMatrix);
+    camera.matrix.fromArray(firstView.transform.matrix);
+    camera.projectionMatrix.fromArray(firstView.projectionMatrix);
     camera.updateMatrixWorld(true);
 
     renderer.render(scene, camera);
@@ -166,7 +163,6 @@ function createImageFromTexture(gl, texture, width, height) {
   // Copy the pixels to a 2D canvas
   let imageData = ctx.createImageData(width, height);
   imageData.data.set(data);
-  console.log(imageData, data);
   ctx.putImageData(imageData, 0, 0);
 }
 
