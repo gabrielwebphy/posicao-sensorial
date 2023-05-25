@@ -61,7 +61,7 @@ function onSessionStarted(session) {
     xrCompatible: true,
   });
   scene = new THREE.Scene();
-  const loader = new GLTFLoader();
+  const loader = new THREE.GLTFLoader();
   loader.load("./textures/apart_06.glb", (object) => {
     scene.add(object.scene);
   });
