@@ -19,6 +19,44 @@ let raycaster = new THREE.Raycaster();
 
 SSButton.addEventListener("click", downloadImage);
 
+function flipImageHorizontally(imageData) {
+  const { width, height, data } = imageData;
+  
+  for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width / 2; x++) {
+          const leftPixelIndex = (y * width + x) * 4;
+          const rightPixelIndex = (y * width + (width - x - 1)) * 4;
+          
+          // Swap the pixel values for R, G, B, and A channels
+          swapPixels(data, leftPixelIndex, rightPixelIndex);
+      }
+  }
+}
+
+// Function to flip the image vertically
+function flipImageVertically(imageData) {
+  const { width, height, data } = imageData;
+  
+  for (let y = 0; y < height / 2; y++) {
+      for (let x = 0; x < width; x++) {
+          const topPixelIndex = (y * width + x) * 4;
+          const bottomPixelIndex = ((height - y - 1) * width + x) * 4;
+          
+          // Swap the pixel values for R, G, B, and A channels
+          swapPixels(data, topPixelIndex, bottomPixelIndex);
+      }
+  }
+}
+
+// Function to swap the pixel values for R, G, B, and A channels
+function swapPixels(data, indexA, indexB) {
+  for (let i = 0; i < 4; i++) {
+      const temp = data[indexA + i];
+      data[indexA + i] = data[indexB + i];
+      data[indexB + i] = temp;
+  }
+}
+
 function checkSupportedState() {
   navigator.xr.isSessionSupported("immersive-ar").then((supported) => {
     if (supported) {
@@ -195,6 +233,8 @@ function createImageFromTexture(gl, texture, width, height) {
   // Copy the pixels to a 2D canvas
   let imageData = ctx.createImageData(width, height);
   imageData.data.set(data);
+  flipImageHorizontally(imageData);
+  flipImageVertically(imageData);
   ctx.putImageData(imageData, 0, 0);
 }
 
