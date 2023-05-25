@@ -19,20 +19,6 @@ let raycaster = new THREE.Raycaster();
 
 SSButton.addEventListener("click", downloadImage);
 
-function flipImageHorizontally(imageData) {
-  const { width, height, data } = imageData;
-  
-  for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width / 2; x++) {
-          const leftPixelIndex = (y * width + x) * 4;
-          const rightPixelIndex = (y * width + (width - x - 1)) * 4;
-          
-          // Swap the pixel values for R, G, B, and A channels
-          swapPixels(data, leftPixelIndex, rightPixelIndex);
-      }
-  }
-}
-
 // Function to flip the image vertically
 function flipImageVertically(imageData) {
   const { width, height, data } = imageData;
@@ -93,7 +79,7 @@ function onButtonClicked() {
 
 function onSessionStarted(session) {
   xrSession = session;
-  xrButton.innerHTML = "Começar WebXR";
+  xrButton.innerHTML = "Parar WebXR";
 
   session.addEventListener("end", onSessionEnded);
   let canvas = document.createElement("canvas");
@@ -204,9 +190,9 @@ function onXRFrame(time, frame) {
       }
     }
     const p = pose.transform.position;
-    xCoord.innerHTML = "x: " + p.x;
-    yCoord.innerHTML = "y: " + p.y;
-    zCoord.innerHTML = "z: " + p.z;
+    xCoord.innerHTML = "x: " + p.x.toFixed(4);
+    yCoord.innerHTML = "y: " + p.y.toFixed(4);
+    zCoord.innerHTML = "z: " + p.z.toFixed(4);
   } else {
     xCoord.innerHTML = "No pose";
     yCoord.innerHTML = "No pose";
@@ -233,7 +219,6 @@ function createImageFromTexture(gl, texture, width, height) {
   // Copy the pixels to a 2D canvas
   let imageData = ctx.createImageData(width, height);
   imageData.data.set(data);
-  flipImageHorizontally(imageData);
   flipImageVertically(imageData);
   ctx.putImageData(imageData, 0, 0);
 }
