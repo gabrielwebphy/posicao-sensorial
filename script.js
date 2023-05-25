@@ -113,6 +113,7 @@ function downloadImage() {
 }
 
 function onXRFrame(time, frame) {
+  renderer.render(scene, camera);
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
 
@@ -121,13 +122,6 @@ function onXRFrame(time, frame) {
   let pose = frame.getViewerPose(xrRefSpace);
 
   if (pose) {
-    for (let view of pose.views) {
-      if (view.camera && screenshotCapture) {
-        const cameraTexture = binding.getCameraImage(view.camera);
-        createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height);
-        screenshotCapture = false;
-      }
-    }
     const firstView = pose.views[0];
     const viewport = session.renderState.baseLayer.getViewport(firstView);
     renderer.setSize(viewport.width, viewport.height);
@@ -139,6 +133,13 @@ function onXRFrame(time, frame) {
     cube.rotation.x += 0.01;
     cube.rotation.y += 0.01;
 
+    for (let view of pose.views) {
+      if (view.camera && screenshotCapture) {
+        const cameraTexture = binding.getCameraImage(view.camera);
+        createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height);
+        screenshotCapture = false;
+      }
+    }
     const p = pose.transform.position;
     xCoord.innerHTML = "x: " + p.x;
     yCoord.innerHTML = "y: " + p.y;
@@ -148,7 +149,6 @@ function onXRFrame(time, frame) {
     yCoord.innerHTML = "No pose";
     zCoord.innerHTML = "No pose";
   }
-  renderer.render(scene, camera);
 }
 
 function createImageFromTexture(gl, texture, width, height) {
