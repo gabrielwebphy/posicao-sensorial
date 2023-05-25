@@ -4,13 +4,16 @@ const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
 const ctx = myCanvas.getContext("2d");
 let xrButton = document.getElementById("ar-button");
-let SSButton = document.getElementById("ss-button")
+let SSButton = document.getElementById("ss-button");
 let xrSession = null;
 let xrRefSpace = null;
 let gl = null;
 let binding = null;
+let renderer = null;
+let camera = null;
+let scene = null;
 
-SSButton.addEventListener("click", downloadImage)
+SSButton.addEventListener("click", downloadImage);
 
 function checkSupportedState() {
   navigator.xr.isSessionSupported("immersive-ar").then((supported) => {
@@ -55,6 +58,20 @@ function onSessionStarted(session) {
   gl = canvas.getContext("webgl", {
     xrCompatible: true,
   });
+  scene = new THREE.Scene();
+  loadScene()
+  camera = new THREE.PerspectiveCamera();
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+  scene.add(ambientLight);
+  renderer = new THREE.WebGLRenderer({
+    alpha: true,
+    preserveDrawingBuffer: true,
+    canvas: canvas,
+    context: gl,
+  });
+  renderer.autoClear = false;
+  camera.matrixAutoUpdate = false;
+
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
   binding = new XRWebGLBinding(session, gl);
   session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
@@ -62,6 +79,18 @@ function onSessionStarted(session) {
     xrRefSpace = refSpace;
     session.requestAnimationFrame(onXRFrame);
   });
+}
+
+function loadScene() {
+  let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
+  let materials = [];
+  for (let i = 0; i < colors.length; i++) {
+    materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
+  }
+  let geometry = new THREE.BoxGeometry(1, 1, 1);
+  let cube = new THREE.Mesh(geometry, materials);
+  cube.position.z = -2
+  scene.add(cube);
 }
 
 function onRequestSessionError(ex) {
@@ -75,13 +104,12 @@ function onSessionEnded(event) {
   gl = null;
 }
 
-function downloadImage(){
-  var link = document.createElement('a');
-  link.download = 'screenshot.png';
-  link.href = myCanvas.toDataURL()
+function downloadImage() {
+  var link = document.createElement("a");
+  link.download = "screenshot.png";
+  link.href = myCanvas.toDataURL();
   link.click();
 }
-
 
 function onXRFrame(time, frame) {
   let session = frame.session;
@@ -95,9 +123,18 @@ function onXRFrame(time, frame) {
     for (const view of pose.views) {
       if (view.camera) {
         const cameraTexture = binding.getCameraImage(view.camera);
-        createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height)
+        createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height);
       }
     }
+    const viewport = session.renderState.baseLayer.getViewport(view);
+    renderer.setSize(viewport.width, viewport.height);
+
+    camera.matrix.fromArray(view.transform.matrix);
+    camera.projectionMatrix.fromArray(view.projectionMatrix);
+    camera.updateMatrixWorld(true);
+
+    renderer.render(scene, camera);
+
     const p = pose.transform.position;
     xCoord.innerHTML = "x: " + p.x;
     yCoord.innerHTML = "y: " + p.y;
@@ -128,6 +165,7 @@ function createImageFromTexture(gl, texture, width, height) {
   // Copy the pixels to a 2D canvas
   let imageData = ctx.createImageData(width, height);
   imageData.data.set(data);
+  console.log(imageData, data);
   ctx.putImageData(imageData, 0, 0);
 }
 
