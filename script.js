@@ -10,9 +10,11 @@ let xrRefSpace = null;
 let gl = null;
 let binding = null;
 let renderer = null;
-let screenshotCapture = false
+let screenshotCapture = false;
 let camera = null;
 let scene = null;
+let cube = null;
+const loader = new GLTFLoader();
 
 SSButton.addEventListener("click", downloadImage);
 
@@ -60,14 +62,17 @@ function onSessionStarted(session) {
     xrCompatible: true,
   });
   scene = new THREE.Scene();
+  loader.load("./textures/apart_06.glb", (object) => {
+    scene.add(object.scene);
+  });
   let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
   let materials = [];
   for (let i = 0; i < colors.length; i++) {
     materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
   }
   let geometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
-  let cube = new THREE.Mesh(geometry, materials);
-  cube.position.z = -2
+  cube = new THREE.Mesh(geometry, materials);
+  cube.position.z = -2;
   scene.add(cube);
 
   camera = new THREE.PerspectiveCamera();
@@ -91,7 +96,6 @@ function onSessionStarted(session) {
   });
 }
 
-
 function onRequestSessionError(ex) {
   alert("Failed to start immersive AR session.");
   console.error(ex.message);
@@ -104,7 +108,7 @@ function onSessionEnded(event) {
 }
 
 function downloadImage() {
-  screenshotCapture = true
+  screenshotCapture = true;
 }
 
 function onXRFrame(time, frame) {
@@ -120,16 +124,19 @@ function onXRFrame(time, frame) {
       if (view.camera && screenshotCapture) {
         const cameraTexture = binding.getCameraImage(view.camera);
         createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height);
-        screenshotCapture = false
+        screenshotCapture = false;
       }
     }
-    const firstView = pose.views[0]
+    const firstView = pose.views[0];
     const viewport = session.renderState.baseLayer.getViewport(firstView);
     renderer.setSize(viewport.width, viewport.height);
 
     camera.matrix.fromArray(firstView.transform.matrix);
     camera.projectionMatrix.fromArray(firstView.projectionMatrix);
     camera.updateMatrixWorld(true);
+
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
 
     renderer.render(scene, camera);
 
