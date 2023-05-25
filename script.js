@@ -14,6 +14,8 @@ let screenshotCapture = false;
 let camera = null;
 let scene = null;
 let cube = null;
+let sphere = null;
+let raycaster = new THREE.Raycaster();
 
 SSButton.addEventListener("click", downloadImage);
 
@@ -63,7 +65,7 @@ function onSessionStarted(session) {
   scene = new THREE.Scene();
   const loader = new THREE.GLTFLoader();
   loader.load("./textures/apart_06.glb", (object) => {
-    object.scene.position.y = -1.5
+    object.scene.position.y = -1.5;
     scene.add(object.scene);
   });
   let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
@@ -75,6 +77,17 @@ function onSessionStarted(session) {
   cube = new THREE.Mesh(geometry, materials);
   cube.position.z = -2;
   scene.add(cube);
+  let sphereMaterial = new THREE.MeshBasicMaterial({
+    color: 0x00ff00, // Green color
+    transparent: true,
+    opacity: 0.5,
+  });
+  geometry = new THREE.SphereGeometry(0.15, 32, 32);
+  sphere = new THREE.Mesh(geometry, sphereMaterial);
+  sphere.position.x = -0.8;
+  sphere.position.y = -0.3;
+  sphere.position.z = -1.1;
+  scene.add(sphere);
 
   camera = new THREE.PerspectiveCamera();
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
@@ -114,6 +127,18 @@ function downloadImage() {
 
 function onXRFrame(time, frame) {
   renderer.render(scene, camera);
+  raycaster.setFromCamera({ x: 0, y: 0 }, camera);
+  let intersects = raycaster.intersectObjects(scene.children, true);
+  if (intersects.length > 0) {
+    if (intersects[0].object === sphere) {
+      sphere.material.color.set(0xff0000);
+    } else {
+      sphere.material.color.set(0x00ff00);
+    }
+  } else {
+    sphere.material.color.set(0x00ff00);
+  }
+
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
 
