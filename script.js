@@ -63,6 +63,7 @@ function onSessionStarted(session) {
   scene = new THREE.Scene();
   const loader = new THREE.GLTFLoader();
   loader.load("./textures/apart_06.glb", (object) => {
+    object.position.y = -1.5
     scene.add(object.scene);
   });
   let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
@@ -138,8 +139,6 @@ function onXRFrame(time, frame) {
     cube.rotation.x += 0.01;
     cube.rotation.y += 0.01;
 
-    renderer.render(scene, camera);
-
     const p = pose.transform.position;
     xCoord.innerHTML = "x: " + p.x;
     yCoord.innerHTML = "y: " + p.y;
@@ -149,6 +148,7 @@ function onXRFrame(time, frame) {
     yCoord.innerHTML = "No pose";
     zCoord.innerHTML = "No pose";
   }
+  renderer.render(scene, camera);
 }
 
 function createImageFromTexture(gl, texture, width, height) {
