@@ -9,9 +9,8 @@ let xrSession = null;
 let xrRefSpace = null;
 let gl = null;
 let binding = null;
-let SSCapture = true //false;
 
-SSButton.addEventListener("click", onScreenshot)
+SSButton.addEventListener("click", downloadImage)
 
 function checkSupportedState() {
   navigator.xr.isSessionSupported("immersive-ar").then((supported) => {
@@ -75,9 +74,13 @@ function onSessionEnded(event) {
   gl = null;
 }
 
-function onScreenshot() {
-  SSCapture = true;
+function downloadImage(){
+  var link = document.createElement('a');
+  link.download = 'screenshot.png';
+  link.href = myCanvas.toDataURL()
+  link.click();
 }
+
 
 function onXRFrame(time, frame) {
   let session = frame.session;
@@ -89,10 +92,9 @@ function onXRFrame(time, frame) {
 
   if (pose) {
     for (const view of pose.views) {
-      if (view.camera && SSCapture) {
+      if (view.camera) {
         const cameraTexture = binding.getCameraImage(view.camera);
-        createImageFromTexture(gl, cameraTexture, 200,200)// view.camera.width, view.camera.height)
-        SSCapture = true //false;
+        createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height)
       }
     }
     const p = pose.transform.position;
