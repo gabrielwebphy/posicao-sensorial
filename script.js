@@ -55,6 +55,7 @@ function onSessionStarted(session) {
   gl = canvas.getContext("webgl", {
     xrCompatible: true,
   });
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
   binding = new XRWebGLBinding(session, gl);
   session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
   session.requestReferenceSpace("local").then((refSpace) => {

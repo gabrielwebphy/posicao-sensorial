@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
-    <title>Hello WebXR!</title>
-    <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
-    <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
-  </head>
-  <body>
-    <!-- Starting an immersive WebXR session requires user interaction.
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+  <title>Hello WebXR!</title>
+  <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
+  <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+
+<body>
+  <!-- Starting an immersive WebXR session requires user interaction.
     We start this one with a simple button. -->
-    <div id="overlay" style="display: grid; grid-template-columns: 1fr 1fr; width: 100%;">
+  <div id="overlay">
+    <div style="display: grid; grid-template-columns: 1fr; width: 100%; padding-top: 30px;">
       <div>
         <button id="ar-button">Start Hello WebXR</button>
         <button id="ss-button">Imagem atual</button>
@@ -22,6 +26,8 @@
         <canvas id="myCanvas" width="200" height="200"></canvas>
       </div>
     </div>
-    <script type="module" src="script.js"></script>
-  </body>
+  </div>
+  <script type="module" src="script.js"></script>
+</body>
+
 </html>
