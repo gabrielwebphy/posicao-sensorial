@@ -19,7 +19,7 @@ let raycaster = new THREE.Raycaster();
 
 SSButton.addEventListener("click", downloadImage);
 
-// Function to flip the image vertically
+// Função para virar a imagem da câmera verticalmente (ela vem invertida)
 function flipImageVertically(imageData) {
   const { width, height, data } = imageData;
   
@@ -33,8 +33,6 @@ function flipImageVertically(imageData) {
       }
   }
 }
-
-// Function to swap the pixel values for R, G, B, and A channels
 function swapPixels(data, indexA, indexB) {
   for (let i = 0; i < 4; i++) {
       const temp = data[indexA + i];
@@ -54,6 +52,7 @@ function checkSupportedState() {
   });
 }
 
+// Assim que o website é aberto
 function initXR() {
   if (navigator.xr) {
     xrButton.addEventListener("click", onButtonClicked);
@@ -62,9 +61,9 @@ function initXR() {
   }
 }
 
+// Quando o botão de começar é clicado
 function onButtonClicked() {
   if (!xrSession) {
-    // Ask for an optional DOM Overlay, see https://immersive-web.github.io/dom-overlays/
     navigator.xr
       .requestSession("immersive-ar", {
         requiredFeatures: ["camera-access"],
@@ -77,11 +76,12 @@ function onButtonClicked() {
   }
 }
 
+// Quando a sessão AR é iniciada
 function onSessionStarted(session) {
   xrSession = session;
   xrButton.innerHTML = "Parar WebXR";
-
   session.addEventListener("end", onSessionEnded);
+
   let canvas = document.createElement("canvas");
   gl = canvas.getContext("webgl", {
     xrCompatible: true,
@@ -124,13 +124,11 @@ function onSessionStarted(session) {
   });
   renderer.autoClear = false;
   camera.matrixAutoUpdate = false;
-
-  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
   binding = new XRWebGLBinding(session, gl);
   session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
   session.requestReferenceSpace("local").then((refSpace) => {
     xrRefSpace = refSpace;
-    session.requestAnimationFrame(onXRFrame);
+    session.requestAnimationFrame(onXRFrame); // Chamando a função a cada frame
   });
 }
 
@@ -149,6 +147,7 @@ function downloadImage() {
   screenshotCapture = true;
 }
 
+// Função que roda a cada frame
 function onXRFrame(time, frame) {
   renderer.render(scene, camera);
   raycaster.setFromCamera({ x: 0, y: 0 }, camera);
@@ -164,6 +163,7 @@ function onXRFrame(time, frame) {
   }
 
   let session = frame.session;
+  // Precisa ser essa função para animar a cada frame, não pode ser window.requestAnimationFrame()
   session.requestAnimationFrame(onXRFrame);
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
@@ -200,23 +200,19 @@ function onXRFrame(time, frame) {
   }
 }
 
+// Passar a textura WebGL para imagem para mostrar no celular
 function createImageFromTexture(gl, texture, width, height) {
-  // Create a framebuffer backed by the texture
   let framebuffer = gl.createFramebuffer();
   gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
   gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-
-  // Read the contents of the framebuffer
   let data = new Uint8Array(width * height * 4);
   gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
 
   gl.deleteFramebuffer(framebuffer);
 
-  // Create a 2D canvas to store the result
   myCanvas.width = width;
   myCanvas.height = height;
 
-  // Copy the pixels to a 2D canvas
   let imageData = ctx.createImageData(width, height);
   imageData.data.set(data);
   flipImageVertically(imageData);
