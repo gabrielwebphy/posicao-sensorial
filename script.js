@@ -3,6 +3,7 @@ const yCoord = document.getElementById("ycoord");
 const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
 const ctx = myCanvas.getContext("2d");
+let cubeButton = document.getElementById("cube-button")
 let xrButton = document.getElementById("ar-button");
 let SSButton = document.getElementById("ss-button");
 let xrSession = null;
@@ -83,7 +84,6 @@ function onButtonClicked() {
 
 // Quando a sessão AR é iniciada
 function onSessionStarted(session) {
-  session.addEventListener('select', onSelect)
   xrSession = session;
   xrButton.innerHTML = "Parar WebXR";
   session.addEventListener("end", onSessionEnded);
