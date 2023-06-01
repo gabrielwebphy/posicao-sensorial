@@ -1,3 +1,4 @@
+import { log } from "console";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
@@ -42,6 +43,7 @@ const xCoord = document.getElementById("xcoord");
 const yCoord = document.getElementById("ycoord");
 const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
+const sceneCanvas = document.getElementById('sceneCanvas')
 const ctx = myCanvas.getContext("2d");
 let xrButton = document.getElementById("ar-button");
 let SSButton = document.getElementById("ss-button");
@@ -53,7 +55,7 @@ let gl = null;
 let binding = null;
 let renderer = null;
 let screenshotCapture = false;
-let camera = null;
+let camera = new THREE.PerspectiveCamera();
 let scene = new THREE.Scene();
 let arObject = null;
 let reticle = null;
@@ -132,7 +134,6 @@ function onSessionStarted(session) {
   reticle = new THREE.Mesh(geometry, transparent);
   reticle.visible = false;
   scene.add(reticle);
-  camera = new THREE.PerspectiveCamera();
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
   renderer = new THREE.WebGLRenderer({
@@ -177,6 +178,8 @@ function downloadImage() {
 function onXRFrame(time, frame) {
   if(drawCubes){
     allObjects.forEach(obj => scene.add(obj))
+    console.log('desenhei');
+    console.log(scene);
     drawCubes = false
   }
   renderer.render(scene, camera);
