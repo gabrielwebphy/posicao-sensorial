@@ -1,5 +1,5 @@
-import { initializeApp } from "./node_modules/@firebase/app/dist/app";
-import { getDatabase } from "./node_modules/@firebase/database/dist/src/index";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAMZuXaEq8himScCF7JyyNV3TCtl76TR7c",
@@ -185,7 +185,6 @@ function onXRFrame(time, frame) {
         position.setFromMatrixPosition(newMatrix);
         reticle.position.copy(position)
         reticle.quaternion.copy(quaternion)
-        console.log('0', reticle);
       }
     }
 
@@ -217,7 +216,11 @@ function onXRFrame(time, frame) {
 
 function addCube() {
   if (reticle.visible) {
-    console.log('1', reticle);
+    set(ref(database, 'objects/' + String(Math.floor(Math.random()*10000))), {
+      position : reticle.position,
+      quaternion: reticle.quaternion
+    });
+  
     let newCube = arObject.clone();
     newCube.position.copy(reticle.position)
     newCube.quaternion.copy(reticle.quaternion)
