@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAMZuXaEq8himScCF7JyyNV3TCtl76TR7c",
@@ -216,7 +216,7 @@ function onXRFrame(time, frame) {
 
 function addCube() {
   if (reticle.visible) {
-    set(ref(database, 'objects/' + String(Math.floor(Math.random()*10000))), {
+    set(ref(database, 'sala1/objects/' + String(Math.floor(Math.random()*100000))), {
       position : {x: reticle.position.x, y: reticle.position.y, z: reticle.position.z},
       quaternion: {w: reticle.quaternion.w, x: reticle.quaternion.x, y: reticle.quaternion.y, z: reticle.quaternion.z}
     });
