@@ -4,6 +4,7 @@ const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
 const ctx = myCanvas.getContext("2d");
 let cubeButton = document.getElementById("cube-button")
+cubeButton.addEventListener('click', addCube)
 let xrButton = document.getElementById("ar-button");
 let SSButton = document.getElementById("ss-button");
 let xrSession = null;
@@ -93,7 +94,6 @@ function onSessionStarted(session) {
     xrCompatible: true,
   });
   scene = new THREE.Scene();
-  loader = new THREE.GLTFLoader();
 
   let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
   let materials = [];
@@ -157,16 +157,17 @@ function onXRFrame(time, frame) {
 
   let pose = frame.getViewerPose(xrRefSpace);
 
-  if (xrHitTestSource && pose) {
-    let hitTestResults = frame.getHitTestResults(xrHitTestSource);
-    if (hitTestResults.length > 0) {
-      let target = hitTestResults[0].getPose(xrRefSpace);
-      reticle.visible = true;
-      reticle.matrix = target.transform.matrix;
-    }
-  }
-
   if (pose) {
+    if (xrHitTestSource) {
+      let hitTestResults = frame.getHitTestResults(xrHitTestSource);
+      if (hitTestResults.length > 0) {
+        console.log('tem hit');
+        let target = hitTestResults[0].getPose(xrRefSpace);
+        reticle.visible = true;
+        reticle.matrix = target.transform.matrix;
+      }
+    }
+  
     const firstView = pose.views[0];
     const viewport = session.renderState.baseLayer.getViewport(firstView);
     renderer.setSize(viewport.width, viewport.height);
@@ -199,8 +200,10 @@ function addARObjectAt(matrix) {
   newCube.matrix = matrix;
   scene.add(newCube);
 }
-function onSelect(event) {
+function addCube() {
+  console.log(reticle);
   if (reticle.visible) {
+    console.log('oi');
     addARObjectAt(reticle.matrix);
   }
 }
