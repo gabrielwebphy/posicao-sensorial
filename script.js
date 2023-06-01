@@ -24,11 +24,9 @@ onValue(objectsRef, (snapshot) => {
     let quaternion = new THREE.Quaternion().fromArray([objData.quaternion.x, objData.quaternion.y, objData.quaternion.z, objData.quaternion.w]);
     newCube.position.set(objData.position.x, objData.position.y, objData.position.z);
     newCube.quaternion.copy(quaternion);
-    console.log(newCube);
     allObjects.push(newCube);
-    scene.add(newCube);
   });
-  console.log(allObjects);
+  drawCubes = true
 });
 
 let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
@@ -49,6 +47,7 @@ let xrButton = document.getElementById("ar-button");
 let SSButton = document.getElementById("ss-button");
 let xrSession = null;
 let xrRefSpace = null;
+let drawCubes = false
 let xrViewerSpace = null;
 let gl = null;
 let binding = null;
@@ -129,10 +128,6 @@ function onSessionStarted(session) {
   gl = canvas.getContext("webgl", {
     xrCompatible: true,
   });
-  allObjects.forEach((obj) => {
-    console.log(obj);
-    scene.add(obj);
-  });
   arObject = new THREE.Mesh(geometry, materials);
   reticle = new THREE.Mesh(geometry, transparent);
   reticle.visible = false;
@@ -180,6 +175,10 @@ function downloadImage() {
 
 // Função que roda a cada frame
 function onXRFrame(time, frame) {
+  if(drawCubes){
+    allObjects.forEach(obj => scene.add(obj))
+    drawCubes = false
+  }
   renderer.render(scene, camera);
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
