@@ -100,7 +100,7 @@ function onSessionStarted(session) {
   for (let i = 0; i < colors.length; i++) {
     materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
   }
-  let geometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+  let geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
   arObject = new THREE.Mesh(geometry, materials);
   let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.4, color: 0x00ff00 })
   reticle = new THREE.Mesh(geometry, transparent)
@@ -161,12 +161,10 @@ function onXRFrame(time, frame) {
     if (xrHitTestSource) {
       let hitTestResults = frame.getHitTestResults(xrHitTestSource);
       if (hitTestResults.length > 0) {
-        console.log('tem hit');
         let target = hitTestResults[0].getPose(xrRefSpace);
         reticle.visible = true;
         const newMatrix = new THREE.Matrix4()
         newMatrix.fromArray(target.transform.matrix)
-        console.log(target.transform.matrix, newMatrix);
         reticle.matrix = newMatrix
       }
     }
@@ -204,9 +202,7 @@ function addARObjectAt(matrix) {
   scene.add(newCube);
 }
 function addCube() {
-  console.log(reticle);
   if (reticle.visible) {
-    console.log('oi');
     addARObjectAt(reticle.matrix);
   }
 }
