@@ -7,7 +7,8 @@ for (let i = 0; i < colors.length; i++) {
   materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
 }
 let geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.3, color: 0x00ff00 });
+let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.25, color: 0x00ff00 });
+let wireframe = new THREE.MeshStandardMaterial({wireframe:true, color: 0x00ff00})
 let scene = new THREE.Scene();
 let allObjects = [];
 let arObject = new THREE.Mesh(geometry, materials);
@@ -59,6 +60,7 @@ let renderer = null;
 let screenshotCapture = false;
 let camera = new THREE.PerspectiveCamera();
 let reticle = null;
+let reticleWireframe = null
 let xrHitTestSource = null;
 
 SSButton.addEventListener("click", downloadImage);
@@ -72,7 +74,6 @@ function flipImageVertically(imageData) {
       const topPixelIndex = (y * width + x) * 4;
       const bottomPixelIndex = ((height - y - 1) * width + x) * 4;
 
-      // Swap the pixel values for R, G, B, and A channels
       swapPixels(data, topPixelIndex, bottomPixelIndex);
     }
   }
@@ -131,8 +132,10 @@ function onSessionStarted(session) {
     xrCompatible: true,
   });
   reticle = new THREE.Mesh(geometry, transparent);
+  reticleWireframe = new THREE.Mesh(geometry, wireframe);
   reticle.visible = false;
-  scene.add(reticle);
+  reticleWireframe.visible = false
+  scene.add(reticle, reticleWireframe);
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
   renderer = new THREE.WebGLRenderer({
@@ -183,12 +186,14 @@ function onXRFrame(time, frame) {
 
   let pose = frame.getViewerPose(xrRefSpace);
   reticle.visible = false;
+  reticleWireframe.visible = false
   if (pose) {
     if (xrHitTestSource) {
       let hitTestResults = frame.getHitTestResults(xrHitTestSource);
       if (hitTestResults.length > 0) {
         let target = hitTestResults[0].getPose(xrRefSpace);
         reticle.visible = true;
+        reticleWireframe.visible = true
         let newMatrix = new THREE.Matrix4().fromArray(target.transform.matrix);
         let quaternion = new THREE.Quaternion();
         quaternion.setFromRotationMatrix(newMatrix);
@@ -196,6 +201,8 @@ function onXRFrame(time, frame) {
         position.setFromMatrixPosition(newMatrix);
         reticle.position.copy(position);
         reticle.quaternion.copy(quaternion);
+        reticleWireframe.position.copy(position);
+        reticleWireframe.quaternion.copy(quaternion);
       }
     }
 
@@ -231,7 +238,6 @@ function addCube() {
       position: { x: reticle.position.x, y: reticle.position.y, z: reticle.position.z },
       quaternion: { w: reticle.quaternion.w, x: reticle.quaternion.x, y: reticle.quaternion.y, z: reticle.quaternion.z },
     });
-    console.log(reticle.position, reticle.quaternion);
   }
 }
 
