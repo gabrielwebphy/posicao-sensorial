@@ -216,11 +216,11 @@ function onXRFrame(time, frame) {
 
 function addCube() {
   if (reticle.visible) {
-    set(ref(database, 'objects/' + String(Math.floor(Math.random()*10000))), {
-      position : reticle.position,
-      quaternion: reticle.quaternion
-    });
-  
+    // set(ref(database, 'objects/' + String(Math.floor(Math.random()*10000))), {
+    //   position : reticle.position,
+    //   quaternion: reticle.quaternion
+    // });
+    console.log(reticle.position, reticle.quaternion);
     let newCube = arObject.clone();
     newCube.position.copy(reticle.position)
     newCube.quaternion.copy(reticle.quaternion)
