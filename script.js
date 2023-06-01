@@ -16,9 +16,6 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const objectsRef = ref(database, "sala1/objects");
 onValue(objectsRef, (snapshot) => {
-  allObjects.forEach((obj) => {
-    scene.remove(obj);
-  });
   const data = snapshot.val();
   allObjects = [];
   Object.entries(data).forEach((objArray) => {
