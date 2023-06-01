@@ -42,7 +42,6 @@ const xCoord = document.getElementById("xcoord");
 const yCoord = document.getElementById("ycoord");
 const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
-const sceneCanvas = document.getElementById('sceneCanvas')
 const ctx = myCanvas.getContext("2d");
 let xrButton = document.getElementById("ar-button");
 let SSButton = document.getElementById("ss-button");
