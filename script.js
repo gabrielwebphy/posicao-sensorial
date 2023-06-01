@@ -8,13 +8,40 @@ const firebaseConfig = {
   projectId: "posicao-sensorial",
   storageBucket: "posicao-sensorial.appspot.com",
   messagingSenderId: "880971324399",
-  appId: "1:880971324399:web:c16bf72ba5aaa73949b41a"
+  appId: "1:880971324399:web:c16bf72ba5aaa73949b41a",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+const objectsRef = ref(database, "sala1/objects");
+onValue(objectsRef, (snapshot) => {
+  allObjects.forEach((obj) => {
+    scene.remove(obj);
+  });
+  const data = snapshot.val();
+  allObjects = [];
+  Object.entries(data).forEach((objArray) => {
+    const objData = objArray[1]
+    const newCube = new THREE.Mesh(geometry, colors);
+    let quaternion = new THREE.Quaternion().fromArray([objData.quaternion.x, objData.quaternion.y, objData.quaternion.z, objData.quaternion.w]);
+    newCube.position.set(objData.position.x, objData.position.y, objData.position.z);
+    newCube.quaternion.copy(quaternion);
+    allObjects.push(newCube);
+    scene.add(newCube);
+  });
+  console.log(allObjects);
+});
 
+let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
+let materials = [];
+for (let i = 0; i < colors.length; i++) {
+  materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
+}
+let geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.3, color: 0x00ff00 });
+
+let allObjects = [];
 const xCoord = document.getElementById("xcoord");
 const yCoord = document.getElementById("ycoord");
 const zCoord = document.getElementById("zcoord");
@@ -30,14 +57,10 @@ let binding = null;
 let renderer = null;
 let screenshotCapture = false;
 let camera = null;
-let scene = null;
-let cube = null;
-let sphere = null;
-let loader = null;
-let arObject = null
+let scene = new THREE.Scene();
+let arObject = null;
 let reticle = null;
 let xrHitTestSource = null;
-let raycaster = new THREE.Raycaster();
 
 SSButton.addEventListener("click", downloadImage);
 
@@ -103,24 +126,16 @@ function onSessionStarted(session) {
   xrSession = session;
   xrButton.innerHTML = "Parar WebXR";
   session.addEventListener("end", onSessionEnded);
-  session.addEventListener("select", addCube)
+  session.addEventListener("select", addCube);
   let canvas = document.createElement("canvas");
   gl = canvas.getContext("webgl", {
     xrCompatible: true,
   });
-  scene = new THREE.Scene();
 
-  let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
-  let materials = [];
-  for (let i = 0; i < colors.length; i++) {
-    materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
-  }
-  let geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
   arObject = new THREE.Mesh(geometry, materials);
-  let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.3, color: 0x00ff00 })
-  reticle = new THREE.Mesh(geometry, transparent)
-  reticle.visible = false
-  scene.add(reticle)
+  reticle = new THREE.Mesh(geometry, transparent);
+  reticle.visible = false;
+  scene.add(reticle);
   camera = new THREE.PerspectiveCamera();
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
@@ -134,7 +149,7 @@ function onSessionStarted(session) {
   camera.matrixAutoUpdate = false;
   binding = new XRWebGLBinding(session, gl);
   session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
-  session.requestReferenceSpace('viewer').then((refSpace) => {
+  session.requestReferenceSpace("viewer").then((refSpace) => {
     xrViewerSpace = refSpace;
     session.requestHitTestSource({ space: xrViewerSpace }).then((hitTestSource) => {
       xrHitTestSource = hitTestSource;
@@ -164,27 +179,27 @@ function downloadImage() {
 
 // Função que roda a cada frame
 function onXRFrame(time, frame) {
-  renderer.render(scene, camera)
+  renderer.render(scene, camera);
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
 
   let pose = frame.getViewerPose(xrRefSpace);
-  reticle.visible = false
+  reticle.visible = false;
   if (pose) {
     if (xrHitTestSource) {
       let hitTestResults = frame.getHitTestResults(xrHitTestSource);
       if (hitTestResults.length > 0) {
         let target = hitTestResults[0].getPose(xrRefSpace);
         reticle.visible = true;
-        let newMatrix = new THREE.Matrix4().fromArray(target.transform.matrix)
+        let newMatrix = new THREE.Matrix4().fromArray(target.transform.matrix);
         let quaternion = new THREE.Quaternion();
-        quaternion.setFromRotationMatrix(newMatrix)
+        quaternion.setFromRotationMatrix(newMatrix);
         let position = new THREE.Vector3();
         position.setFromMatrixPosition(newMatrix);
-        reticle.position.copy(position)
-        reticle.quaternion.copy(quaternion)
+        reticle.position.copy(position);
+        reticle.quaternion.copy(quaternion);
       }
     }
 
@@ -216,14 +231,14 @@ function onXRFrame(time, frame) {
 
 function addCube() {
   if (reticle.visible) {
-    set(ref(database, 'sala1/objects/' + String(Math.floor(Math.random()*100000))), {
-      position : {x: reticle.position.x, y: reticle.position.y, z: reticle.position.z},
-      quaternion: {w: reticle.quaternion.w, x: reticle.quaternion.x, y: reticle.quaternion.y, z: reticle.quaternion.z}
+    set(ref(database, "sala1/objects/" + String(Math.floor(Math.random() * 100000))), {
+      position: { x: reticle.position.x, y: reticle.position.y, z: reticle.position.z },
+      quaternion: { w: reticle.quaternion.w, x: reticle.quaternion.x, y: reticle.quaternion.y, z: reticle.quaternion.z },
     });
     console.log(reticle.position, reticle.quaternion);
     let newCube = arObject.clone();
-    newCube.position.copy(reticle.position)
-    newCube.quaternion.copy(reticle.quaternion)
+    newCube.position.copy(reticle.position);
+    newCube.quaternion.copy(reticle.quaternion);
     scene.add(newCube);
   }
 }
