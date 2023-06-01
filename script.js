@@ -3,8 +3,6 @@ const yCoord = document.getElementById("ycoord");
 const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
 const ctx = myCanvas.getContext("2d");
-let cubeButton = document.getElementById("cube-button")
-cubeButton.addEventListener('click', addCube)
 let xrButton = document.getElementById("ar-button");
 let SSButton = document.getElementById("ss-button");
 let xrSession = null;
@@ -88,7 +86,7 @@ function onSessionStarted(session) {
   xrSession = session;
   xrButton.innerHTML = "Parar WebXR";
   session.addEventListener("end", onSessionEnded);
-
+  session.addEventListener("select", addCube)
   let canvas = document.createElement("canvas");
   gl = canvas.getContext("webgl", {
     xrCompatible: true,
@@ -102,7 +100,7 @@ function onSessionStarted(session) {
   }
   let geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
   arObject = new THREE.Mesh(geometry, materials);
-  let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.6, color: 0x00ff00 })
+  let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.3, color: 0x00ff00 })
   reticle = new THREE.Mesh(geometry, transparent)
   reticle.visible = false
   scene.add(reticle)
