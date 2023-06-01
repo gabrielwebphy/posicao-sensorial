@@ -148,14 +148,14 @@ function downloadImage() {
 
 // Função que roda a cada frame
 function onXRFrame(time, frame) {
-  renderer.render(scene, camera);
-  reticle.visible = false
+  renderer.render(scene, camera)
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
 
   let pose = frame.getViewerPose(xrRefSpace);
+  reticle.visible = false
 
   if (pose) {
     if (xrHitTestSource) {
