@@ -166,7 +166,7 @@ function onXRFrame(time, frame) {
         const newMatrix = new THREE.Matrix4()
         newMatrix.fromArray(target.transform.matrix)
         reticle.matrix = newMatrix
-        reticle.updateMatrixWorld = true
+        reticle.updateMatrixWorld(true)
       }
     }
 
