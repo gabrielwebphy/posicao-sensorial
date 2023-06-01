@@ -22,7 +22,7 @@ onValue(objectsRef, (snapshot) => {
   const data = snapshot.val();
   allObjects = [];
   Object.entries(data).forEach((objArray) => {
-    const objData = objArray[1]
+    const objData = objArray[1];
     const newCube = new THREE.Mesh(geometry, colors);
     let quaternion = new THREE.Quaternion().fromArray([objData.quaternion.x, objData.quaternion.y, objData.quaternion.z, objData.quaternion.w]);
     newCube.position.set(objData.position.x, objData.position.y, objData.position.z);
@@ -131,7 +131,14 @@ function onSessionStarted(session) {
   gl = canvas.getContext("webgl", {
     xrCompatible: true,
   });
-
+  Object.entries(data).forEach((objArray) => {
+    const objData = objArray[1];
+    const newCube = new THREE.Mesh(geometry, colors);
+    let quaternion = new THREE.Quaternion().fromArray([objData.quaternion.x, objData.quaternion.y, objData.quaternion.z, objData.quaternion.w]);
+    newCube.position.set(objData.position.x, objData.position.y, objData.position.z);
+    newCube.quaternion.copy(quaternion);
+    scene.add(newCube);
+  });
   arObject = new THREE.Mesh(geometry, materials);
   reticle = new THREE.Mesh(geometry, transparent);
   reticle.visible = false;
