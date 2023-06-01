@@ -8,6 +8,8 @@ for (let i = 0; i < colors.length; i++) {
 }
 let geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
 let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.3, color: 0x00ff00 });
+let scene = new THREE.Scene();
+let allObjects = [];
 
 const firebaseConfig = {
   apiKey: "AIzaSyAMZuXaEq8himScCF7JyyNV3TCtl76TR7c",
@@ -24,6 +26,9 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const objectsRef = ref(database, "sala1/objects");
 onValue(objectsRef, (snapshot) => {
+  allObjects.forEach(obj => {
+    scene.remove(obj)
+  })
   const data = snapshot.val();
   allObjects = [];
   Object.entries(data).forEach((objArray) => {
@@ -33,11 +38,10 @@ onValue(objectsRef, (snapshot) => {
     newCube.position.set(objData.position.x, objData.position.y, objData.position.z);
     newCube.quaternion.copy(quaternion);
     allObjects.push(newCube);
+    scene.add(newCube)
   });
-  drawCubes = true
 });
 
-let allObjects = [];
 const xCoord = document.getElementById("xcoord");
 const yCoord = document.getElementById("ycoord");
 const zCoord = document.getElementById("zcoord");
@@ -47,14 +51,12 @@ let xrButton = document.getElementById("ar-button");
 let SSButton = document.getElementById("ss-button");
 let xrSession = null;
 let xrRefSpace = null;
-let drawCubes = false
 let xrViewerSpace = null;
 let gl = null;
 let binding = null;
 let renderer = null;
 let screenshotCapture = false;
 let camera = new THREE.PerspectiveCamera();
-let scene = new THREE.Scene();
 let arObject = null;
 let reticle = null;
 let xrHitTestSource = null;
@@ -174,12 +176,6 @@ function downloadImage() {
 
 // Função que roda a cada frame
 function onXRFrame(time, frame) {
-  if(drawCubes){
-    allObjects.forEach(obj => scene.add(obj))
-    console.log('desenhei');
-    console.log(scene);
-    drawCubes = false
-  }
   renderer.render(scene, camera);
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
