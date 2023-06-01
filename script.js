@@ -19,7 +19,7 @@ let scene = null;
 let cube = null;
 let sphere = null;
 let loader = null;
-let arObject = null
+let arreticle = null
 let reticle = null;
 let xrHitTestSource = null;
 let raycaster = new THREE.Raycaster();
@@ -101,7 +101,7 @@ function onSessionStarted(session) {
     materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
   }
   let geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-  arObject = new THREE.Mesh(geometry, materials);
+  arreticle = new THREE.Mesh(geometry, materials);
   let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.4, color: 0x00ff00 })
   reticle = new THREE.Mesh(geometry, transparent)
 
@@ -166,7 +166,10 @@ function onXRFrame(time, frame) {
         const newMatrix = new THREE.Matrix4()
         newMatrix.fromArray(target.transform.matrix)
         reticle.matrix = newMatrix
-        reticle.updateMatrixWorld(true)
+        reticle.matrixAutoUpdate = false;
+        reticle.updateMatrix();
+
+
       }
     }
 
@@ -196,15 +199,15 @@ function onXRFrame(time, frame) {
   }
 }
 
-function addARObjectAt(matrix) {
-  let newCube = arObject.clone();
+function addARreticleAt(matrix) {
+  let newCube = arreticle.clone();
   newCube.visible = true;
   newCube.matrix = matrix;
   scene.add(newCube);
 }
 function addCube() {
   if (reticle.visible) {
-    addARObjectAt(reticle.matrix);
+    addARreticleAt(reticle.matrix);
   }
 }
 
