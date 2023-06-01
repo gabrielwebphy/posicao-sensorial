@@ -160,9 +160,9 @@ function onXRFrame(time, frame) {
   if (xrHitTestSource && pose) {
     let hitTestResults = frame.getHitTestResults(xrHitTestSource);
     if (hitTestResults.length > 0) {
-      let pose = hitTestResults[0].getPose(xrRefSpace);
+      let target = hitTestResults[0].getPose(xrRefSpace);
       reticle.visible = true;
-      reticle.matrix = pose.transform.matrix;
+      reticle.matrix = target.transform.matrix;
     }
   }
 
