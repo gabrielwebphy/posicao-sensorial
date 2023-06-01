@@ -10,6 +10,7 @@ let geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
 let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.3, color: 0x00ff00 });
 let scene = new THREE.Scene();
 let allObjects = [];
+let arObject = new THREE.Mesh(geometry, materials);
 
 const firebaseConfig = {
   apiKey: "AIzaSyAMZuXaEq8himScCF7JyyNV3TCtl76TR7c",
@@ -33,7 +34,7 @@ onValue(objectsRef, (snapshot) => {
   allObjects = [];
   Object.entries(data).forEach((objArray) => {
     const objData = objArray[1];
-    const newCube = new THREE.Mesh(geometry, colors);
+    const newCube = arObject.clone()
     let quaternion = new THREE.Quaternion().fromArray([objData.quaternion.x, objData.quaternion.y, objData.quaternion.z, objData.quaternion.w]);
     newCube.position.set(objData.position.x, objData.position.y, objData.position.z);
     newCube.quaternion.copy(quaternion);
@@ -57,7 +58,6 @@ let binding = null;
 let renderer = null;
 let screenshotCapture = false;
 let camera = new THREE.PerspectiveCamera();
-let arObject = null;
 let reticle = null;
 let xrHitTestSource = null;
 
@@ -130,7 +130,6 @@ function onSessionStarted(session) {
   gl = canvas.getContext("webgl", {
     xrCompatible: true,
   });
-  arObject = new THREE.Mesh(geometry, materials);
   reticle = new THREE.Mesh(geometry, transparent);
   reticle.visible = false;
   scene.add(reticle);
@@ -233,10 +232,6 @@ function addCube() {
       quaternion: { w: reticle.quaternion.w, x: reticle.quaternion.x, y: reticle.quaternion.y, z: reticle.quaternion.z },
     });
     console.log(reticle.position, reticle.quaternion);
-    let newCube = arObject.clone();
-    newCube.position.copy(reticle.position);
-    newCube.quaternion.copy(reticle.quaternion);
-    scene.add(newCube);
   }
 }
 
