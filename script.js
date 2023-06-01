@@ -1,6 +1,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
+let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
+let materials = [];
+for (let i = 0; i < colors.length; i++) {
+  materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
+}
+let geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.3, color: 0x00ff00 });
+
 const firebaseConfig = {
   apiKey: "AIzaSyAMZuXaEq8himScCF7JyyNV3TCtl76TR7c",
   authDomain: "posicao-sensorial.firebaseapp.com",
@@ -28,14 +36,6 @@ onValue(objectsRef, (snapshot) => {
   });
   drawCubes = true
 });
-
-let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
-let materials = [];
-for (let i = 0; i < colors.length; i++) {
-  materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
-}
-let geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.3, color: 0x00ff00 });
 
 let allObjects = [];
 const xCoord = document.getElementById("xcoord");
