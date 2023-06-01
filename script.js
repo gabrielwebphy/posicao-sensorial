@@ -104,7 +104,8 @@ function onSessionStarted(session) {
   arObject = new THREE.Mesh(geometry, materials);
   let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.6, color: 0x00ff00 })
   reticle = new THREE.Mesh(geometry, transparent)
-
+  reticle.visible = false
+  scene.add(reticle)
   camera = new THREE.PerspectiveCamera();
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
@@ -156,7 +157,6 @@ function onXRFrame(time, frame) {
 
   let pose = frame.getViewerPose(xrRefSpace);
   reticle.visible = false
-
   if (pose) {
     if (xrHitTestSource) {
       let hitTestResults = frame.getHitTestResults(xrHitTestSource);
@@ -170,6 +170,7 @@ function onXRFrame(time, frame) {
         position.setFromMatrixPosition(newMatrix);
         reticle.position.copy(position)
         reticle.quaternion.copy(quaternion)
+        console.log('0', reticle);
       }
     }
 
@@ -199,15 +200,16 @@ function onXRFrame(time, frame) {
   }
 }
 
-function addCubeAt(matrix) {
+function addCube() {
   let newCube = arObject.clone();
-  newCube.visible = true;
-  newCube.matrix = matrix;
+  newCube.position.copy(reticle.position)
+  newCube.quaternion.copy(reticle.quaternion)
   scene.add(newCube);
 }
 function addCube() {
   if (reticle.visible) {
-    addCubeAt(reticle.matrix);
+    console.log('1', reticle);
+    addCube();
   }
 }
 
