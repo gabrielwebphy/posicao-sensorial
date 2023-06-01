@@ -7,6 +7,7 @@ let xrButton = document.getElementById("ar-button");
 let SSButton = document.getElementById("ss-button");
 let xrSession = null;
 let xrRefSpace = null;
+let xrViewerSpace = null;
 let gl = null;
 let binding = null;
 let renderer = null;
@@ -15,6 +16,10 @@ let camera = null;
 let scene = null;
 let cube = null;
 let sphere = null;
+let loader = null;
+let arObject = null
+let reticle = null;
+let xrHitTestSource = null;
 let raycaster = new THREE.Raycaster();
 
 SSButton.addEventListener("click", downloadImage);
@@ -22,22 +27,22 @@ SSButton.addEventListener("click", downloadImage);
 // Função para virar a imagem da câmera verticalmente (ela vem invertida)
 function flipImageVertically(imageData) {
   const { width, height, data } = imageData;
-  
+
   for (let y = 0; y < height / 2; y++) {
-      for (let x = 0; x < width; x++) {
-          const topPixelIndex = (y * width + x) * 4;
-          const bottomPixelIndex = ((height - y - 1) * width + x) * 4;
-          
-          // Swap the pixel values for R, G, B, and A channels
-          swapPixels(data, topPixelIndex, bottomPixelIndex);
-      }
+    for (let x = 0; x < width; x++) {
+      const topPixelIndex = (y * width + x) * 4;
+      const bottomPixelIndex = ((height - y - 1) * width + x) * 4;
+
+      // Swap the pixel values for R, G, B, and A channels
+      swapPixels(data, topPixelIndex, bottomPixelIndex);
+    }
   }
 }
 function swapPixels(data, indexA, indexB) {
   for (let i = 0; i < 4; i++) {
-      const temp = data[indexA + i];
-      data[indexA + i] = data[indexB + i];
-      data[indexB + i] = temp;
+    const temp = data[indexA + i];
+    data[indexA + i] = data[indexB + i];
+    data[indexB + i] = temp;
   }
 }
 
@@ -66,7 +71,7 @@ function onButtonClicked() {
   if (!xrSession) {
     navigator.xr
       .requestSession("immersive-ar", {
-        requiredFeatures: ["camera-access"],
+        requiredFeatures: ["camera-access, hit-test"],
         optionalFeatures: ["dom-overlay"],
         domOverlay: { root: document.getElementById("overlay") },
       })
@@ -78,6 +83,7 @@ function onButtonClicked() {
 
 // Quando a sessão AR é iniciada
 function onSessionStarted(session) {
+  session.addEventListener('select', onSelect)
   xrSession = session;
   xrButton.innerHTML = "Parar WebXR";
   session.addEventListener("end", onSessionEnded);
@@ -87,31 +93,17 @@ function onSessionStarted(session) {
     xrCompatible: true,
   });
   scene = new THREE.Scene();
-  const loader = new THREE.GLTFLoader();
-  loader.load("./textures/apart_06.glb", (object) => {
-    object.scene.position.y = -1.5;
-    scene.add(object.scene);
-  });
+  loader = new THREE.GLTFLoader();
+
   let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
   let materials = [];
   for (let i = 0; i < colors.length; i++) {
     materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
   }
   let geometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
-  cube = new THREE.Mesh(geometry, materials);
-  cube.position.z = -2;
-  scene.add(cube);
-  let sphereMaterial = new THREE.MeshBasicMaterial({
-    color: 0x00ff00, // Green color
-    transparent: true,
-    opacity: 0.5,
-  });
-  geometry = new THREE.SphereGeometry(0.15, 32, 32);
-  sphere = new THREE.Mesh(geometry, sphereMaterial);
-  sphere.position.x = -0.8;
-  sphere.position.y = -0.3;
-  sphere.position.z = -1.1;
-  scene.add(sphere);
+  arObject = new THREE.Mesh(geometry, materials);
+  let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.4, color: 0x00ff00 })
+  reticle = new THREE.Mesh(geometry, transparent)
 
   camera = new THREE.PerspectiveCamera();
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
@@ -126,6 +118,12 @@ function onSessionStarted(session) {
   camera.matrixAutoUpdate = false;
   binding = new XRWebGLBinding(session, gl);
   session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
+  session.requestReferenceSpace('viewer').then((refSpace) => {
+    xrViewerSpace = refSpace;
+    session.requestHitTestSource({ space: xrViewerSpace }).then((hitTestSource) => {
+      xrHitTestSource = hitTestSource;
+    });
+  });
   session.requestReferenceSpace("local").then((refSpace) => {
     xrRefSpace = refSpace;
     session.requestAnimationFrame(onXRFrame); // Chamando a função a cada frame
@@ -138,6 +136,7 @@ function onRequestSessionError(ex) {
 }
 
 function onSessionEnded(event) {
+  xrHitTestSource = null;
   xrSession = null;
   xrButton.innerHTML = "Começar WebXR";
   gl = null;
@@ -150,25 +149,22 @@ function downloadImage() {
 // Função que roda a cada frame
 function onXRFrame(time, frame) {
   renderer.render(scene, camera);
-  raycaster.setFromCamera({ x: 0, y: 0 }, camera);
-  let intersects = raycaster.intersectObjects(scene.children, true);
-  if (intersects.length > 0) {
-    if (intersects[0].object === sphere) {
-      sphere.material.color.set(0xff0000);
-    } else {
-      sphere.material.color.set(0x00ff00);
-    }
-  } else {
-    sphere.material.color.set(0x00ff00);
-  }
-
+  reticle.visible = false
   let session = frame.session;
-  // Precisa ser essa função para animar a cada frame, não pode ser window.requestAnimationFrame()
   session.requestAnimationFrame(onXRFrame);
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
 
   let pose = frame.getViewerPose(xrRefSpace);
+
+  if (xrHitTestSource && pose) {
+    let hitTestResults = frame.getHitTestResults(xrHitTestSource);
+    if (hitTestResults.length > 0) {
+      let pose = hitTestResults[0].getPose(xrRefSpace);
+      reticle.visible = true;
+      reticle.matrix = pose.transform.matrix;
+    }
+  }
 
   if (pose) {
     const firstView = pose.views[0];
@@ -197,6 +193,18 @@ function onXRFrame(time, frame) {
     xCoord.innerHTML = "No pose";
     yCoord.innerHTML = "No pose";
     zCoord.innerHTML = "No pose";
+  }
+}
+
+function addARObjectAt(matrix) {
+  let newCube = arObject.clone();
+  newCube.visible = true;
+  newCube.matrix = matrix;
+  scene.add(newCube);
+}
+function onSelect(event) {
+  if (reticle.visible) {
+    addARObjectAt(reticle.matrix);
   }
 }
 
