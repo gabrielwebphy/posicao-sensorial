@@ -27,6 +27,7 @@ onValue(objectsRef, (snapshot) => {
     let quaternion = new THREE.Quaternion().fromArray([objData.quaternion.x, objData.quaternion.y, objData.quaternion.z, objData.quaternion.w]);
     newCube.position.set(objData.position.x, objData.position.y, objData.position.z);
     newCube.quaternion.copy(quaternion);
+    console.log(newCube);
     allObjects.push(newCube);
     scene.add(newCube);
   });
@@ -132,6 +133,7 @@ function onSessionStarted(session) {
     xrCompatible: true,
   });
   allObjects.forEach((obj) => {
+    console.log(obj);
     scene.add(obj);
   });
   arObject = new THREE.Mesh(geometry, materials);
