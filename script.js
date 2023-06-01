@@ -164,7 +164,8 @@ function onXRFrame(time, frame) {
         console.log('tem hit');
         let target = hitTestResults[0].getPose(xrRefSpace);
         reticle.visible = true;
-        reticle.matrix = new THREE.Matrix4();
+        reticle.matrix = new THREE.Matrix3();
+        console.log(target.transform.matrix);
         reticle.matrix.copy(target.transform.matrix);
       }
     }
