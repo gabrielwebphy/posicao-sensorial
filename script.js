@@ -201,15 +201,12 @@ function onXRFrame(time, frame) {
 }
 
 function addCube() {
-  let newCube = arObject.clone();
-  newCube.position.copy(reticle.position)
-  newCube.quaternion.copy(reticle.quaternion)
-  scene.add(newCube);
-}
-function addCube() {
   if (reticle.visible) {
     console.log('1', reticle);
-    addCube();
+    let newCube = arObject.clone();
+    newCube.position.copy(reticle.position)
+    newCube.quaternion.copy(reticle.quaternion)
+    scene.add(newCube);
   }
 }
 
