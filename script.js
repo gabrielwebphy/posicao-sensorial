@@ -164,8 +164,12 @@ function onXRFrame(time, frame) {
         let target = hitTestResults[0].getPose(xrRefSpace);
         reticle.visible = true;
         let newMatrix = new THREE.Matrix4().fromArray(target.transform.matrix)
-        reticle.matrix.copy(newMatrix);
-        reticle.updateMatrixWorld(true);
+        let quaternion = new THREE.Quaternion();
+        quaternion.setFromRotationMatrix(newMatrix)
+        let position = new THREE.Vector3();
+        position.setFromMatrixPosition(newMatrix);
+        reticle.position.copy(position)
+        reticle.quaternion.copy(quaternion)
       }
     }
 
