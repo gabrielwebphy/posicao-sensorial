@@ -175,9 +175,6 @@ function onXRFrame(time, frame) {
     camera.projectionMatrix.fromArray(firstView.projectionMatrix);
     camera.updateMatrixWorld(true);
 
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-
     for (let view of pose.views) {
       if (view.camera && screenshotCapture) {
         const cameraTexture = binding.getCameraImage(view.camera);
