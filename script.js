@@ -1,3 +1,20 @@
+import { initializeApp } from "firebase/app";
+import { getDatabase } from "firebase/database";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAMZuXaEq8himScCF7JyyNV3TCtl76TR7c",
+  authDomain: "posicao-sensorial.firebaseapp.com",
+  databaseURL: "https://posicao-sensorial-default-rtdb.firebaseio.com",
+  projectId: "posicao-sensorial",
+  storageBucket: "posicao-sensorial.appspot.com",
+  messagingSenderId: "880971324399",
+  appId: "1:880971324399:web:c16bf72ba5aaa73949b41a"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
 const xCoord = document.getElementById("xcoord");
 const yCoord = document.getElementById("ycoord");
 const zCoord = document.getElementById("zcoord");
