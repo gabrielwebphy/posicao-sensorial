@@ -141,12 +141,26 @@ function onSessionStarted(session) {
   gl = canvas.getContext("webgl", {
     xrCompatible: true,
   });
+  const material = new THREE.LineBasicMaterial({
+    color: 0x0000ff
+  });
+  
+  const points = [
+    new THREE.Vector3( - 0.1, 0, -0.1 ),
+    new THREE.Vector3( 0.1, 0, -0.1 ),
+    new THREE.Vector3( 0.1, 0, 0.1 ),
+    new THREE.Vector3(  -0.1, 0, 0.1 ),
+    new THREE.Vector3( - 0.1, 0, -0.1 ),
+  ];
+
+  const geometry = new THREE.BufferGeometry().setFromPoints( points );
+
+  calibrateReticle = new THREE.Line( geometry, material );
   reticle = new THREE.Mesh(geometry, transparent);
   reticleWireframe = new THREE.Mesh(geometry, wireframe);
   reticle.visible = false;
-  function addCube() {}
   reticleWireframe.visible = false;
-  scene.add(reticle, reticleWireframe);
+  scene.add(reticle, reticleWireframe, calibrateReticle);
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
   renderer = new THREE.WebGLRenderer({
