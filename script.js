@@ -63,6 +63,7 @@ let reticle = null;
 let calibrateReticle = null;
 let reticleWireframe = null;
 let xrHitTestSource = null;
+let marker = null
 
 SSButton.addEventListener("click", downloadImage);
 calibrateButton.addEventListener("click", changeCalibrationMode);
@@ -154,7 +155,8 @@ function onSessionStarted(session) {
   ];
 
   const geometry = new THREE.BufferGeometry().setFromPoints( points );
-
+  marker = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), new THREE.MeshStandardMaterial({transparent:true, opacity:0.75, color: 0x00ff00}))
+  scene.add(marker)
   calibrateReticle = new THREE.Line( geometry, material );
   reticle = new THREE.Mesh(geometry, transparent);
   reticleWireframe = new THREE.Mesh(geometry, wireframe);
@@ -277,6 +279,8 @@ function calibrateWorld(){
   if(calibrateReticle.visible){
     worldPosition = calibrateReticle.position
     worldQuaternion = calibrateReticle.quaternion
+    marker.position.set(worldPosition.x, worldPosition.y, worldPosition.z)
+    marker.quaternion.copy(worldQuaternion)
     allObjects.forEach(obj => {
       scene.remove(obj);
       drawCube(obj)
