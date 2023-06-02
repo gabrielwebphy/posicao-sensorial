@@ -71,8 +71,9 @@ calibrateButton.addEventListener("click", changeCalibrationMode);
 function drawCube(data) {
   const newCube = arObject.clone();
   let quaternion = new THREE.Quaternion().fromArray([data.quaternion.x, data.quaternion.y, data.quaternion.z, data.quaternion.w]);
-  newCube.position.set(data.position.x - worldPosition.x, data.position.y - worldPosition.y, data.position.z - worldPosition.z);
-  newCube.quaternion.copy(worldQuaternion.multiply(quaternion));
+  let offsetPosition = obj.position.clone().sub(worldPosition);
+  newCube.position.set(offsetPosition.x, offsetPosition.y, offsetPosition.z);
+  newCube.quaternion.copy(quaternion.clone().premultiply(worldQuaternion));
   scene.add(newCube);
 }
 
@@ -281,9 +282,12 @@ function calibrateWorld(){
     worldQuaternion = calibrateReticle.quaternion
     marker.position.set(worldPosition.x, worldPosition.y, worldPosition.z)
     marker.quaternion.copy(worldQuaternion)
+  
     allObjects.forEach(obj => {
-      scene.remove(obj);
-      drawCube(obj)
+      const offsetPosition = obj.position.clone().sub(worldPosition);
+      const offsetQuaternion = obj.quaternion.clone().premultiply(worldQuaternion);
+      obj.position.copy(offsetPosition);
+      obj.quaternion.copy(offsetQuaternion);
     })
   }
 }
@@ -318,7 +322,7 @@ function createImageFromTexture(gl, texture, width, height) {
 
 function changeCalibrationMode() {
   calibrateMode = !calibrateMode;
-  calibrateButton.innerHTML = calibrateMode ? "Calibrar posição" : "Alternar para calibração";
+  calibrateButton.innerHTML = calibrateMode ? "Modo atual: Calibração" : "Modo atual: Adicionar cubos";
 }
 
 initXR();
