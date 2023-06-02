@@ -70,10 +70,12 @@ calibrateButton.addEventListener("click", changeCalibrationMode);
 
 function drawCube(data) {
   const newCube = arObject.clone();
-  let quaternion = new THREE.Quaternion().fromArray([data.quaternion.x, data.quaternion.y, data.quaternion.z, data.quaternion.w]);
-  let offsetPosition = obj.position.clone().sub(worldPosition);
-  newCube.position.set(offsetPosition.x, offsetPosition.y, offsetPosition.z);
-  newCube.quaternion.copy(quaternion.clone().premultiply(worldQuaternion));
+  let newQuaternion = new THREE.Quaternion().fromArray([data.quaternion.x, data.quaternion.y, data.quaternion.z, data.quaternion.w]);
+  let offsetQuaternion = newQuaternion.clone().premultiply(worldQuaternion)
+  let newPosition = new THREE.Vector3(data.position.x, data.position.y, data.position.z)
+  let offsetPosition = newPosition.clone().sub(worldPosition);
+  newCube.position.copy(offsetPosition)
+  newCube.quaternion.copy(offsetQuaternion);
   scene.add(newCube);
 }
 
