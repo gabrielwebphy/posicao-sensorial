@@ -155,11 +155,11 @@ function onSessionStarted(session) {
 
   const points = [new THREE.Vector3(-0.1, 0, -0.1), new THREE.Vector3(0.1, 0, -0.1), new THREE.Vector3(0.1, 0, 0.1), new THREE.Vector3(-0.1, 0, 0.1), new THREE.Vector3(-0.1, 0, -0.1)];
 
-  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
   marker = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.5, 0.1), new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.5, color: 0xff00ff }));
   marker.position.y = 0.25;
   scene.add(marker);
-  calibrateReticle = new THREE.Line(geometry, material);
+  calibrateReticle = new THREE.Line(lineGeometry, material);
   reticle = new THREE.Mesh(geometry, transparent);
   reticleWireframe = new THREE.Mesh(geometry, wireframe);
   reticle.visible = false;
