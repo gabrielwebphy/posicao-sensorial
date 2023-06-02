@@ -8,10 +8,13 @@ for (let i = 0; i < colors.length; i++) {
 }
 let geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
 let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.25, color: 0x00ff00 });
-let wireframe = new THREE.MeshStandardMaterial({wireframe:true, color: 0x00ff00})
+let wireframe = new THREE.MeshStandardMaterial({ wireframe: true, color: 0x00ff00 });
 let scene = new THREE.Scene();
 let allObjects = [];
 let arObject = new THREE.Mesh(geometry, materials);
+let worldQuaternion = new THREE.Quaternion();
+let worldPosition = new THREE.Vector3();
+let calibrateMode = true;
 
 const firebaseConfig = {
   apiKey: "AIzaSyAMZuXaEq8himScCF7JyyNV3TCtl76TR7c",
@@ -28,19 +31,15 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const objectsRef = ref(database, "sala1/objects");
 onValue(objectsRef, (snapshot) => {
-  allObjects.forEach(obj => {
-    scene.remove(obj)
-  })
+  allObjects.forEach((obj) => {
+    scene.remove(obj);
+  });
   const data = snapshot.val();
   allObjects = [];
   Object.entries(data).forEach((objArray) => {
     const objData = objArray[1];
-    const newCube = arObject.clone()
-    let quaternion = new THREE.Quaternion().fromArray([objData.quaternion.x, objData.quaternion.y, objData.quaternion.z, objData.quaternion.w]);
-    newCube.position.set(objData.position.x, objData.position.y, objData.position.z);
-    newCube.quaternion.copy(quaternion);
+    drawCube(objData);
     allObjects.push(newCube);
-    scene.add(newCube)
   });
 });
 
@@ -51,6 +50,7 @@ const myCanvas = document.getElementById("myCanvas");
 const ctx = myCanvas.getContext("2d");
 let xrButton = document.getElementById("ar-button");
 let SSButton = document.getElementById("ss-button");
+let calibrateButton = document.getElementById("calibrate-button");
 let xrSession = null;
 let xrRefSpace = null;
 let xrViewerSpace = null;
@@ -60,10 +60,20 @@ let renderer = null;
 let screenshotCapture = false;
 let camera = new THREE.PerspectiveCamera();
 let reticle = null;
-let reticleWireframe = null
+let calibrateReticle = null;
+let reticleWireframe = null;
 let xrHitTestSource = null;
 
 SSButton.addEventListener("click", downloadImage);
+calibrateButton.addEventListener("click", changeCalibrationMode);
+
+function drawCube(data) {
+  const newCube = arObject.clone();
+  let quaternion = new THREE.Quaternion().fromArray([data.quaternion.x, data.quaternion.y, data.quaternion.z, data.quaternion.w]);
+  newCube.position.set(data.position.x - worldPosition.x, data.position.y - worldPosition.y, data.position.z - worldPosition.z);
+  newCube.quaternion.copy(worldQuaternion.multiply(quaternion));
+  scene.add(newCube);
+}
 
 // Função para virar a imagem da câmera verticalmente (ela vem invertida)
 function flipImageVertically(imageData) {
@@ -126,7 +136,7 @@ function onSessionStarted(session) {
   xrSession = session;
   xrButton.innerHTML = "Parar WebXR";
   session.addEventListener("end", onSessionEnded);
-  session.addEventListener("select", addCube);
+  session.addEventListener("select", onTouch);
   let canvas = document.createElement("canvas");
   gl = canvas.getContext("webgl", {
     xrCompatible: true,
@@ -134,7 +144,8 @@ function onSessionStarted(session) {
   reticle = new THREE.Mesh(geometry, transparent);
   reticleWireframe = new THREE.Mesh(geometry, wireframe);
   reticle.visible = false;
-  reticleWireframe.visible = false
+  function addCube() {}
+  reticleWireframe.visible = false;
   scene.add(reticle, reticleWireframe);
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
@@ -186,23 +197,30 @@ function onXRFrame(time, frame) {
 
   let pose = frame.getViewerPose(xrRefSpace);
   reticle.visible = false;
-  reticleWireframe.visible = false
+  calibrateReticle.visible = false;
+  reticleWireframe.visible = false;
   if (pose) {
     if (xrHitTestSource) {
       let hitTestResults = frame.getHitTestResults(xrHitTestSource);
       if (hitTestResults.length > 0) {
         let target = hitTestResults[0].getPose(xrRefSpace);
-        reticle.visible = true;
-        reticleWireframe.visible = true
         let newMatrix = new THREE.Matrix4().fromArray(target.transform.matrix);
         let quaternion = new THREE.Quaternion();
         quaternion.setFromRotationMatrix(newMatrix);
         let position = new THREE.Vector3();
         position.setFromMatrixPosition(newMatrix);
-        reticle.position.copy(position);
-        reticle.quaternion.copy(quaternion);
-        reticleWireframe.position.copy(position);
-        reticleWireframe.quaternion.copy(quaternion);
+        if (calibrateMode) {
+          calibrateReticle.visible = true;
+          calibrateReticle.position.copy(position);
+          calibrateReticle.quaternion.copy(quaternion);
+        } else {
+          reticle.visible = true;
+          reticleWireframe.visible = true;
+          reticle.position.copy(position);
+          reticle.quaternion.copy(quaternion);
+          reticleWireframe.position.copy(position);
+          reticleWireframe.quaternion.copy(quaternion);
+        }
       }
     }
 
@@ -232,6 +250,26 @@ function onXRFrame(time, frame) {
   }
 }
 
+function onTouch() {
+  if(calibrateMode){
+    calibrateWorld()
+  }
+  else{
+    addCube()
+  }
+}
+
+function calibrateWorld(){
+  if(calibrateReticle.visible){
+    worldPosition = calibrateReticle.position
+    worldQuaternion = calibrateReticle.quaternion
+    allObjects.forEach(obj => {
+      scene.remove(obj);
+      drawCube(obj)
+    })
+  }
+}
+
 function addCube() {
   if (reticle.visible) {
     set(ref(database, "sala1/objects/" + String(Math.floor(Math.random() * 100000))), {
@@ -258,6 +296,11 @@ function createImageFromTexture(gl, texture, width, height) {
   imageData.data.set(data);
   flipImageVertically(imageData);
   ctx.putImageData(imageData, 0, 0);
+}
+
+function changeCalibrationMode() {
+  calibrateMode = !calibrateMode;
+  calibrateButton.innerHTML = calibrateMode ? "Calibrar posição" : "Alternar para calibração";
 }
 
 initXR();
