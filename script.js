@@ -149,14 +149,14 @@ function onSessionStarted(session) {
 
   const geometry = new THREE.BufferGeometry().setFromPoints(points);
   marker = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.5, 0.1), new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.5, color: 0xff00ff }));
-  marker.position.y = 0.25
+  marker.position.y = 0.25;
   scene.add(marker);
   calibrateReticle = new THREE.Line(geometry, material);
   reticle = new THREE.Mesh(geometry, transparent);
   reticleWireframe = new THREE.Mesh(geometry, wireframe);
   reticle.visible = false;
   reticleWireframe.visible = false;
-  calibrateReticle.visible = false
+  calibrateReticle.visible = false;
   scene.add(reticle, reticleWireframe, calibrateReticle);
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
@@ -276,17 +276,14 @@ function calibrateWorld() {
     marker.position.copy(worldPosition);
     marker.quaternion.copy(worldQuaternion);
 
-    allObjects.forEach((obj) => {
-      const offsetPosition = obj.position.clone().sub(worldPosition);
-      const offsetQuaternion = obj.quaternion.clone().premultiply(worldQuaternion);
+    scene.traverse(function (object) {
+      if (object instanceof THREE.Mesh) {
+        object.position.x += worldPosition.x;
+        object.position.y += worldPosition.y;
+        object.position.z += worldPosition.z;
 
-      // Calculate the final position and quaternion by considering both offsets
-      const finalPosition = offsetPosition.clone().add(worldPosition);
-      const finalQuaternion = offsetQuaternion.clone().multiply(worldQuaternion);
-
-      obj.position.copy(finalPosition);
-      obj.quaternion.copy(finalQuaternion);
-
+        object.quaternion.multiplyQuaternions(worldQuaternion, object.quaternion);
+      }
     });
   }
 }
