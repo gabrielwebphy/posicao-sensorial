@@ -10,7 +10,8 @@ let geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
 let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.25, color: 0x00ff00 });
 let wireframe = new THREE.MeshStandardMaterial({ wireframe: true, color: 0x00ff00 });
 let scene = new THREE.Scene();
-let allObjects = [];
+let allRawObjects = [];
+let allSceneObjects = [];
 let arObject = new THREE.Mesh(geometry, materials);
 let worldQuaternion = new THREE.Quaternion();
 let worldPosition = new THREE.Vector3();
@@ -31,22 +32,29 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const objectsRef = ref(database, "sala1/objects");
 onValue(objectsRef, (snapshot) => {
-  allObjects.forEach((obj) => {
+  allSceneObjects.forEach((obj) => {
     scene.remove(obj);
   });
   const data = snapshot.val();
-  allObjects = [];
+  allRawObjects = [];
+  allSceneObjects = [];
   Object.entries(data).forEach((objArray) => {
     const objData = objArray[1];
     const newCube = arObject.clone();
-    let newQuaternion = new THREE.Quaternion().fromArray([objData.quaternion.x, objData.quaternion.y, objData.quaternion.z, objData.quaternion.w]);
-    let offsetQuaternion = newQuaternion.clone().premultiply(worldQuaternion);
-    let newPosition = new THREE.Vector3(objData.position.x, objData.position.y, objData.position.z);
-    let offsetPosition = newPosition.clone().sub(worldPosition);
-    newCube.position.copy(offsetPosition);
+    let rawQuaternion = new THREE.Quaternion().fromArray([objData.quaternion.x, objData.quaternion.y, objData.quaternion.z, objData.quaternion.w]);
+    let rawPosition = new THREE.Vector3(objData.position.x, objData.position.y, objData.position.z);
+    newCube.position.copy(rawPosition);
+    newCube.quaternion.copy(rawQuaternion);
+    allRawObjects.push(newCube);
+  });
+  allRawObjects.forEach((obj) => {
+    const newCube = obj.clone();
+    let offsetQuaternion = newCube.quaternion.clone().multiply(worldQuaternion);
+    let offsetPosition = newPosition.clone().add(worldPosition);
     newCube.quaternion.copy(offsetQuaternion);
+    newCube.position.copy(offsetPosition);
+    allSceneObjects.push(newCube);
     scene.add(newCube);
-    allObjects.push(newCube);
   });
 });
 
@@ -275,24 +283,29 @@ function calibrateWorld() {
     worldQuaternion = calibrateReticle.quaternion.clone();
     marker.position.copy(worldPosition);
     marker.quaternion.copy(worldQuaternion);
-
-    scene.traverse(function (object) {
-      if (object instanceof THREE.Mesh) {
-        object.position.x += worldPosition.x;
-        object.position.y += worldPosition.y;
-        object.position.z += worldPosition.z;
-
-        object.quaternion.multiplyQuaternions(worldQuaternion, object.quaternion);
-      }
+    allSceneObjects.forEach((obj) => {
+      scene.remove(obj);
+    });
+    allSceneObjects = [];
+    allRawObjects.forEach((obj) => {
+      const newCube = obj.clone();
+      let offsetQuaternion = newCube.quaternion.clone().multiply(worldQuaternion);
+      let offsetPosition = newPosition.clone().add(worldPosition);
+      newCube.quaternion.copy(offsetQuaternion);
+      newCube.position.copy(offsetPosition);
+      allSceneObjects.push(newCube);
+      scene.add(newCube);
     });
   }
 }
 
 function addCube() {
   if (reticle.visible) {
+    let originalQuaternion = reticle.quaternion.clone().premultiply(worldQuaternion);
+    let originalPosition = reticle.position.clone().sub(worldPosition);
     set(ref(database, "sala1/objects/" + String(Math.floor(Math.random() * 100000))), {
-      position: { x: reticle.position.x, y: reticle.position.y, z: reticle.position.z },
-      quaternion: { w: reticle.quaternion.w, x: reticle.quaternion.x, y: reticle.quaternion.y, z: reticle.quaternion.z },
+      position: { x: originalPosition.x, y: originalPosition.y, z: originalPosition.z },
+      quaternion: { w: originalQuaternion.w, x: originalQuaternion.x, y: originalQuaternion.y, z: originalQuaternion.z },
     });
   }
 }
