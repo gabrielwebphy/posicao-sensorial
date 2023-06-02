@@ -148,7 +148,8 @@ function onSessionStarted(session) {
   const points = [new THREE.Vector3(-0.1, 0, -0.1), new THREE.Vector3(0.1, 0, -0.1), new THREE.Vector3(0.1, 0, 0.1), new THREE.Vector3(-0.1, 0, 0.1), new THREE.Vector3(-0.1, 0, -0.1)];
 
   const geometry = new THREE.BufferGeometry().setFromPoints(points);
-  marker = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 0.1), new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.75, color: 0x00ff00 }));
+  marker = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.5, 0.1), new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.5, color: 0xff00ff }));
+  marker.position.y = 0.25
   scene.add(marker);
   calibrateReticle = new THREE.Line(geometry, material);
   reticle = new THREE.Mesh(geometry, transparent);
@@ -278,9 +279,14 @@ function calibrateWorld() {
     allObjects.forEach((obj) => {
       const offsetPosition = obj.position.clone().sub(worldPosition);
       const offsetQuaternion = obj.quaternion.clone().premultiply(worldQuaternion);
-      console.log(offsetPosition, offsetQuaternion);
-      obj.position.copy(offsetPosition);
-      obj.quaternion.copy(offsetQuaternion);
+
+      // Calculate the final position and quaternion by considering both offsets
+      const finalPosition = offsetPosition.clone().add(worldPosition);
+      const finalQuaternion = offsetQuaternion.clone().multiply(worldQuaternion);
+
+      obj.position.copy(finalPosition);
+      obj.quaternion.copy(finalQuaternion);
+
     });
   }
 }
