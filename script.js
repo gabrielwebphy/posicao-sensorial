@@ -38,7 +38,14 @@ onValue(objectsRef, (snapshot) => {
   allObjects = [];
   Object.entries(data).forEach((objArray) => {
     const objData = objArray[1];
-    drawCube(objData);
+    const newCube = arObject.clone();
+    let newQuaternion = new THREE.Quaternion().fromArray([objData.quaternion.x, objData.quaternion.y, objData.quaternion.z, objData.quaternion.w]);
+    let offsetQuaternion = newQuaternion.clone().premultiply(worldQuaternion);
+    let newPosition = new THREE.Vector3(objData.position.x, objData.position.y, objData.position.z);
+    let offsetPosition = newPosition.clone().sub(worldPosition);
+    newCube.position.copy(offsetPosition);
+    newCube.quaternion.copy(offsetQuaternion);
+    scene.add(newCube);
     allObjects.push(newCube);
   });
 });
@@ -63,21 +70,10 @@ let reticle = null;
 let calibrateReticle = null;
 let reticleWireframe = null;
 let xrHitTestSource = null;
-let marker = null
+let marker = null;
 
 SSButton.addEventListener("click", downloadImage);
 calibrateButton.addEventListener("click", changeCalibrationMode);
-
-function drawCube(data) {
-  const newCube = arObject.clone();
-  let newQuaternion = new THREE.Quaternion().fromArray([data.quaternion.x, data.quaternion.y, data.quaternion.z, data.quaternion.w]);
-  let offsetQuaternion = newQuaternion.clone().premultiply(worldQuaternion)
-  let newPosition = new THREE.Vector3(data.position.x, data.position.y, data.position.z)
-  let offsetPosition = newPosition.clone().sub(worldPosition);
-  newCube.position.copy(offsetPosition)
-  newCube.quaternion.copy(offsetQuaternion);
-  scene.add(newCube);
-}
 
 // Função para virar a imagem da câmera verticalmente (ela vem invertida)
 function flipImageVertically(imageData) {
@@ -146,21 +142,15 @@ function onSessionStarted(session) {
     xrCompatible: true,
   });
   const material = new THREE.LineBasicMaterial({
-    color: 0x0000ff
+    color: 0x0000ff,
   });
-  
-  const points = [
-    new THREE.Vector3( - 0.1, 0, -0.1 ),
-    new THREE.Vector3( 0.1, 0, -0.1 ),
-    new THREE.Vector3( 0.1, 0, 0.1 ),
-    new THREE.Vector3(  -0.1, 0, 0.1 ),
-    new THREE.Vector3( - 0.1, 0, -0.1 ),
-  ];
 
-  const geometry = new THREE.BufferGeometry().setFromPoints( points );
-  marker = new THREE.Mesh(new THREE.BoxGeometry(0.1,1,0.1), new THREE.MeshStandardMaterial({transparent:true, opacity:0.75, color: 0x00ff00}))
-  scene.add(marker)
-  calibrateReticle = new THREE.Line( geometry, material );
+  const points = [new THREE.Vector3(-0.1, 0, -0.1), new THREE.Vector3(0.1, 0, -0.1), new THREE.Vector3(0.1, 0, 0.1), new THREE.Vector3(-0.1, 0, 0.1), new THREE.Vector3(-0.1, 0, -0.1)];
+
+  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  marker = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1, 0.1), new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.75, color: 0x00ff00 }));
+  scene.add(marker);
+  calibrateReticle = new THREE.Line(geometry, material);
   reticle = new THREE.Mesh(geometry, transparent);
   reticleWireframe = new THREE.Mesh(geometry, wireframe);
   reticle.visible = false;
@@ -270,27 +260,26 @@ function onXRFrame(time, frame) {
 }
 
 function onTouch() {
-  if(calibrateMode){
-    calibrateWorld()
-  }
-  else{
-    addCube()
+  if (calibrateMode) {
+    calibrateWorld();
+  } else {
+    addCube();
   }
 }
 
-function calibrateWorld(){
-  if(calibrateReticle.visible){
-    worldPosition = calibrateReticle.position
-    worldQuaternion = calibrateReticle.quaternion
-    marker.position.set(worldPosition.x, worldPosition.y, worldPosition.z)
-    marker.quaternion.copy(worldQuaternion)
-  
-    allObjects.forEach(obj => {
+function calibrateWorld() {
+  if (calibrateReticle.visible) {
+    worldPosition = calibrateReticle.position;
+    worldQuaternion = calibrateReticle.quaternion;
+    marker.position.set(worldPosition.x, worldPosition.y, worldPosition.z);
+    marker.quaternion.copy(worldQuaternion);
+
+    allObjects.forEach((obj) => {
       const offsetPosition = obj.position.clone().sub(worldPosition);
       const offsetQuaternion = obj.quaternion.clone().premultiply(worldQuaternion);
       obj.position.copy(offsetPosition);
       obj.quaternion.copy(offsetQuaternion);
-    })
+    });
   }
 }
 
