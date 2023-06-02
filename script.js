@@ -155,6 +155,7 @@ function onSessionStarted(session) {
   reticleWireframe = new THREE.Mesh(geometry, wireframe);
   reticle.visible = false;
   reticleWireframe.visible = false;
+  calibrateReticle.visible = false
   scene.add(reticle, reticleWireframe, calibrateReticle);
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
@@ -269,14 +270,15 @@ function onTouch() {
 
 function calibrateWorld() {
   if (calibrateReticle.visible) {
-    worldPosition = calibrateReticle.position;
-    worldQuaternion = calibrateReticle.quaternion;
-    marker.position.set(worldPosition.x, worldPosition.y, worldPosition.z);
+    worldPosition = calibrateReticle.position.clone();
+    worldQuaternion = calibrateReticle.quaternion.clone();
+    marker.position.copy(worldPosition);
     marker.quaternion.copy(worldQuaternion);
 
     allObjects.forEach((obj) => {
       const offsetPosition = obj.position.clone().sub(worldPosition);
       const offsetQuaternion = obj.quaternion.clone().premultiply(worldQuaternion);
+      console.log(offsetPosition, offsetQuaternion);
       obj.position.copy(offsetPosition);
       obj.quaternion.copy(offsetQuaternion);
     });
