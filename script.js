@@ -301,7 +301,7 @@ function calibrateWorld() {
 
 function addCube() {
   if (reticle.visible) {
-    let originalQuaternion = worldQuaternion.clone().conjugate().multiply(reticle.quaternion.clone());
+    let originalQuaternion = reticle.quaternion.clone().multiply(worldQuaternion.clone().conjugate());
     let originalPosition = reticle.position.clone().sub(worldPosition.clone());
     set(ref(database, "sala1/objects/" + String(Math.floor(Math.random() * 100000))), {
       position: { x: originalPosition.x, y: originalPosition.y, z: originalPosition.z },
