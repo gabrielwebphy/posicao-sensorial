@@ -13,7 +13,7 @@ let scene = new THREE.Scene();
 let allRawObjects = [];
 let allSceneObjects = [];
 let arObject = new THREE.Mesh(geometry, materials);
-let worldQuaternion = new THREE.Quaternion();
+let worldQuaternion = new THREE.Quaternion().identity()
 let worldPosition = new THREE.Vector3();
 let calibrateMode = true;
 
@@ -301,7 +301,7 @@ function calibrateWorld() {
 
 function addCube() {
   if (reticle.visible) {
-    let originalQuaternion = reticle.quaternion.clone().premultiply(worldQuaternion);
+    let originalQuaternion = reticle.quaternion.clone().multiply(worldQuaternion.clone().conjugate());
     let originalPosition = reticle.position.clone().sub(worldPosition);
     set(ref(database, "sala1/objects/" + String(Math.floor(Math.random() * 100000))), {
       position: { x: originalPosition.x, y: originalPosition.y, z: originalPosition.z },
