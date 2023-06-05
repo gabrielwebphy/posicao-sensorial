@@ -49,10 +49,10 @@ onValue(objectsRef, (snapshot) => {
   });
   allRawObjects.forEach((obj) => {
     const newCube = obj.clone();
-    const positionOffset = referencePosition.clone().sub(newCube.position);
-    const quaternionOffset = referenceQuaternion.clone().multiply(newCube.quaternion.clone().inverse());
-    newCube.position.add(positionOffset);
-    newCube.quaternion.multiply(quaternionOffset);
+    let offsetQuaternion = newCube.quaternion.clone().multiply(worldQuaternion);
+    let offsetPosition = newCube.position.clone().add(worldPosition);
+    newCube.quaternion.copy(offsetQuaternion);
+    newCube.position.copy(offsetPosition);
     allSceneObjects.push(newCube);
     scene.add(newCube);
   });
@@ -289,10 +289,10 @@ function calibrateWorld() {
     allSceneObjects = [];
     allRawObjects.forEach((obj) => {
       const newCube = obj.clone();
-      const positionOffset = referencePosition.clone().sub(newCube.position);
-      const quaternionOffset = referenceQuaternion.clone().multiply(newCube.quaternion.clone().inverse());
-      newCube.position.add(positionOffset);
-      newCube.quaternion.multiply(quaternionOffset);
+      let offsetQuaternion = newCube.quaternion.clone().multiply(worldQuaternion);
+      let offsetPosition = newCube.position.clone().add(worldPosition);
+      newCube.quaternion.copy(offsetQuaternion);
+      newCube.position.copy(offsetPosition);
       allSceneObjects.push(newCube);
       scene.add(newCube);
     });
