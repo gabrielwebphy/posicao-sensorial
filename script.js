@@ -50,7 +50,7 @@ onValue(objectsRef, (snapshot) => {
   allRawObjects.forEach((obj) => {
     const newCube = obj.clone();
     let offsetQuaternion = newCube.quaternion.clone().multiply(worldQuaternion);
-    let offsetPosition = newCube.position.clone().add(worldPosition);
+    let offsetPosition = newCube.position.clone().applyQuaternion(worldQuaternion).add(worldPosition);
     newCube.quaternion.copy(offsetQuaternion);
     newCube.position.copy(offsetPosition);
     allSceneObjects.push(newCube);
@@ -290,7 +290,7 @@ function calibrateWorld() {
     allRawObjects.forEach((obj) => {
       const newCube = obj.clone();
       let offsetQuaternion = newCube.quaternion.clone().multiply(worldQuaternion);
-      let offsetPosition = newCube.position.clone().add(worldPosition);
+      let offsetPosition = newCube.position.clone().applyQuaternion(worldQuaternion).add(worldPosition);
       newCube.quaternion.copy(offsetQuaternion);
       newCube.position.copy(offsetPosition);
       allSceneObjects.push(newCube);
