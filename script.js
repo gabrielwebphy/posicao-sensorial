@@ -300,6 +300,7 @@ function calibrateWorld() {
 }
 
 function addCube() {
+  // todo: salvar posição do cubo ajustada sem o quatérnio global
   if (reticle.visible) {
     let originalQuaternion = reticle.quaternion.clone().multiply(worldQuaternion.clone().conjugate());
     let originalPosition = reticle.position.clone().sub(worldPosition);
