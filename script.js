@@ -1,20 +1,20 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
-const video = document.getElementById( 'video1' );
-const videoTexture = new THREE.VideoTexture( video );
-video.play();
-
+const video = document.getElementById("video1");
+const videoTexture = new THREE.VideoTexture(video);
+// Possível solução do bug do vídeo sem tirar acesso à câmera: Inicializar vídeo junto com a cena do three (quando webxr for iniciado)
 let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.25, color: 0x00ff00 });
 let wireframe = new THREE.MeshStandardMaterial({ wireframe: true, color: 0x00ff00 });
 let scene = new THREE.Scene();
 let allRawObjects = [];
 let allSceneObjects = [];
 const geometry = new THREE.PlaneGeometry(0.34, 0.48).rotateX(-Math.PI / 2);
-const material = new THREE.MeshBasicMaterial({ map: videoTexture, })//side: THREE.DoubleSide });
+const material = new THREE.MeshBasicMaterial({ map: videoTexture }); //side: THREE.DoubleSide });
 
 let arObject = new THREE.Mesh(geometry, material);
-let worldQuaternion = new THREE.Quaternion().identity()
+arObject.name = "videoplane";
+let worldQuaternion = new THREE.Quaternion().identity();
 let worldPosition = new THREE.Vector3();
 let calibrateMode = true;
 
@@ -73,7 +73,9 @@ let xrViewerSpace = null;
 let gl = null;
 let binding = null;
 let renderer = null;
+let intersections = false;
 let screenshotCapture = false;
+let raycaster = null;
 let camera = new THREE.PerspectiveCamera();
 let reticle = null;
 let calibrateReticle = null;
@@ -177,6 +179,8 @@ function onSessionStarted(session) {
   });
   renderer.autoClear = false;
   camera.matrixAutoUpdate = false;
+  raycaster = new THREE.Raycaster().setFromCamera(new THREE.Vector2(0, 0), camera);
+
   //binding = new XRWebGLBinding(session, gl);
   session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
   session.requestReferenceSpace("viewer").then((refSpace) => {
@@ -209,7 +213,6 @@ function downloadImage() {
 
 // Função que roda a cada frame
 function onXRFrame(time, frame) {
-  renderer.clear()
   renderer.render(scene, camera);
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
@@ -220,6 +223,7 @@ function onXRFrame(time, frame) {
   reticle.visible = false;
   calibrateReticle.visible = false;
   reticleWireframe.visible = false;
+  intersections = raycaster.intersectObjects(scene.children, true);
   if (pose) {
     if (xrHitTestSource) {
       let hitTestResults = frame.getHitTestResults(xrHitTestSource);
@@ -254,11 +258,11 @@ function onXRFrame(time, frame) {
     camera.updateMatrixWorld(true);
 
     //for (let view of pose.views) {
-      //if (view.camera && screenshotCapture) {
-        //const cameraTexture = binding.getCameraImage(view.camera);
-        //createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height);
-        //screenshotCapture = false;
-      //}
+    //if (view.camera && screenshotCapture) {
+    //const cameraTexture = binding.getCameraImage(view.camera);
+    //createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height);
+    //screenshotCapture = false;
+    //}
     //}
     const p = pose.transform.position;
     xCoord.innerHTML = "x: " + (p.x - worldPosition.x).toFixed(4);
@@ -272,6 +276,16 @@ function onXRFrame(time, frame) {
 }
 
 function onTouch() {
+  if (intersections.length) {
+    const intersectedObject = intersects[0].object;
+    if (intersectedObject.name === "videoplane") {
+      if (!videoElement.paused) {
+        video.pause();
+      } else {
+        video.play();
+      }
+    }
+  }
   if (calibrateMode) {
     calibrateWorld();
   } else {
@@ -305,7 +319,7 @@ function addCube() {
   // todo: salvar posição do cubo ajustada sem o quatérnio global
   if (reticle.visible) {
     let originalQuaternion = reticle.quaternion.clone().multiply(worldQuaternion.clone().conjugate());
-    let originalPosition = reticle.position.clone().sub(worldPosition).applyQuaternion(worldQuaternion.clone().conjugate())
+    let originalPosition = reticle.position.clone().sub(worldPosition).applyQuaternion(worldQuaternion.clone().conjugate());
     set(ref(database, "sala1/objects/" + String(Math.floor(Math.random() * 100000))), {
       position: { x: originalPosition.x, y: originalPosition.y, z: originalPosition.z },
       quaternion: { w: originalQuaternion.w, x: originalQuaternion.x, y: originalQuaternion.y, z: originalQuaternion.z },
