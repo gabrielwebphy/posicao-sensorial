@@ -339,7 +339,7 @@ function calibrateWorld() {
 function addCube() {
   // todo: salvar posição do cubo ajustada sem o quatérnio global
   if (reticle.visible) {
-    let originalQuaternion = reticle.quaternion.clone().multiply(worldQuaternion.clone().conjugate()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3( 0, 0, 1 ), Math.PI))
+    let originalQuaternion = reticle.quaternion.clone().multiply(worldQuaternion.clone().conjugate()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3( 0, 1, 0 ), Math.PI))
     let originalPosition = reticle.position.clone().sub(worldPosition).applyQuaternion(worldQuaternion.clone().conjugate());
     set(ref(database, "sala1/objects/00001"), { //+ String(Math.floor(Math.random() * 100000))), {
       position: { x: originalPosition.x, y: originalPosition.y, z: originalPosition.z },
