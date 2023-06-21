@@ -9,11 +9,21 @@ let wireframe = new THREE.MeshStandardMaterial({ wireframe: true, color: 0x00ff0
 let scene = new THREE.Scene();
 let allRawObjects = [];
 let allSceneObjects = [];
-const geometry = new THREE.PlaneGeometry(0.34, 0.48).rotateX(-Math.PI / 2);
-const material = new THREE.MeshBasicMaterial({ map: videoTexture }); //side: THREE.DoubleSide });
-let raycaster = null;
+const geometry = new THREE.BoxGeometry(0.34, 0.01, 0.48)
+const transparentMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.1 });
+const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture }); //side: THREE.DoubleSide });
 
-let arObject = new THREE.Mesh(geometry, material);
+const materials = [
+  transparentMaterial, // Face 0 (front)
+  transparentMaterial, // Face 1 (back)
+  videoMaterial, // Face 2 (top)
+  transparentMaterial, // Face 3 (bottom)
+  transparentMaterial, // Face 4 (right)
+  transparentMaterial, // Face 5 (left)
+];
+
+
+let arObject = new THREE.Mesh(geometry, materials);
 arObject.name = "videoplane";
 let worldQuaternion = new THREE.Quaternion().identity();
 let worldPosition = new THREE.Vector3();
