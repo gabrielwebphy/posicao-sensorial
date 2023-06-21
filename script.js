@@ -9,7 +9,7 @@ let scene = new THREE.Scene();
 let allRawObjects = [];
 let allSceneObjects = [];
 const geometry = new THREE.PlaneGeometry(0.34, 0.48).rotateX(-Math.PI / 2);
-const material = new THREE.MeshBasicMaterial({ map: videoTexture });
+const material = new THREE.MeshBasicMaterial({ map: videoTexture, })//side: THREE.DoubleSide });
 
 let arObject = new THREE.Mesh(geometry, material);
 let worldQuaternion = new THREE.Quaternion().identity()
@@ -207,6 +207,7 @@ function downloadImage() {
 
 // Função que roda a cada frame
 function onXRFrame(time, frame) {
+  renderer.clear()
   renderer.render(scene, camera);
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
@@ -250,13 +251,13 @@ function onXRFrame(time, frame) {
     camera.projectionMatrix.fromArray(firstView.projectionMatrix);
     camera.updateMatrixWorld(true);
 
-    for (let view of pose.views) {
-      if (view.camera && screenshotCapture) {
-        const cameraTexture = binding.getCameraImage(view.camera);
-        createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height);
-        screenshotCapture = false;
-      }
-    }
+    //for (let view of pose.views) {
+      //if (view.camera && screenshotCapture) {
+        //const cameraTexture = binding.getCameraImage(view.camera);
+        //createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height);
+        //screenshotCapture = false;
+      //}
+    //}
     const p = pose.transform.position;
     xCoord.innerHTML = "x: " + (p.x - worldPosition.x).toFixed(4);
     yCoord.innerHTML = "y: " + (p.y - worldPosition.y).toFixed(4);
