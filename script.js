@@ -1,12 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
-const video = document.createElement('video');
-video.src = 'video.mp4';
-video.loop = true;
+const video = document.getElementById( 'video1' );
+const videoTexture = new THREE.VideoTexture( video );
 video.play();
 
-const videoTexture = new THREE.VideoTexture( video );
 let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.25, color: 0x00ff00 });
 let wireframe = new THREE.MeshStandardMaterial({ wireframe: true, color: 0x00ff00 });
 let scene = new THREE.Scene();
