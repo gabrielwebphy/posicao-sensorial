@@ -130,7 +130,7 @@ function onButtonClicked() {
   if (!xrSession) {
     navigator.xr
       .requestSession("immersive-ar", {
-        requiredFeatures: ["camera-access", "hit-test", "local"],
+        requiredFeatures: [/*"camera-access",*/ "hit-test", "local"],
         optionalFeatures: ["dom-overlay"],
         domOverlay: { root: document.getElementById("overlay") },
       })
@@ -177,7 +177,7 @@ function onSessionStarted(session) {
   });
   renderer.autoClear = false;
   camera.matrixAutoUpdate = false;
-  binding = new XRWebGLBinding(session, gl);
+  //binding = new XRWebGLBinding(session, gl);
   session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
   session.requestReferenceSpace("viewer").then((refSpace) => {
     xrViewerSpace = refSpace;
@@ -214,7 +214,7 @@ function onXRFrame(time, frame) {
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
 
-  gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+  //gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
 
   let pose = frame.getViewerPose(xrRefSpace);
   reticle.visible = false;
