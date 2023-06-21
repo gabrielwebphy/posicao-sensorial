@@ -278,7 +278,7 @@ function onXRFrame(time, frame) {
 }
 
 function onPause(){
-  if (!videoElement.paused) {
+  if (!video.paused) {
     video.pause();
   }
   else{
