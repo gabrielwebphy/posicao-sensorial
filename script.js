@@ -331,7 +331,7 @@ function addCube() {
   if (reticle.visible) {
     let originalQuaternion = reticle.quaternion.clone().multiply(worldQuaternion.clone().conjugate());
     let originalPosition = reticle.position.clone().sub(worldPosition).applyQuaternion(worldQuaternion.clone().conjugate());
-    set(ref(database, "sala1/objects/" + String(Math.floor(Math.random() * 100000))), {
+    set(ref(database, "sala1/objects/00001"), { //+ String(Math.floor(Math.random() * 100000))), {
       position: { x: originalPosition.x, y: originalPosition.y, z: originalPosition.z },
       quaternion: { w: originalQuaternion.w, x: originalQuaternion.x, y: originalQuaternion.y, z: originalQuaternion.z },
     });
