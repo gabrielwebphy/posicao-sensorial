@@ -78,7 +78,7 @@ const pauseButton = document.getElementById("pause-button")
 pauseButton.addEventListener('click', onPause)
 const ctx = myCanvas.getContext("2d");
 let xrButton = document.getElementById("ar-button");
-let SSButton = document.getElementById("ss-button");
+//let SSButton = document.getElementById("ss-button");
 let calibrateButton = document.getElementById("calibrate-button");
 let xrSession = null;
 let xrRefSpace = null;
@@ -95,7 +95,7 @@ let reticleWireframe = null;
 let xrHitTestSource = null;
 let marker = null;
 
-SSButton.addEventListener("click", downloadImage);
+//SSButton.addEventListener("click", downloadImage);
 calibrateButton.addEventListener("click", changeCalibrationMode);
 
 // Função para virar a imagem da câmera verticalmente (ela vem invertida)
