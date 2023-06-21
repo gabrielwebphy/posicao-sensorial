@@ -191,7 +191,7 @@ function onSessionStarted(session) {
   });
   renderer.autoClear = false;
   camera.matrixAutoUpdate = false;
-  raycaster = new THREE.Raycaster().setFromCamera(new THREE.Vector2(0, 0), camera);
+  //raycaster = new THREE.Raycaster().setFromCamera(new THREE.Vector2(0, 0), camera);
 
   //binding = new XRWebGLBinding(session, gl);
   session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
