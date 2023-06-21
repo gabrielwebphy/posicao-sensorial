@@ -28,6 +28,7 @@ arObject.name = "videoplane";
 let worldQuaternion = new THREE.Quaternion().identity();
 let worldPosition = new THREE.Vector3();
 let calibrateMode = true;
+let worldYRotation = 0
 
 const firebaseConfig = {
   apiKey: "AIzaSyAMZuXaEq8himScCF7JyyNV3TCtl76TR7c",
@@ -75,6 +76,7 @@ const yCoord = document.getElementById("ycoord");
 const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
 const pauseButton = document.getElementById("pause-button")
+const rotateButton = document.getElementById("rotate-button")
 pauseButton.addEventListener('click', onPause)
 const ctx = myCanvas.getContext("2d");
 let xrButton = document.getElementById("ar-button");
@@ -94,7 +96,7 @@ let calibrateReticle = null;
 let reticleWireframe = null;
 let xrHitTestSource = null;
 let marker = null;
-
+rotateButton.addEventListener('click', adjustYRotation)
 //SSButton.addEventListener("click", downloadImage);
 calibrateButton.addEventListener("click", changeCalibrationMode);
 
@@ -339,13 +341,18 @@ function calibrateWorld() {
 function addCube() {
   // todo: salvar posição do cubo ajustada sem o quatérnio global
   if (reticle.visible) {
-    let originalQuaternion = reticle.quaternion.clone().multiply(worldQuaternion.clone().conjugate()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3( 0, 1, 0 ), Math.PI))
+    let originalQuaternion = reticle.quaternion.clone().multiply(worldQuaternion.clone().conjugate()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3( 0, 1, 0 ), worldYRotation))
     let originalPosition = reticle.position.clone().sub(worldPosition).applyQuaternion(worldQuaternion.clone().conjugate());
     set(ref(database, "sala1/objects/00001"), { //+ String(Math.floor(Math.random() * 100000))), {
       position: { x: originalPosition.x, y: originalPosition.y, z: originalPosition.z },
       quaternion: { w: originalQuaternion.w, x: originalQuaternion.x, y: originalQuaternion.y, z: originalQuaternion.z },
     });
   }
+}
+
+function adjustYRotation(){
+  worldYRotation += Math.PI/36
+  reticle.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI/36))
 }
 
 // Passar a textura WebGL para imagem para mostrar no celular
