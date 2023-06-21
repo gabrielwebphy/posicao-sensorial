@@ -64,6 +64,8 @@ const xCoord = document.getElementById("xcoord");
 const yCoord = document.getElementById("ycoord");
 const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
+const pauseButton = document.getElementById("pause-button")
+pauseButton.addEventListener('click', onPause)
 const ctx = myCanvas.getContext("2d");
 let xrButton = document.getElementById("ar-button");
 let SSButton = document.getElementById("ss-button");
@@ -74,7 +76,7 @@ let xrViewerSpace = null;
 let gl = null;
 let binding = null;
 let renderer = null;
-let intersections = false;
+let intersections = [];
 let screenshotCapture = false;
 let camera = new THREE.PerspectiveCamera();
 let reticle = null;
@@ -223,7 +225,7 @@ function onXRFrame(time, frame) {
   reticle.visible = false;
   calibrateReticle.visible = false;
   reticleWireframe.visible = false;
-  intersections = raycaster.intersectObjects(scene.children, true);
+  //intersections = raycaster.intersectObjects(scene.children, true);
   if (pose) {
     if (xrHitTestSource) {
       let hitTestResults = frame.getHitTestResults(xrHitTestSource);
@@ -272,6 +274,15 @@ function onXRFrame(time, frame) {
     xCoord.innerHTML = "No pose";
     yCoord.innerHTML = "No pose";
     zCoord.innerHTML = "No pose";
+  }
+}
+
+function onPause(){
+  if (!videoElement.paused) {
+    video.pause();
+  }
+  else{
+    video.play()
   }
 }
 

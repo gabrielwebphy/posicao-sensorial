@@ -7,6 +7,11 @@
     content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
   <title>Hello WebXR!</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.147.0/three.js"></script>
+  <style>
+    button{
+      font-size: 25px;
+    }
+  </style>
 </head>
 
 <body>
@@ -18,10 +23,11 @@
   <div id="overlay">
     <div style="width: 100vw; height: 100vh; padding-top: 30px; border: 2px solid #fff; position: relative;">
       <!-- padding top padrão de ~30px -->
-      <div style="color: #fff; display: flex; flex-direction: column; align-items: start; gap: 10px;">
+      <div style="color: #fff; display: flex; flex-direction: column; align-items: start; gap: 10px; flex-wrap: wrap;">
         <div style="display: flex; gap: 5px;">
           <button id="ar-button">Começar WebXR</button>
           <button id="ss-button">Imagem atual</button>
+          <button id="pause-button">Pausar vídeo</button>
           <button id="calibrate-button">Modo atual: Calibração</button>
         </div>
         <div>Sala 1</div>
