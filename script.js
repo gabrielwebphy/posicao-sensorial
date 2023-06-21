@@ -259,9 +259,9 @@ function onXRFrame(time, frame) {
       }
     }
     const p = pose.transform.position;
-    xCoord.innerHTML = "x: " + p.x.toFixed(4);
-    yCoord.innerHTML = "y: " + p.y.toFixed(4);
-    zCoord.innerHTML = "z: " + p.z.toFixed(4);
+    xCoord.innerHTML = "x: " + (p.x - worldPosition.x).toFixed(4);
+    yCoord.innerHTML = "y: " + (p.y - worldPosition.y).toFixed(4);
+    zCoord.innerHTML = "z: " + (p.z - worldPosition.z).toFixed(4);
   } else {
     xCoord.innerHTML = "No pose";
     yCoord.innerHTML = "No pose";
