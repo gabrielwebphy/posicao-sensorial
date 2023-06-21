@@ -1,18 +1,17 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
-let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
-let materials = [];
-for (let i = 0; i < colors.length; i++) {
-  materials.push(new THREE.MeshBasicMaterial({ color: colors[i] }));
-}
-let geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+const video = document.getElementById( 'video1' );
+const videoTexture = new THREE.VideoTexture( video );
 let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.25, color: 0x00ff00 });
 let wireframe = new THREE.MeshStandardMaterial({ wireframe: true, color: 0x00ff00 });
 let scene = new THREE.Scene();
 let allRawObjects = [];
 let allSceneObjects = [];
-let arObject = new THREE.Mesh(geometry, materials);
+const geometry = new THREE.PlaneGeometry(2, 2);
+const material = new THREE.MeshBasicMaterial({ map: videoTexture });
+
+let arObject = new THREE.Mesh(geometry, material);
 let worldQuaternion = new THREE.Quaternion().identity()
 let worldPosition = new THREE.Vector3();
 let calibrateMode = true;
@@ -62,8 +61,6 @@ const xCoord = document.getElementById("xcoord");
 const yCoord = document.getElementById("ycoord");
 const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
-const video = document.getElementById( 'video1' );
-const videoTexture = new THREE.VideoTexture( video );
 const ctx = myCanvas.getContext("2d");
 let xrButton = document.getElementById("ar-button");
 let SSButton = document.getElementById("ss-button");
