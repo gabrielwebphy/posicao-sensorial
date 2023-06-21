@@ -8,7 +8,7 @@ let wireframe = new THREE.MeshStandardMaterial({ wireframe: true, color: 0x00ff0
 let scene = new THREE.Scene();
 let allRawObjects = [];
 let allSceneObjects = [];
-const geometry = new THREE.PlaneGeometry(2, 2);
+const geometry = new THREE.PlaneGeometry(0.34, 0.48).rotateX(-Math.PI / 2);
 const material = new THREE.MeshBasicMaterial({ map: videoTexture });
 
 let arObject = new THREE.Mesh(geometry, material);
