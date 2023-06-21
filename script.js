@@ -246,6 +246,7 @@ function onXRFrame(time, frame) {
         let newMatrix = new THREE.Matrix4().fromArray(target.transform.matrix);
         let quaternion = new THREE.Quaternion();
         quaternion.setFromRotationMatrix(newMatrix);
+        quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), worldYRotation))
         let position = new THREE.Vector3();
         position.setFromMatrixPosition(newMatrix);
         if (calibrateMode) {
@@ -341,7 +342,7 @@ function calibrateWorld() {
 function addCube() {
   // todo: salvar posição do cubo ajustada sem o quatérnio global
   if (reticle.visible) {
-    let originalQuaternion = reticle.quaternion.clone().multiply(worldQuaternion.clone().conjugate()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3( 0, 1, 0 ), worldYRotation))
+    let originalQuaternion = reticle.quaternion.clone().multiply(worldQuaternion.clone().conjugate())
     let originalPosition = reticle.position.clone().sub(worldPosition).applyQuaternion(worldQuaternion.clone().conjugate());
     set(ref(database, "sala1/objects/00001"), { //+ String(Math.floor(Math.random() * 100000))), {
       position: { x: originalPosition.x, y: originalPosition.y, z: originalPosition.z },
@@ -352,7 +353,6 @@ function addCube() {
 
 function adjustYRotation(){
   worldYRotation += Math.PI/36
-  reticle.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI/36))
 }
 
 // Passar a textura WebGL para imagem para mostrar no celular
