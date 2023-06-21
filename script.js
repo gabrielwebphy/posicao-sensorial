@@ -11,6 +11,7 @@ let allRawObjects = [];
 let allSceneObjects = [];
 const geometry = new THREE.PlaneGeometry(0.34, 0.48).rotateX(-Math.PI / 2);
 const material = new THREE.MeshBasicMaterial({ map: videoTexture }); //side: THREE.DoubleSide });
+let raycaster = null;
 
 let arObject = new THREE.Mesh(geometry, material);
 arObject.name = "videoplane";
@@ -75,7 +76,6 @@ let binding = null;
 let renderer = null;
 let intersections = false;
 let screenshotCapture = false;
-let raycaster = null;
 let camera = new THREE.PerspectiveCamera();
 let reticle = null;
 let calibrateReticle = null;
