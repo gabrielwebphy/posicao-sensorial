@@ -247,22 +247,14 @@ function onXRFrame(time, frame) {
       if (hitTestResults.length > 0) {
         let target = hitTestResults[0].getPose(xrRefSpace);
         let newMatrix = new THREE.Matrix4().fromArray(target.transform.matrix);
-        let quaternion = new THREE.Quaternion();
-        quaternion.setFromRotationMatrix(newMatrix);
-        //quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), worldYRotation))
-        let position = new THREE.Vector3();
-        position.setFromMatrixPosition(newMatrix);
         if (calibrateMode) {
           calibrateReticle.visible = true;
-          calibrateReticle.position.copy(position);
-          calibrateReticle.quaternion.copy(quaternion);
+          calibrateReticle.matrix.copy(newMatrix);
         } else {
           reticle.visible = true;
           reticleWireframe.visible = true;
-          reticle.position.copy(position);
-          reticle.quaternion.copy(quaternion);
-          reticleWireframe.position.copy(position);
-          reticleWireframe.quaternion.copy(quaternion);
+          reticle.matrix.copy(newMatrix);
+          reticleWireframe.matrix.copy(newMatrix);
         }
       }
     }
@@ -322,7 +314,7 @@ function onTouch() {
 
 function calibrateWorld() {
   if (calibrateReticle.visible) {
-    let referenceMatrix = new THREE.Matrix4().compose(worldPosition, worldQuaternion, worldScale)
+    let referenceMatrix = new THREE.Matrix4().copy(calibrateReticle.matrix)
     marker.matrix.copy(referenceMatrix);
     allSceneObjects.forEach((obj) => {
       scene.remove(obj);
