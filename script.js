@@ -248,7 +248,7 @@ function onXRFrame(time, frame) {
         let newMatrix = new THREE.Matrix4().fromArray(target.transform.matrix);
         let quaternion = new THREE.Quaternion();
         quaternion.setFromRotationMatrix(newMatrix);
-        quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), worldYRotation))
+        //quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), worldYRotation))
         let position = new THREE.Vector3();
         position.setFromMatrixPosition(newMatrix);
         if (calibrateMode) {
@@ -354,7 +354,7 @@ function addCube() {
 }
 
 function adjustYRotation(){
-  worldYRotation += Math.PI/36
+  worldYRotation += Math.PI/18
 }
 
 // Passar a textura WebGL para imagem para mostrar no celular
