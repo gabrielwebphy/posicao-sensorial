@@ -248,7 +248,6 @@ function onXRFrame(time, frame) {
         let newMatrix = new THREE.Matrix4().fromArray(target.transform.matrix);
         let quaternion = new THREE.Quaternion();
         quaternion.setFromRotationMatrix(newMatrix);
-        quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), worldYRotation))
         let position = new THREE.Vector3();
         position.setFromMatrixPosition(newMatrix);
         if (calibrateMode) {
@@ -258,6 +257,7 @@ function onXRFrame(time, frame) {
         } else {
           reticle.visible = true;
           reticleWireframe.visible = true;
+          quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), worldYRotation))
           reticle.position.copy(position);
           reticle.quaternion.copy(quaternion);
           reticleWireframe.position.copy(position);
