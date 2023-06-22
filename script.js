@@ -46,7 +46,7 @@ const database = getDatabase(app);
 const objectsRef = ref(database, "sala1/objects");
 onValue(objectsRef, (snapshot) => {
   allSceneObjects.forEach((obj) => {
-    scene.remove(obj);
+    marker.remove(obj);
   });
   const data = snapshot.val();
   allRawObjects = [];
@@ -326,7 +326,7 @@ function calibrateWorld() {
     marker.position.copy(worldPosition);
     marker.quaternion.copy(worldQuaternion);
     allSceneObjects.forEach((obj) => {
-      scene.remove(obj);
+      marker.remove(obj);
     });
     allSceneObjects = [];
     allRawObjects.forEach((obj) => {
@@ -344,7 +344,7 @@ function calibrateWorld() {
 function addCube() {
   // todo: salvar posição do cubo ajustada sem o quatérnio global
   if (reticle.visible) {
-    let originalQuaternion = reticle.quaternion.clone().multiply(worldQuaternion.clone().conjugate())
+    let originalQuaternion = reticle.quaternion.clone().premultiply(worldQuaternion.clone().invert())
     let originalPosition = reticle.position.clone().sub(worldPosition).applyQuaternion(worldQuaternion.clone().conjugate());
     set(ref(database, "sala1/objects/00001"), { //+ String(Math.floor(Math.random() * 100000))), {
       position: { x: originalPosition.x, y: originalPosition.y, z: originalPosition.z },
