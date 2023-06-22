@@ -250,13 +250,14 @@ function onXRFrame(time, frame) {
         if (calibrateMode) {
           calibrateReticle.visible = true;
           calibrateReticle.matrix = newMatrix;
-          scene.matrixWorldNeedsUpdate = true
+          calibrateReticle.updateMatrixWorld()
         } else {
           reticle.visible = true;
           reticleWireframe.visible = true;
           reticle.matrix = newMatrix;
           reticleWireframe.matrix = newMatrix;
-          scene.matrixWorldNeedsUpdate = true
+          reticleWireframe.updateMatrixWorld()
+          reticle.updateMatrixWorld()
         }
       }
     }
@@ -318,6 +319,7 @@ function calibrateWorld() {
   if (calibrateReticle.visible) {
     let referenceMatrix = new THREE.Matrix4().copy(calibrateReticle.matrix)
     marker.matrix = referenceMatrix;
+    marker.updateMatrixWorld()
     allSceneObjects.forEach((obj) => {
       scene.remove(obj);
     });
@@ -327,10 +329,10 @@ function calibrateWorld() {
       let offsetMatrix = new THREE.Matrix4().copy(newCube.matrix)
       offsetMatrix.multiply(referenceMatrix)
       newCube.matrix = offsetMatrix;
+      newCube.updateMatrixWorld()
       allSceneObjects.push(newCube);
       scene.add(newCube);
     });
-    scene.matrixWorldNeedsUpdate = true
   }
 }
 
