@@ -7,7 +7,7 @@ const videoTexture = new THREE.VideoTexture(video);
 let transparent = new THREE.MeshStandardMaterial({ transparent: true, opacity: 0.25, color: 0x00ff00 });
 let wireframe = new THREE.MeshStandardMaterial({ wireframe: true, color: 0x00ff00 });
 let scene = new THREE.Scene();
-let allObjects = [];
+let allRawObjects = [];
 let allSceneObjects = [];
 const geometry = new THREE.BoxGeometry(0.34, 0.01, 0.48)
 const transparentMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.1 });
@@ -45,11 +45,11 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const objectsRef = ref(database, "sala1/objects");
 onValue(objectsRef, (snapshot) => {
-  allObjects.forEach((obj) => {
+  allSceneObjects.forEach((obj) => {
     marker.remove(obj);
   });
   const data = snapshot.val();
-  allObjects = [];
+  allRawObjects = [];
   allSceneObjects = [];
   Object.entries(data).forEach((objArray) => {
     const objData = objArray[1];
@@ -58,7 +58,15 @@ onValue(objectsRef, (snapshot) => {
     let rawPosition = new THREE.Vector3(objData.position.x, objData.position.y, objData.position.z);
     newCube.position.copy(rawPosition);
     newCube.quaternion.copy(rawQuaternion);
-    allObjects.push(newCube);
+    allRawObjects.push(newCube);
+  });
+  allRawObjects.forEach((obj) => {
+    const newCube = obj.clone();
+    let offsetQuaternion = newCube.quaternion.clone()
+    let offsetPosition = newCube.position.clone()
+    newCube.quaternion.copy(offsetQuaternion);
+    newCube.position.copy(offsetPosition);
+    allSceneObjects.push(newCube);
     marker.add(newCube);
   });
 });
@@ -317,6 +325,19 @@ function calibrateWorld() {
     worldQuaternion = calibrateReticle.quaternion.clone();
     marker.position.copy(worldPosition);
     marker.quaternion.copy(worldQuaternion);
+    allSceneObjects.forEach((obj) => {
+      marker.remove(obj);
+    });
+    allSceneObjects = [];
+    allRawObjects.forEach((obj) => {
+      const newCube = obj.clone();
+      let offsetQuaternion = newCube.quaternion.clone()
+      let offsetPosition = newCube.position.clone()
+      newCube.quaternion.copy(offsetQuaternion);
+      newCube.position.copy(offsetPosition);
+      allSceneObjects.push(newCube);
+      marker.add(newCube);
+    });
   }
 }
 
