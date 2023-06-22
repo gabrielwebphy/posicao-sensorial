@@ -184,10 +184,6 @@ function onSessionStarted(session) {
   reticle.visible = false;
   reticleWireframe.visible = false;
   calibrateReticle.visible = false;
-  camera.rotation.order = "YXZ"
-  reticle.rotation.order = "YXZ"
-  reticleWireframe.rotation.order = "YXZ"
-  calibrateReticle.rotation.order = "YXZ"
   scene.add(reticle, reticleWireframe, calibrateReticle)
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
