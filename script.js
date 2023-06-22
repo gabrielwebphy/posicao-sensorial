@@ -76,6 +76,7 @@ const yCoord = document.getElementById("ycoord");
 const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
 const pauseButton = document.getElementById("pause-button")
+let worldScale = new THREE.Vector3(1,1,1)
 const rotateButton = document.getElementById("rotate-button")
 pauseButton.addEventListener('click', onPause)
 const ctx = myCanvas.getContext("2d");
@@ -321,20 +322,17 @@ function onTouch() {
 
 function calibrateWorld() {
   if (calibrateReticle.visible) {
-    worldPosition = calibrateReticle.position.clone();
-    worldQuaternion = calibrateReticle.quaternion.clone();
-    marker.position.copy(worldPosition);
-    marker.quaternion.copy(worldQuaternion);
+    let referenceMatrix = new THREE.Matrix4().compose(worldPosition, worldQuaternion, worldScale)
+    marker.matrix.copy(referenceMatrix);
     allSceneObjects.forEach((obj) => {
       scene.remove(obj);
     });
     allSceneObjects = [];
     allRawObjects.forEach((obj) => {
       const newCube = obj.clone();
-      let offsetQuaternion = newCube.quaternion.clone().multiply(worldQuaternion);
-      let offsetPosition = newCube.position.clone().applyQuaternion(worldQuaternion).add(worldPosition);
-      newCube.quaternion.copy(offsetQuaternion);
-      newCube.position.copy(offsetPosition);
+      let offsetMatrix = new THREE.Matrix4().compose(newCube.position, newCube.quaternion, newCube.scale)
+      offsetMatrix.multiply(referenceMatrix)
+      newCube.matrix.copy(offsetMatrix);
       allSceneObjects.push(newCube);
       scene.add(newCube);
     });
