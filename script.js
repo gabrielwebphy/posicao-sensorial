@@ -62,12 +62,12 @@ onValue(objectsRef, (snapshot) => {
   });
   allRawObjects.forEach((obj) => {
     const newCube = obj.clone();
-    let offsetQuaternion = newCube.quaternion.clone().multiply(worldQuaternion);
-    let offsetPosition = newCube.position.clone().applyQuaternion(worldQuaternion).add(worldPosition);
+    let offsetQuaternion = newCube.quaternion.clone()
+    let offsetPosition = newCube.position.clone()
     newCube.quaternion.copy(offsetQuaternion);
     newCube.position.copy(offsetPosition);
     allSceneObjects.push(newCube);
-    scene.add(newCube);
+    marker.add(newCube);
   });
 });
 
@@ -76,7 +76,6 @@ const yCoord = document.getElementById("ycoord");
 const zCoord = document.getElementById("zcoord");
 const myCanvas = document.getElementById("myCanvas");
 const pauseButton = document.getElementById("pause-button")
-let worldScale = new THREE.Vector3(1,1,1)
 const rotateButton = document.getElementById("rotate-button")
 pauseButton.addEventListener('click', onPause)
 const ctx = myCanvas.getContext("2d");
@@ -185,7 +184,7 @@ function onSessionStarted(session) {
   reticle.visible = false;
   reticleWireframe.visible = false;
   calibrateReticle.visible = false;
-  scene.add(reticle, reticleWireframe, calibrateReticle);
+  marker.add(reticle, reticleWireframe, calibrateReticle);
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
   renderer = new THREE.WebGLRenderer({
@@ -247,17 +246,22 @@ function onXRFrame(time, frame) {
       if (hitTestResults.length > 0) {
         let target = hitTestResults[0].getPose(xrRefSpace);
         let newMatrix = new THREE.Matrix4().fromArray(target.transform.matrix);
+        let quaternion = new THREE.Quaternion();
+        quaternion.setFromRotationMatrix(newMatrix);
+        quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), worldYRotation))
+        let position = new THREE.Vector3();
+        position.setFromMatrixPosition(newMatrix);
         if (calibrateMode) {
           calibrateReticle.visible = true;
-          calibrateReticle.matrix = newMatrix;
-          calibrateReticle.updateMatrixWorld()
+          calibrateReticle.position.copy(position);
+          calibrateReticle.quaternion.copy(quaternion);
         } else {
           reticle.visible = true;
           reticleWireframe.visible = true;
-          reticle.matrix = newMatrix;
-          reticleWireframe.matrix = newMatrix;
-          reticleWireframe.updateMatrixWorld()
-          reticle.updateMatrixWorld()
+          reticle.position.copy(position);
+          reticle.quaternion.copy(quaternion);
+          reticleWireframe.position.copy(position);
+          reticleWireframe.quaternion.copy(quaternion);
         }
       }
     }
@@ -317,21 +321,22 @@ function onTouch() {
 
 function calibrateWorld() {
   if (calibrateReticle.visible) {
-    let referenceMatrix = new THREE.Matrix4().copy(calibrateReticle.matrix)
-    marker.matrix = referenceMatrix;
-    marker.updateMatrixWorld()
+    worldPosition = calibrateReticle.position.clone();
+    worldQuaternion = calibrateReticle.quaternion.clone();
+    marker.position.copy(worldPosition);
+    marker.quaternion.copy(worldQuaternion);
     allSceneObjects.forEach((obj) => {
       scene.remove(obj);
     });
     allSceneObjects = [];
     allRawObjects.forEach((obj) => {
       const newCube = obj.clone();
-      let offsetMatrix = new THREE.Matrix4().copy(newCube.matrix)
-      offsetMatrix.multiply(referenceMatrix)
-      newCube.matrix = offsetMatrix;
-      newCube.updateMatrixWorld()
+      let offsetQuaternion = newCube.quaternion.clone()
+      let offsetPosition = newCube.position.clone()
+      newCube.quaternion.copy(offsetQuaternion);
+      newCube.position.copy(offsetPosition);
       allSceneObjects.push(newCube);
-      scene.add(newCube);
+      marker.add(newCube);
     });
   }
 }
