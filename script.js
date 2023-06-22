@@ -249,12 +249,14 @@ function onXRFrame(time, frame) {
         let newMatrix = new THREE.Matrix4().fromArray(target.transform.matrix);
         if (calibrateMode) {
           calibrateReticle.visible = true;
-          calibrateReticle.matrix.copy(newMatrix);
+          calibrateReticle.matrix = newMatrix;
+          scene.matrixWorldNeedsUpdate = true
         } else {
           reticle.visible = true;
           reticleWireframe.visible = true;
-          reticle.matrix.copy(newMatrix);
-          reticleWireframe.matrix.copy(newMatrix);
+          reticle.matrix = newMatrix;
+          reticleWireframe.matrix = newMatrix;
+          scene.matrixWorldNeedsUpdate = true
         }
       }
     }
@@ -315,19 +317,20 @@ function onTouch() {
 function calibrateWorld() {
   if (calibrateReticle.visible) {
     let referenceMatrix = new THREE.Matrix4().copy(calibrateReticle.matrix)
-    marker.matrix.copy(referenceMatrix);
+    marker.matrix = referenceMatrix;
     allSceneObjects.forEach((obj) => {
       scene.remove(obj);
     });
     allSceneObjects = [];
     allRawObjects.forEach((obj) => {
       const newCube = obj.clone();
-      let offsetMatrix = new THREE.Matrix4().compose(newCube.position, newCube.quaternion, newCube.scale)
+      let offsetMatrix = new THREE.Matrix4().copy(newCube.matrix)
       offsetMatrix.multiply(referenceMatrix)
-      newCube.matrix.copy(offsetMatrix);
+      newCube.matrix = offsetMatrix;
       allSceneObjects.push(newCube);
       scene.add(newCube);
     });
+    scene.matrixWorldNeedsUpdate = true
   }
 }
 
