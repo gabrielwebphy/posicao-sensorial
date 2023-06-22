@@ -82,6 +82,7 @@ const ctx = myCanvas.getContext("2d");
 let xrButton = document.getElementById("ar-button");
 //let SSButton = document.getElementById("ss-button");
 let calibrateButton = document.getElementById("calibrate-button");
+let addButton = document.getElementById('add-button')
 let xrSession = null;
 let xrRefSpace = null;
 let xrViewerSpace = null;
@@ -98,6 +99,7 @@ let xrHitTestSource = null;
 let marker = null;
 rotateButton.addEventListener('click', adjustYRotation)
 //SSButton.addEventListener("click", downloadImage);
+addButton.addEventListener('click', onTouch)
 calibrateButton.addEventListener("click", changeCalibrationMode);
 
 // Função para virar a imagem da câmera verticalmente (ela vem invertida)
@@ -161,7 +163,7 @@ function onSessionStarted(session) {
   xrSession = session;
   xrButton.innerHTML = "Parar WebXR";
   session.addEventListener("end", onSessionEnded);
-  session.addEventListener("select", onTouch);
+  //session.addEventListener("select", onTouch);
   let canvas = document.createElement("canvas");
   gl = canvas.getContext("webgl", {
     xrCompatible: true,
