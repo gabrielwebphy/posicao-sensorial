@@ -46,7 +46,7 @@ const database = getDatabase(app);
 const objectsRef = ref(database, "sala1/objects");
 onValue(objectsRef, (snapshot) => {
   allSceneObjects.forEach((obj) => {
-    scene.remove(obj);
+    marker.remove(obj);
   });
   const data = snapshot.val();
   allRawObjects = [];
@@ -62,12 +62,12 @@ onValue(objectsRef, (snapshot) => {
   });
   allRawObjects.forEach((obj) => {
     const newCube = obj.clone();
-    let offsetQuaternion = newCube.quaternion.clone().multiply(worldQuaternion);
-    let offsetPosition = newCube.position.clone().applyQuaternion(worldQuaternion).add(worldPosition);
+    let offsetQuaternion = newCube.quaternion.clone()
+    let offsetPosition = newCube.position.clone()
     newCube.quaternion.copy(offsetQuaternion);
     newCube.position.copy(offsetPosition);
     allSceneObjects.push(newCube);
-    scene.add(newCube);
+    marker.add(newCube);
   });
 });
 
@@ -82,6 +82,7 @@ const ctx = myCanvas.getContext("2d");
 let xrButton = document.getElementById("ar-button");
 //let SSButton = document.getElementById("ss-button");
 let calibrateButton = document.getElementById("calibrate-button");
+let addButton = document.getElementById('add-button')
 let xrSession = null;
 let xrRefSpace = null;
 let xrViewerSpace = null;
@@ -98,6 +99,7 @@ let xrHitTestSource = null;
 let marker = null;
 rotateButton.addEventListener('click', adjustYRotation)
 //SSButton.addEventListener("click", downloadImage);
+addButton.addEventListener('click', onTouch)
 calibrateButton.addEventListener("click", changeCalibrationMode);
 
 // Função para virar a imagem da câmera verticalmente (ela vem invertida)
@@ -161,7 +163,7 @@ function onSessionStarted(session) {
   xrSession = session;
   xrButton.innerHTML = "Parar WebXR";
   session.addEventListener("end", onSessionEnded);
-  session.addEventListener("select", onTouch);
+  //session.addEventListener("select", onTouch);
   let canvas = document.createElement("canvas");
   gl = canvas.getContext("webgl", {
     xrCompatible: true,
@@ -182,7 +184,7 @@ function onSessionStarted(session) {
   reticle.visible = false;
   reticleWireframe.visible = false;
   calibrateReticle.visible = false;
-  scene.add(reticle, reticleWireframe, calibrateReticle);
+  scene.add(reticle, reticleWireframe, calibrateReticle)
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
   renderer = new THREE.WebGLRenderer({
@@ -246,7 +248,6 @@ function onXRFrame(time, frame) {
         let newMatrix = new THREE.Matrix4().fromArray(target.transform.matrix);
         let quaternion = new THREE.Quaternion();
         quaternion.setFromRotationMatrix(newMatrix);
-        quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), worldYRotation))
         let position = new THREE.Vector3();
         position.setFromMatrixPosition(newMatrix);
         if (calibrateMode) {
@@ -256,6 +257,7 @@ function onXRFrame(time, frame) {
         } else {
           reticle.visible = true;
           reticleWireframe.visible = true;
+          quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), worldYRotation))
           reticle.position.copy(position);
           reticle.quaternion.copy(quaternion);
           reticleWireframe.position.copy(position);
@@ -324,17 +326,17 @@ function calibrateWorld() {
     marker.position.copy(worldPosition);
     marker.quaternion.copy(worldQuaternion);
     allSceneObjects.forEach((obj) => {
-      scene.remove(obj);
+      marker.remove(obj);
     });
     allSceneObjects = [];
     allRawObjects.forEach((obj) => {
       const newCube = obj.clone();
-      let offsetQuaternion = newCube.quaternion.clone().multiply(worldQuaternion);
-      let offsetPosition = newCube.position.clone().applyQuaternion(worldQuaternion).add(worldPosition);
+      let offsetQuaternion = newCube.quaternion.clone()
+      let offsetPosition = newCube.position.clone()
       newCube.quaternion.copy(offsetQuaternion);
       newCube.position.copy(offsetPosition);
       allSceneObjects.push(newCube);
-      scene.add(newCube);
+      marker.add(newCube);
     });
   }
 }
@@ -342,7 +344,7 @@ function calibrateWorld() {
 function addCube() {
   // todo: salvar posição do cubo ajustada sem o quatérnio global
   if (reticle.visible) {
-    let originalQuaternion = reticle.quaternion.clone().multiply(worldQuaternion.clone().conjugate())
+    let originalQuaternion = reticle.quaternion.clone().premultiply(worldQuaternion.clone().invert())
     let originalPosition = reticle.position.clone().sub(worldPosition).applyQuaternion(worldQuaternion.clone().conjugate());
     set(ref(database, "sala1/objects/00001"), { //+ String(Math.floor(Math.random() * 100000))), {
       position: { x: originalPosition.x, y: originalPosition.y, z: originalPosition.z },
@@ -352,7 +354,7 @@ function addCube() {
 }
 
 function adjustYRotation(){
-  worldYRotation += Math.PI/36
+  worldYRotation += Math.PI/18
 }
 
 // Passar a textura WebGL para imagem para mostrar no celular
