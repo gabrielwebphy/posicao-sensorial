@@ -168,7 +168,7 @@ function onSessionStarted(session) {
   session.addEventListener("end", onSessionEnded);
   //session.addEventListener("select", onTouch);
   let canvas = document.createElement("canvas");
-  gl = canvas.getContext("webgl", {
+  gl = canvas.getContext("webgl2", {
     xrCompatible: true,
   });
   const material = new THREE.LineBasicMaterial({
@@ -237,8 +237,8 @@ function onXRFrame(time, frame) {
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
 
-  const target = renderer.getRenderTarget()
-  gl.bindFramebuffer(gl.FRAMEBUFFER, target);
+  //const target = renderer.getRenderTarget()
+  //gl.bindFramebuffer(gl.FRAMEBUFFER, target);
   
   renderer.render(scene, camera);
   let pose = frame.getViewerPose(xrRefSpace);
