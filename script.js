@@ -1,7 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-let threeCanvas = document.getElementById("threeCanvas");
-const ctxThree = boundingCanvas.getContext("2d");
+
 
 const video = document.getElementById("video1");
 const videoTexture = new THREE.VideoTexture(video);
@@ -200,8 +199,8 @@ function onSessionStarted(session) {
   camera.matrixAutoUpdate = false;
   //raycaster = new THREE.Raycaster().setFromCamera(new THREE.Vector2(0, 0), camera);
 
-  binding = new XRWebGLBinding(session, gl);
-  session.updateRenderState({ baseLayer: binding });
+  //binding = new XRWebGLBinding(session, gl);
+  session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
   session.requestReferenceSpace("viewer").then((refSpace) => {
     xrViewerSpace = refSpace;
     session.requestHitTestSource({ space: xrViewerSpace }).then((hitTestSource) => {
