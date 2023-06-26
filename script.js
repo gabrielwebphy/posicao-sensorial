@@ -198,8 +198,8 @@ function onSessionStarted(session) {
   camera.matrixAutoUpdate = false;
   //raycaster = new THREE.Raycaster().setFromCamera(new THREE.Vector2(0, 0), camera);
 
-  //binding = new XRWebGLBinding(session, gl);
-  session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
+  binding = new XRWebGLBinding(session, gl);
+  session.updateRenderState({ baseLayer: binding });
   session.requestReferenceSpace("viewer").then((refSpace) => {
     xrViewerSpace = refSpace;
     session.requestHitTestSource({ space: xrViewerSpace }).then((hitTestSource) => {
@@ -210,7 +210,6 @@ function onSessionStarted(session) {
     xrRefSpace = refSpace;
     session.requestAnimationFrame(onXRFrame); // Chamando a função a cada frame
   });
-  gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
 }
 
 function onRequestSessionError(ex) {
@@ -235,7 +234,7 @@ function onXRFrame(time, frame) {
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
   if(!started){
-    
+    gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
     started = true
   }
 
