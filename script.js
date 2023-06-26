@@ -236,7 +236,7 @@ function onXRFrame(time, frame) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
     started = true
   }
-  
+  renderer.render(scene, camera);
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
 
@@ -295,7 +295,7 @@ function onXRFrame(time, frame) {
     yCoord.innerHTML = "No pose";
     zCoord.innerHTML = "No pose";
   }
-  renderer.render(scene, camera);
+  
 }
 
 function onPause() {
