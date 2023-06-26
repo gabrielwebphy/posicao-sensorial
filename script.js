@@ -149,7 +149,7 @@ function onButtonClicked() {
   if (!xrSession) {
     navigator.xr
       .requestSession("immersive-ar", {
-        requiredFeatures: [/*"camera-access",*/ "hit-test", "local"],
+        requiredFeatures: ["camera-access", "hit-test", "local"],
         optionalFeatures: ["dom-overlay"],
         domOverlay: { root: document.getElementById("overlay") },
       })
@@ -237,7 +237,6 @@ function onXRFrame(time, frame) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
     started = true
   }
-  //gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
 
   let pose = frame.getViewerPose(xrRefSpace);
   reticle.visible = false;
