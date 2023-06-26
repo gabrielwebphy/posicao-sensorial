@@ -198,6 +198,7 @@ function onSessionStarted(session) {
   //raycaster = new THREE.Raycaster().setFromCamera(new THREE.Vector2(0, 0), camera);
 
   //binding = new XRWebGLBinding(session, gl);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
   session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
   session.requestReferenceSpace("viewer").then((refSpace) => {
     xrViewerSpace = refSpace;
