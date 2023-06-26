@@ -95,6 +95,7 @@ let camera = new THREE.PerspectiveCamera();
 let reticle = null;
 let calibrateReticle = null;
 let reticleWireframe = null;
+let started = false
 let xrHitTestSource = null;
 let marker = null;
 rotateButton.addEventListener('click', adjustYRotation)
@@ -198,7 +199,6 @@ function onSessionStarted(session) {
   //raycaster = new THREE.Raycaster().setFromCamera(new THREE.Vector2(0, 0), camera);
 
   //binding = new XRWebGLBinding(session, gl);
-  gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
   session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
   session.requestReferenceSpace("viewer").then((refSpace) => {
     xrViewerSpace = refSpace;
@@ -233,7 +233,10 @@ function onXRFrame(time, frame) {
   renderer.render(scene, camera);
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
-
+  if(!started){
+    gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+    started = true
+  }
   //gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
 
   let pose = frame.getViewerPose(xrRefSpace);
