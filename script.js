@@ -199,7 +199,7 @@ function onSessionStarted(session) {
   camera.matrixAutoUpdate = false;
   //raycaster = new THREE.Raycaster().setFromCamera(new THREE.Vector2(0, 0), camera);
 
-  //binding = new XRWebGLBinding(session, gl);
+  binding = new XRWebGLBinding(session, gl);
   session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
   session.requestReferenceSpace("viewer").then((refSpace) => {
     xrViewerSpace = refSpace;
@@ -277,13 +277,13 @@ function onXRFrame(time, frame) {
     camera.projectionMatrix.fromArray(firstView.projectionMatrix);
     camera.updateMatrixWorld(true);
 
-    //for (let view of pose.views) {
-    //if (view.camera && screenshotCapture) {
-    //const cameraTexture = binding.getCameraImage(view.camera);
-    //createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height);
-    //screenshotCapture = false;
-    //}
-    //}
+    for (let view of pose.views) {
+      if (view.camera && screenshotCapture) {
+        const cameraTexture = binding.getCameraImage(view.camera);
+        createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height);
+        screenshotCapture = false;
+      }
+    }
     const p = pose.transform.position;
     xCoord.innerHTML = "x: " + (p.x - worldPosition.x).toFixed(4);
     yCoord.innerHTML = "y: " + (p.y - worldPosition.y).toFixed(4);
