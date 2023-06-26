@@ -231,15 +231,13 @@ function downloadImage() {
 
 // Função que roda a cada frame
 function onXRFrame(time, frame) {
-
+  let session = frame.session;
+  session.requestAnimationFrame(onXRFrame);
   if (!started) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
     started = true
   }
   renderer.render(scene, camera);
-  let session = frame.session;
-  session.requestAnimationFrame(onXRFrame);
-
   let pose = frame.getViewerPose(xrRefSpace);
   reticle.visible = false;
   calibrateReticle.visible = false;
@@ -295,7 +293,7 @@ function onXRFrame(time, frame) {
     yCoord.innerHTML = "No pose";
     zCoord.innerHTML = "No pose";
   }
-  
+
 }
 
 function onPause() {
