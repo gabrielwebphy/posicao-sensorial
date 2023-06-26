@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
+const threeCanvas = document.getElementById('three-canvas')
 
 const video = document.getElementById("video1");
 const videoTexture = new THREE.VideoTexture(video);
@@ -196,6 +197,7 @@ function onSessionStarted(session) {
     context: gl,
   });
   renderer.autoClear = false;
+  threeCanvas.appendChild(renderer.domElement)
   camera.matrixAutoUpdate = false;
   //raycaster = new THREE.Raycaster().setFromCamera(new THREE.Vector2(0, 0), camera);
 
