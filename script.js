@@ -1,5 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+let threeCanvas = document.getElementById("threeCanvas");
+const ctxThree = boundingCanvas.getContext("2d");
 
 const video = document.getElementById("video1");
 const videoTexture = new THREE.VideoTexture(video);
@@ -230,13 +232,14 @@ function downloadImage() {
 
 // Função que roda a cada frame
 function onXRFrame(time, frame) {
-  renderer.render(scene, camera);
-  let session = frame.session;
-  session.requestAnimationFrame(onXRFrame);
-  if(!started){
+
+  if (!started) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
     started = true
   }
+  
+  let session = frame.session;
+  session.requestAnimationFrame(onXRFrame);
 
   let pose = frame.getViewerPose(xrRefSpace);
   reticle.visible = false;
@@ -260,7 +263,7 @@ function onXRFrame(time, frame) {
         } else {
           reticle.visible = true;
           reticleWireframe.visible = true;
-          quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), worldYRotation))
+          quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), worldYRotation))
           reticle.position.copy(position);
           reticle.quaternion.copy(quaternion);
           reticleWireframe.position.copy(position);
@@ -293,13 +296,14 @@ function onXRFrame(time, frame) {
     yCoord.innerHTML = "No pose";
     zCoord.innerHTML = "No pose";
   }
+  renderer.render(scene, camera);
 }
 
-function onPause(){
+function onPause() {
   if (!video.paused) {
     video.pause();
   }
-  else{
+  else {
     video.play()
   }
 }
@@ -356,8 +360,8 @@ function addCube() {
   }
 }
 
-function adjustYRotation(){
-  worldYRotation += Math.PI/18
+function adjustYRotation() {
+  worldYRotation += Math.PI / 18
 }
 
 // Passar a textura WebGL para imagem para mostrar no celular
