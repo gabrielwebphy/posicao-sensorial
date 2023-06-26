@@ -231,12 +231,13 @@ function downloadImage() {
 
 // Função que roda a cada frame
 function onXRFrame(time, frame) {
+  
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
-  if (!started) {
-    gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
-    started = true
-  }
+
+  const target = renderer.getRenderTarget()
+  gl.bindFramebuffer(gl.FRAMEBUFFER, target);
+  
   renderer.render(scene, camera);
   let pose = frame.getViewerPose(xrRefSpace);
   reticle.visible = false;
