@@ -233,7 +233,7 @@ function onXRFrame(time, frame) {
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
 
-  gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+  //gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
 
   let pose = frame.getViewerPose(xrRefSpace);
   reticle.visible = false;
