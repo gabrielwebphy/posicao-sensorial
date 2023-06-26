@@ -81,7 +81,7 @@ const rotateButton = document.getElementById("rotate-button")
 pauseButton.addEventListener('click', onPause)
 const ctx = myCanvas.getContext("2d");
 let xrButton = document.getElementById("ar-button");
-//let SSButton = document.getElementById("ss-button");
+let SSButton = document.getElementById("ss-button");
 let calibrateButton = document.getElementById("calibrate-button");
 let addButton = document.getElementById('add-button')
 let xrSession = null;
@@ -100,7 +100,7 @@ let started = false
 let xrHitTestSource = null;
 let marker = null;
 rotateButton.addEventListener('click', adjustYRotation)
-//SSButton.addEventListener("click", downloadImage);
+SSButton.addEventListener("click", downloadImage);
 addButton.addEventListener('click', onTouch)
 calibrateButton.addEventListener("click", changeCalibrationMode);
 
@@ -346,7 +346,6 @@ function calibrateWorld() {
 }
 
 function addCube() {
-  // todo: salvar posição do cubo ajustada sem o quatérnio global
   if (reticle.visible) {
     let originalQuaternion = reticle.quaternion.clone().premultiply(worldQuaternion.clone().invert())
     let originalPosition = reticle.position.clone().sub(worldPosition).applyQuaternion(worldQuaternion.clone().conjugate());
