@@ -210,6 +210,7 @@ function onSessionStarted(session) {
     xrRefSpace = refSpace;
     session.requestAnimationFrame(onXRFrame); // Chamando a função a cada frame
   });
+  gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
 }
 
 function onRequestSessionError(ex) {
@@ -234,7 +235,7 @@ function onXRFrame(time, frame) {
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
   if(!started){
-    gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+    
     started = true
   }
 
