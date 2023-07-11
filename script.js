@@ -187,7 +187,7 @@ function onSessionStarted(session) {
   scene.add(ambientLight);
   renderer = new THREE.WebGLRenderer({
     alpha: true,
-    preserveDrawingBuffer: true,
+    preserveDrawingBuffer: false,
     canvas: canvas,
     context: gl,
   });
