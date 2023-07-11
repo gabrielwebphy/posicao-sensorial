@@ -80,7 +80,7 @@ const rotateButton = document.getElementById("rotate-button")
 pauseButton.addEventListener('click', onPause)
 const ctx = myCanvas.getContext("2d");
 let xrButton = document.getElementById("ar-button");
-let SSButton = document.getElementById("ss-button");
+//let SSButton = document.getElementById("ss-button");
 let calibrateButton = document.getElementById("calibrate-button");
 let addButton = document.getElementById('add-button')
 let xrSession = null;
@@ -95,11 +95,10 @@ let camera = new THREE.PerspectiveCamera();
 let reticle = null;
 let calibrateReticle = null;
 let reticleWireframe = null;
-let started = false
 let xrHitTestSource = null;
 let marker = null;
 rotateButton.addEventListener('click', adjustYRotation)
-SSButton.addEventListener("click", downloadImage);
+//SSButton.addEventListener("click", downloadImage);
 addButton.addEventListener('click', onTouch)
 calibrateButton.addEventListener("click", changeCalibrationMode);
 
@@ -149,7 +148,7 @@ function onButtonClicked() {
   if (!xrSession) {
     navigator.xr
       .requestSession("immersive-ar", {
-        requiredFeatures: ["camera-access", "hit-test", "local"],
+        requiredFeatures: [/*"camera-access",*/ "hit-test", "local"],
         optionalFeatures: ["dom-overlay"],
         domOverlay: { root: document.getElementById("overlay") },
       })
@@ -198,7 +197,7 @@ function onSessionStarted(session) {
   camera.matrixAutoUpdate = false;
   //raycaster = new THREE.Raycaster().setFromCamera(new THREE.Vector2(0, 0), camera);
 
-  binding = new XRWebGLBinding(session, gl);
+  //binding = new XRWebGLBinding(session, gl);
   session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
   session.requestReferenceSpace("viewer").then((refSpace) => {
     xrViewerSpace = refSpace;
@@ -230,14 +229,12 @@ function downloadImage() {
 
 // Função que roda a cada frame
 function onXRFrame(time, frame) {
-  
+  renderer.render(scene, camera);
   let session = frame.session;
   session.requestAnimationFrame(onXRFrame);
 
-  const target = renderer.getRenderTarget()
-  gl.bindFramebuffer(gl.FRAMEBUFFER, target);
-  
-  renderer.render(scene, camera);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+
   let pose = frame.getViewerPose(xrRefSpace);
   reticle.visible = false;
   calibrateReticle.visible = false;
@@ -260,7 +257,7 @@ function onXRFrame(time, frame) {
         } else {
           reticle.visible = true;
           reticleWireframe.visible = true;
-          quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), worldYRotation))
+          quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), worldYRotation))
           reticle.position.copy(position);
           reticle.quaternion.copy(quaternion);
           reticleWireframe.position.copy(position);
@@ -277,13 +274,13 @@ function onXRFrame(time, frame) {
     camera.projectionMatrix.fromArray(firstView.projectionMatrix);
     camera.updateMatrixWorld(true);
 
-    for (let view of pose.views) {
-      if (view.camera && screenshotCapture) {
-        const cameraTexture = binding.getCameraImage(view.camera);
-        createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height);
-        screenshotCapture = false;
-      }
-    }
+    //for (let view of pose.views) {
+    //if (view.camera && screenshotCapture) {
+    //const cameraTexture = binding.getCameraImage(view.camera);
+    //createImageFromTexture(gl, cameraTexture, view.camera.width, view.camera.height);
+    //screenshotCapture = false;
+    //}
+    //}
     const p = pose.transform.position;
     xCoord.innerHTML = "x: " + (p.x - worldPosition.x).toFixed(4);
     yCoord.innerHTML = "y: " + (p.y - worldPosition.y).toFixed(4);
@@ -293,14 +290,13 @@ function onXRFrame(time, frame) {
     yCoord.innerHTML = "No pose";
     zCoord.innerHTML = "No pose";
   }
-
 }
 
-function onPause() {
+function onPause(){
   if (!video.paused) {
     video.pause();
   }
-  else {
+  else{
     video.play()
   }
 }
@@ -346,6 +342,7 @@ function calibrateWorld() {
 }
 
 function addCube() {
+  // todo: salvar posição do cubo ajustada sem o quatérnio global
   if (reticle.visible) {
     let originalQuaternion = reticle.quaternion.clone().premultiply(worldQuaternion.clone().invert())
     let originalPosition = reticle.position.clone().sub(worldPosition).applyQuaternion(worldQuaternion.clone().conjugate());
@@ -356,8 +353,8 @@ function addCube() {
   }
 }
 
-function adjustYRotation() {
-  worldYRotation += Math.PI / 18
+function adjustYRotation(){
+  worldYRotation += Math.PI/18
 }
 
 // Passar a textura WebGL para imagem para mostrar no celular
