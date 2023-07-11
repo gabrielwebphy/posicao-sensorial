@@ -37,10 +37,8 @@ const firebaseConfig = {
   projectId: "posicao-sensorial",
   storageBucket: "posicao-sensorial.appspot.com",
   messagingSenderId: "880971324399",
-  appId: "1:880971324399:web:c16bf72ba5aaa73949b41a",
-};
-
-// Initialize Firebase
+  appId: "1:880971324399:web:c16bf72ba5aaa73949b41a"
+};// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const objectsRef = ref(database, "sala1/objects");
