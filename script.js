@@ -146,7 +146,7 @@ function onButtonClicked() {
   if (!xrSession) {
     navigator.xr
       .requestSession("immersive-ar", {
-        requiredFeatures: [/*"camera-access",*/ "hit-test", "local"],
+        requiredFeatures: ["camera-access", "hit-test", "local"],
         optionalFeatures: ["dom-overlay"],
         domOverlay: { root: document.getElementById("overlay") },
       })
